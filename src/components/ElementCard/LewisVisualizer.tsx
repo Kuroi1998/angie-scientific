@@ -335,6 +335,41 @@ export const LewisVisualizer: React.FC<LewisVisualizerProps> = ({ centralSymbol 
     return language === 'fr' ? bond.characterFR : bond.characterES;
   };
 
+  // Noble gases and elements that can't form standard covalent bonds
+  const NOBLE_GASES = ['He', 'Ne', 'Ar', 'Kr', 'Xe', 'Rn', 'Og'];
+  const NO_BOND_ELEMENTS = ['He', 'Ne', 'Ar', 'Kr', 'Xe', 'Rn', 'Og'];
+
+  if (NO_BOND_ELEMENTS.includes(centralSymbol)) {
+    return React.createElement('div', {
+      style: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '12px',
+        padding: '32px 16px',
+        textAlign: 'center',
+        background: 'rgba(0, 243, 255, 0.02)',
+        border: '1px dashed rgba(0, 243, 255, 0.15)',
+        borderRadius: '6px'
+      }
+    },
+      React.createElement('span', { style: { fontSize: '32px' } }, '⚗️'),
+      React.createElement('p', {
+        style: { fontFamily: 'var(--font-title)', fontSize: '12px', color: 'var(--neon-cyan)', margin: 0, letterSpacing: '1px' }
+      }, (language === 'fr' ? 'GAZ NOBLE — COUCHE COMPLÈTE' : 'GAS NOBLE — CAPA COMPLETA').toUpperCase()),
+      React.createElement('p', {
+        style: { fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.5', maxWidth: '280px' }
+      }, language === 'fr'
+        ? `${centralSymbol} possède une configuration électronique stable (octet/duet complet). Il ne forme pas de liaisons covalentes dans des conditions standard.`
+        : `${centralSymbol} tiene una configuración electrónica estable (octeto/dueto completo). No forma enlaces covalentes en condiciones estándar.`
+      )
+    );
+  }
+
+  // Prevent unused variable warning
+  void NOBLE_GASES;
+
   return React.createElement('div', {
     className: 'lewis-vsepr-container animate-fade-in',
     style: {

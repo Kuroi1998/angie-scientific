@@ -21,6 +21,7 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const [reactionResult, setReactionResult] = useState<ReactionResult | null>(null);
+  const [customInput, setCustomInput] = useState<string>('');
 
   // List of common reactive elements for quick selector
   const quickElements = [
@@ -220,6 +221,64 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
               className: !isSelected ? 'quick-element-btn' : ''
             }, el.s);
           })
+        )
+      ),
+
+      // Custom symbol input
+      React.createElement('div', {
+        className: 'glass-panel',
+        style: {
+          padding: '16px',
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--glass-border)',
+          borderRadius: '8px',
+          marginTop: '0'
+        }
+      },
+        React.createElement('h3', { style: { fontFamily: 'var(--font-title)', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px', letterSpacing: '1px' } },
+          (language === 'fr' ? 'SAISIE MANUELLE D\'ÉLÉMENT' : 'ENTRADA MANUAL DE ELEMENTO').toUpperCase()
+        ),
+        React.createElement('div', { style: { display: 'flex', gap: '8px' } },
+          React.createElement('input', {
+            type: 'text',
+            value: customInput,
+            onChange: (e) => setCustomInput((e.target as HTMLInputElement).value.slice(0, 3)),
+            onKeyDown: (e: React.KeyboardEvent) => {
+              if (e.key === 'Enter' && customInput.trim()) {
+                selectQuickElement(customInput.trim());
+                setCustomInput('');
+              }
+            },
+            placeholder: language === 'fr' ? 'Ex: Fe, Au, Pb...' : 'Ej: Fe, Au, Pb...',
+            style: {
+              flex: 1,
+              padding: '8px 12px',
+              background: 'rgba(5, 5, 10, 0.6)',
+              border: '1px solid var(--glass-border)',
+              borderRadius: '4px',
+              color: '#fff',
+              fontFamily: 'var(--font-title)',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              outline: 'none',
+              letterSpacing: '1px'
+            }
+          }),
+          React.createElement('button', {
+            onClick: () => { if (customInput.trim()) { selectQuickElement(customInput.trim()); setCustomInput(''); } },
+            style: {
+              padding: '8px 14px',
+              background: 'rgba(0, 243, 255, 0.08)',
+              border: '1px solid var(--neon-cyan)',
+              borderRadius: '4px',
+              color: 'var(--neon-cyan)',
+              fontFamily: 'var(--font-title)',
+              fontSize: '11px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              letterSpacing: '1px'
+            }
+          }, language === 'fr' ? 'AJOUTER' : 'AÑADIR')
         )
       ),
 

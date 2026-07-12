@@ -8,12 +8,17 @@ import { LewisVisualizer } from './LewisVisualizer';
 interface DetailModalProps {
   element: ElementType;
   onClose: () => void;
+  onAddToFusion?: (el: ElementType) => void;
 }
+
+// Elements that cannot form standard covalent bonds
+const NOBLE_GASES = ['He', 'Ne', 'Ar', 'Kr', 'Xe', 'Rn', 'Og'];
 
 type TabType = 'general' | 'atomic' | 'quantum' | 'history' | 'bonds';
 
-export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose }) => {
+export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAddToFusion }) => {
   const { language, t } = useLanguage();
+  const isNobleGas = NOBLE_GASES.includes(element.s);
   const [activeTab, setActiveTab] = useState<TabType>('general');
 
   // Map category to color
@@ -113,24 +118,48 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose }) =>
             React.createElement('p', { style: { fontSize: '11px', fontFamily: 'var(--font-mono)', color: catColor, textTransform: 'uppercase', letterSpacing: '2px' } }, element.cat.replace('-', ' '))
           )
         ),
-        React.createElement('button', {
-          onClick: onClose,
-          style: {
-            background: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '50%',
-            width: '32px',
-            height: '32px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
+        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+          // Add to Fusion shortcut button
+          onAddToFusion && React.createElement('button', {
+            onClick: () => { onAddToFusion(element); onClose(); },
+            title: language === 'fr' ? 'Ajouter au Simulateur de Fusion' : 'Añadir al Simulador de Fusión',
+            style: {
+              background: 'rgba(157, 0, 255, 0.1)',
+              border: '1px solid var(--neon-purple)',
+              borderRadius: '4px',
+              padding: '6px 10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: 'var(--neon-purple)',
+              cursor: 'pointer',
+              fontFamily: 'var(--font-title)',
+              fontSize: '10px',
+              fontWeight: 'bold',
+              letterSpacing: '1px',
+              boxShadow: 'var(--glow-purple)',
+              transition: 'all 0.2s'
+            }
+          }, '⚡ FUSION'),
+          React.createElement('button', {
+            onClick: onClose,
+            style: {
+              background: 'rgba(255,255,255,0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            },
+            className: 'close-btn'
           },
-          className: 'close-btn'
-        },
-          React.createElement(X, { size: 18 })
+            React.createElement(X, { size: 18 })
+          )
         )
       ),
 
@@ -138,11 +167,12 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose }) =>
       React.createElement('div', {
         style: {
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '24px',
-          padding: '24px',
-          maxHeight: '70vh',
-          overflowY: 'auto'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '20px',
+          padding: '20px',
+          maxHeight: 'min(70vh, 600px)',
+          overflowY: 'auto',
+          overflowX: 'hidden'
         }
       },
         // Column 1: Tabs & Details
@@ -159,9 +189,10 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose }) =>
               { id: 'general', label: t('element.general'), icon: Info },
               { id: 'atomic', label: t('element.atomic'), icon: Layers },
               { id: 'quantum', label: t('element.quantum'), icon: Shield },
-              { id: 'bonds', label: language === 'fr' ? 'Liaisons' : 'Enlaces', icon: GitCommit },
+              // Hide Bonds tab for noble gases — they don't form covalent bonds
+              ...(isNobleGas ? [] : [{ id: 'bonds', label: language === 'fr' ? 'Liaisons' : 'Enlaces', icon: GitCommit }]),
               { id: 'history', label: t('element.history'), icon: HelpCircle }
-            ] as const).map(tab => {
+            ] as { id: TabType; label: string; icon: React.ElementType }[]).map(tab => {
               const active = activeTab === tab.id;
               const Icon = tab.icon;
               return React.createElement('button', {

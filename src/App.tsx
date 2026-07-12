@@ -178,7 +178,8 @@ const AppContent: React.FC = () => {
     // Details Modal popup for single element properties
     selectedElement && React.createElement(DetailModal, {
       element: selectedElement,
-      onClose: () => setSelectedElement(null)
+      onClose: () => setSelectedElement(null),
+      onAddToFusion: handleAddToFusion
     }),
 
     // Telemetry Footer

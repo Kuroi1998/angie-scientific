@@ -77,25 +77,38 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
 
   const handleSearchSubmit = (queryStr: string) => {
     if (!queryStr.trim()) return;
-    setSearch(queryStr);
-    
-    // Add to history
     const cleanQuery = queryStr.trim();
+
+    // Add to history
     const newHistory = [cleanQuery, ...searchHistory.filter(h => h !== cleanQuery)].slice(0, 5);
     setSearchHistory(newHistory);
     localStorage.setItem('angie_sci_search_history', JSON.stringify(newHistory));
 
-    // Find if exact match
+    // Find exact match first (symbol, name, or atomic number)
     const matched = elements.find(el => {
       const name = language === 'es' ? el.nameES : el.nameFR;
-      return el.s.toLowerCase() === cleanQuery.toLowerCase() || 
-             name.toLowerCase() === cleanQuery.toLowerCase() || 
+      return el.s.toLowerCase() === cleanQuery.toLowerCase() ||
+             name.toLowerCase() === cleanQuery.toLowerCase() ||
              el.n.toString() === cleanQuery;
     });
+
     if (matched) {
       onSelectElement(matched);
       setSearch('');
       setSuggestions([]);
+    } else {
+      // Fallback: open first partial match if available
+      const partialMatched = elements.find(el => {
+        const name = language === 'es' ? el.nameES : el.nameFR;
+        return el.s.toLowerCase().startsWith(cleanQuery.toLowerCase()) ||
+               name.toLowerCase().includes(cleanQuery.toLowerCase());
+      });
+      if (partialMatched) {
+        onSelectElement(partialMatched);
+        setSearch('');
+        setSuggestions([]);
+      }
+      // Otherwise: keep the search text to filter the grid
     }
   };
 
