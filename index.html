@@ -1,13 +1,54 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>angiescientific</title>
+    <title>ANGIE Scientific — Tableau Périodique Interactif FR/ES</title>
+    <meta name="description" content="Application web interactive bilingue (FR/ES) du tableau périodique des éléments. Simulation chimique, VSEPR, Chimie Quantique, Labo Virtuel." />
+    <style>
+      body { margin: 0; background: #08090d; }
+      #root-loader {
+        position: fixed; inset: 0;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        background: #08090d;
+        color: #00f3ff;
+        font-family: 'Orbitron', monospace, sans-serif;
+        font-size: 13px;
+        letter-spacing: 3px;
+        gap: 20px;
+        z-index: 99999;
+        transition: opacity 0.4s ease;
+      }
+      #root-loader .spinner {
+        width: 48px; height: 48px;
+        border: 2px solid rgba(0,243,255,0.15);
+        border-top-color: #00f3ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
   </head>
   <body>
+    <div id="root-loader">
+      <div class="spinner"></div>
+      <span>ANGIE SCIENTIFIC</span>
+      <span style="font-size:9px;opacity:0.5;letter-spacing:2px">INITIALISATION DU SYSTÈME...</span>
+    </div>
     <div id="root"></div>
+    <script>
+      // Hide the loader once React mounts
+      const observer = new MutationObserver(() => {
+        if (document.getElementById('root').childElementCount > 0) {
+          const loader = document.getElementById('root-loader');
+          if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 400); }
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.getElementById('root'), { childList: true });
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
