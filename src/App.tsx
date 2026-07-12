@@ -193,7 +193,7 @@ const AppContent: React.FC = () => {
         color: 'var(--text-muted)'
       }
     },
-      "// ANTIGRAVITY QUANTUM LABS // ALL SIMULATIONS CALIBRATED FOR STP // ENERGETIC INTEGRITY SECURED"
+      "// ANGIE QUANTUM LABS // ALL SIMULATIONS CALIBRATED FOR STP // ENERGETIC INTEGRITY SECURED"
     )
   );
 };
