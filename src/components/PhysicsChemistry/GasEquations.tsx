@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { resolveCssColor } from '../../utils/resolveCssColor';
 
 interface GasParams {
   name: string;
@@ -43,6 +44,10 @@ export const GasEquations: React.FC = () => {
 
     let animId: number;
 
+    const bgTertiary = resolveCssColor('var(--bg-tertiary)', '#171b2a');
+    const neonCyan = resolveCssColor('var(--neon-cyan)', '#00f3ff');
+    const neonMagenta = resolveCssColor('var(--neon-magenta)', '#ff007f');
+
     const pCount = 35;
     // Particle arrays
     const iParticles = Array.from({ length: pCount }, () => ({
@@ -81,8 +86,8 @@ export const GasEquations: React.FC = () => {
         ctx.strokeRect(10, topY, w - 20, h - topY - 10);
 
         // Draw Piston
-        ctx.fillStyle = 'var(--bg-tertiary)';
-        ctx.strokeStyle = 'var(--neon-cyan)';
+        ctx.fillStyle = bgTertiary;
+        ctx.strokeStyle = neonCyan;
         ctx.fillRect(8, topY - 8, w - 16, 8);
         ctx.strokeRect(8, topY - 8, w - 16, 8);
 
@@ -106,7 +111,7 @@ export const GasEquations: React.FC = () => {
         if (p.y < iTopY + 4) { p.y = iTopY + 4; p.vy *= -1; }
         if (p.y > ih - 14) { p.y = ih - 14; p.vy *= -1; }
 
-        iCtx.fillStyle = 'var(--neon-cyan)';
+        iCtx.fillStyle = neonCyan;
         iCtx.beginPath();
         iCtx.arc(p.x, p.y, 2, 0, Math.PI * 2);
         iCtx.fill();
@@ -152,7 +157,7 @@ export const GasEquations: React.FC = () => {
         }
 
         // Draw Particle
-        vCtx.fillStyle = 'var(--neon-magenta)';
+        vCtx.fillStyle = neonMagenta;
         vCtx.beginPath();
         vCtx.arc(p.x, p.y, particleRadius, 0, Math.PI * 2);
         vCtx.fill();
@@ -264,6 +269,8 @@ export const GasEquations: React.FC = () => {
           ref: idealCanvasRef,
           width: 200,
           height: 180,
+          role: 'img',
+          'aria-label': `${t('phys.gas.ideal')}: P = ${pIdeal.toFixed(2)} bar`,
           style: { background: '#000', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '4px' }
         }),
         React.createElement('span', { style: { marginTop: '8px', fontSize: '14px', fontFamily: 'var(--font-mono)', fontWeight: 'bold', color: 'var(--neon-cyan)' } },
@@ -283,6 +290,8 @@ export const GasEquations: React.FC = () => {
           ref: vdwCanvasRef,
           width: 200,
           height: 180,
+          role: 'img',
+          'aria-label': `${t('phys.gas.vdw')}: P = ${pVdw.toFixed(2)} bar`,
           style: { background: '#000', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '4px' }
         }),
         React.createElement('span', { style: { marginTop: '8px', fontSize: '14px', fontFamily: 'var(--font-mono)', fontWeight: 'bold', color: 'var(--neon-magenta)' } },

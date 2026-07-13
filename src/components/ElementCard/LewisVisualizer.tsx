@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 import { getBondDetails, predictVsepr } from '../../engines/bondingEngine';
 import { GitCommit, Activity } from 'lucide-react';
+import { resolveCssColor } from '../../utils/resolveCssColor';
+import { resolveCssFont } from '../../utils/resolveCssFont';
 
 interface LewisVisualizerProps {
   centralSymbol: string;
@@ -39,14 +41,16 @@ export const LewisVisualizer: React.FC<LewisVisualizerProps> = ({ centralSymbol 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
+    const neonCyan = resolveCssColor('var(--neon-cyan)', '#00f3ff');
+    const neonMagenta = resolveCssColor('var(--neon-magenta)', '#ff007f');
 
     // Draw central atom symbol
-    ctx.font = 'bold 20px var(--font-title)';
+    ctx.font = resolveCssFont('bold 20px var(--font-title)');
     ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.shadowBlur = 8;
-    ctx.shadowColor = 'var(--neon-cyan)';
+    ctx.shadowColor = neonCyan;
     ctx.fillText(centralSymbol, cx, cy);
     ctx.shadowBlur = 0; // reset
 
@@ -75,7 +79,7 @@ export const LewisVisualizer: React.FC<LewisVisualizerProps> = ({ centralSymbol 
 
       // Draw Bond lines (Double bond if ligand is Oxygen and count <= 2, otherwise single)
       const isDouble = (ligand === 'O' && count <= 2);
-      ctx.strokeStyle = 'var(--neon-cyan)';
+      ctx.strokeStyle = neonCyan;
       ctx.lineWidth = 2;
 
       if (isDouble) {
@@ -97,14 +101,14 @@ export const LewisVisualizer: React.FC<LewisVisualizerProps> = ({ centralSymbol 
 
       // Draw ligand symbol
       ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-      ctx.font = 'bold 15px var(--font-title)';
+      ctx.font = resolveCssFont('bold 15px var(--font-title)');
       ctx.fillText(ligand, lx, ly);
     });
 
     // Draw central lone pairs if any
     const lpCount = vsepr.lonePairs;
     if (lpCount > 0) {
-      ctx.fillStyle = 'var(--neon-magenta)';
+      ctx.fillStyle = neonMagenta;
       // Place lone pairs in gaps between bonds
       const lpAngles: number[] = [];
       if (count === 1) {
@@ -143,12 +147,15 @@ export const LewisVisualizer: React.FC<LewisVisualizerProps> = ({ centralSymbol 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
+    const neonPurple = resolveCssColor('var(--neon-purple)', '#9d00ff');
+    const neonCyan = resolveCssColor('var(--neon-cyan)', '#00f3ff');
+    const neonMagenta = resolveCssColor('var(--neon-magenta)', '#ff007f');
 
     // Draw Central Atom Sphere
     ctx.shadowBlur = 10;
-    ctx.shadowColor = 'var(--neon-purple)';
+    ctx.shadowColor = neonPurple;
     ctx.fillStyle = 'rgba(157, 0, 255, 0.2)';
-    ctx.strokeStyle = 'var(--neon-purple)';
+    ctx.strokeStyle = neonPurple;
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(cx, cy, 18, 0, 2 * Math.PI);
@@ -157,7 +164,7 @@ export const LewisVisualizer: React.FC<LewisVisualizerProps> = ({ centralSymbol 
     ctx.shadowBlur = 0; // reset
 
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 12px var(--font-title)';
+    ctx.font = resolveCssFont('bold 12px var(--font-title)');
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(centralSymbol, cx, cy);
@@ -217,7 +224,7 @@ export const LewisVisualizer: React.FC<LewisVisualizerProps> = ({ centralSymbol 
 
     const drawLigandSphere = (px: number, py: number, symbol: string) => {
       ctx.fillStyle = 'rgba(0, 243, 255, 0.1)';
-      ctx.strokeStyle = 'var(--neon-cyan)';
+      ctx.strokeStyle = neonCyan;
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.arc(px, py, 11, 0, 2 * Math.PI);
@@ -225,7 +232,7 @@ export const LewisVisualizer: React.FC<LewisVisualizerProps> = ({ centralSymbol 
       ctx.stroke();
 
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 9px var(--font-title)';
+      ctx.font = resolveCssFont('bold 9px var(--font-title)');
       ctx.fillText(symbol, px, py);
     };
 
@@ -308,7 +315,7 @@ export const LewisVisualizer: React.FC<LewisVisualizerProps> = ({ centralSymbol 
         ctx.stroke();
 
         // Draw double dots
-        ctx.fillStyle = 'var(--neon-magenta)';
+        ctx.fillStyle = neonMagenta;
         ctx.beginPath();
         ctx.arc(proj.px - 2, proj.py, 1.5, 0, 2 * Math.PI);
         ctx.arc(proj.px + 2, proj.py, 1.5, 0, 2 * Math.PI);
@@ -522,6 +529,8 @@ export const LewisVisualizer: React.FC<LewisVisualizerProps> = ({ centralSymbol 
             ref: lewisCanvasRef,
             width: 150,
             height: 150,
+            role: 'img',
+            'aria-label': `Structure de Lewis: ${centralSymbol} lié à ${count} ${ligand}, ${vsepr.lonePairs} doublet(s) non liant(s)`,
             style: {
               border: '1px solid rgba(255,255,255,0.04)',
               borderRadius: '6px',
@@ -549,6 +558,8 @@ export const LewisVisualizer: React.FC<LewisVisualizerProps> = ({ centralSymbol 
             ref: vseprCanvasRef,
             width: 150,
             height: 150,
+            role: 'img',
+            'aria-label': `Géométrie VSEPR: ${getGeometryLabel()}, angle de liaison ${vsepr.bondAngle}`,
             style: {
               border: '1px solid rgba(255,255,255,0.04)',
               borderRadius: '6px',

@@ -3,7 +3,6 @@ import elementsData from './data/elements.json';
 export interface ReactionResult {
   reactants: { symbol: string; coef: number; molarMass: number }[];
   products: { symbol: string; name: string; coef: number; molarMass: number }[];
-  equationHTML: string;
   dH: number; // kJ per mole of reaction
   dS: number; // J/(mol*K)
   dG: number; // kJ/mol
@@ -94,7 +93,6 @@ export const predictReaction = (s1: string, s2: string): ReactionResult | null =
         { symbol: 'NaOH', name: 'Soude Caustique / Soda Cáustica (NaOH)', coef: 2, molarMass: 39.997 },
         { symbol: 'H2', name: 'Dihydrogène / Dihidrógeno (H₂)', coef: 1, molarMass: 2.016 }
       ],
-      equationHTML: "2Na + 2H<sub>2</sub>O ➔ 2NaOH + H<sub>2</sub>",
       dH: -368.6,
       dS: -15.4,
       dG: -364.0,
@@ -357,15 +355,6 @@ export const predictReaction = (s1: string, s2: string): ReactionResult | null =
   const mm2 = isDiatomic(sym2) ? r2.mass * 2 : r2.mass;
   const mmp = (r1.mass * (c1 * (isDiatomic(sym1) ? 2 : 1))) / cp + (r2.mass * (c2 * (isDiatomic(sym2) ? 2 : 1))) / cp;
 
-  // HTML Representation of reactants
-  const labelR1 = `${c1 > 1 ? c1 : ''}${sym1}${isDiatomic(sym1) ? '<sub>2</sub>' : ''}`;
-  const labelR2 = `${c2 > 1 ? c2 : ''}${sym2}${isDiatomic(sym2) ? '<sub>2</sub>' : ''}`;
-  
-  // Format product subscripts
-  const formattedProductHTML = prodSym.replace(/([A-Z][a-z]?|H)(\d+)/g, '$1<sub>$2</sub>');
-  const labelProd = `${cp > 1 ? cp : ''}${formattedProductHTML}`;
-  const equationHTML = `${labelR1} + ${labelR2} ➔ ${labelProd}`;
-
   // 3. Thermodynamic Enthalpy and Free Energy calculations
   let dH = 0;
   let dS = 0;
@@ -404,7 +393,6 @@ export const predictReaction = (s1: string, s2: string): ReactionResult | null =
     products: [
       { symbol: prodSym, name: prodName, coef: cp, molarMass: mmp }
     ],
-    equationHTML,
     dH: Math.round(dH * 10) / 10,
     dS: Math.round(dS * 10) / 10,
     dG: Math.round(dG * 10) / 10,

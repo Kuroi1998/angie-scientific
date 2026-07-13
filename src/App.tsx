@@ -9,15 +9,23 @@ import { QuantumVisualizer } from './components/QuantumVisualizer/QuantumVisuali
 import { PhysChemLab } from './components/PhysicsChemistry/PhysChemLab';
 import { VirtualLab } from './components/VirtualLab/VirtualLab';
 import { QuestSystem } from './components/Gamification/QuestSystem';
-import { Grid, Flame, Zap, Beaker, Globe, Trophy, FlaskConical } from 'lucide-react';
+import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
+import { useLocalStorageState } from './hooks/useLocalStorageState';
+import { clearAllStoredValues } from './utils/localStorage';
+import { Grid, Flame, Zap, Beaker, Globe, Trophy, FlaskConical, RotateCcw } from 'lucide-react';
 import './styles/theme.css';
 import './styles/animations.css';
+import './styles/responsive.css';
 
 type TabType = 'table' | 'fusion' | 'quantum' | 'physchem' | 'virtuallab' | 'quests';
 
+const TAB_IDS: TabType[] = ['table', 'fusion', 'quantum', 'physchem', 'virtuallab', 'quests'];
+const isTabType = (raw: unknown): raw is TabType =>
+  typeof raw === 'string' && (TAB_IDS as string[]).includes(raw);
+
 const AppContent: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<TabType>('table');
+  const [activeTab, setActiveTab] = useLocalStorageState<TabType>('activeTab', 'table', { validate: isTabType });
   const [selectedElement, setSelectedElement] = useState<ElementType | null>(null);
 
   // Fusion Reactant slots managed at App level so elements can be added from the grid!
@@ -27,6 +35,17 @@ const AppContent: React.FC = () => {
   const toggleLanguage = () => {
     if (language === 'fr') setLanguage('es');
     else setLanguage('fr');
+  };
+
+  const handleResetAllData = () => {
+    const confirmed = window.confirm(
+      language === 'fr'
+        ? 'Réinitialiser toutes les données locales (langue, progression des quêtes, historique de recherche, expériences complétées) ? Cette action est irréversible.'
+        : '¿Restablecer todos los datos locales (idioma, progreso de misiones, historial de búsqueda, experimentos completados)? Esta acción es irreversible.'
+    );
+    if (!confirmed) return;
+    clearAllStoredValues();
+    window.location.reload();
   };
 
   const handleAddToFusion = (el: ElementType) => {
@@ -44,11 +63,13 @@ const AppContent: React.FC = () => {
   };
 
   return React.createElement('div', {
+    className: 'app-root',
     style: {
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      padding: '20px 40px'
+      minWidth: 0,
+      maxWidth: '100vw'
     }
   },
     // Welcome Screen locks UI until language is chosen
@@ -58,8 +79,10 @@ const AppContent: React.FC = () => {
     React.createElement('header', {
       style: {
         display: 'flex',
+        flexWrap: 'wrap',
         justifyContent: 'space-between',
         alignItems: 'center',
+        gap: '12px',
         borderBottom: '1px solid var(--glass-border)',
         paddingBottom: '20px',
         marginBottom: '24px'
@@ -87,32 +110,61 @@ const AppContent: React.FC = () => {
         }, t('welcome.subtitle'))
       ),
 
-      // Language Switcher
-      React.createElement('button', {
-        onClick: toggleLanguage,
-        style: {
-          padding: '8px 16px',
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--neon-cyan)',
-          borderRadius: '4px',
-          color: '#fff',
-          fontFamily: 'var(--font-title)',
-          fontSize: '11px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          boxShadow: 'var(--glow-cyan)',
-          transition: 'all 0.2s'
-        }
-      },
-        React.createElement(Globe, { size: 14 }),
-        language === 'fr' ? "FRANÇAIS" : "ESPAÑOL"
+      React.createElement('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' } },
+        // Language Switcher
+        React.createElement('button', {
+          onClick: toggleLanguage,
+          style: {
+            padding: '8px 16px',
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--neon-cyan)',
+            borderRadius: '4px',
+            color: '#fff',
+            fontFamily: 'var(--font-title)',
+            fontSize: '11px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: 'var(--glow-cyan)',
+            transition: 'all 0.2s'
+          }
+        },
+          React.createElement(Globe, { size: 14 }),
+          language === 'fr' ? "FRANÇAIS" : "ESPAÑOL"
+        ),
+
+        // Reset local data
+        React.createElement('button', {
+          onClick: handleResetAllData,
+          title: language === 'fr'
+            ? 'Réinitialiser la langue, la progression des quêtes et l\'historique de recherche enregistrés localement'
+            : 'Restablecer el idioma, el progreso de misiones y el historial de búsqueda guardados localmente',
+          style: {
+            padding: '8px 12px',
+            background: 'transparent',
+            border: '1px solid rgba(255, 0, 127, 0.4)',
+            borderRadius: '4px',
+            color: 'var(--neon-magenta)',
+            fontFamily: 'var(--font-title)',
+            fontSize: '10px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            transition: 'all 0.2s'
+          }
+        },
+          React.createElement(RotateCcw, { size: 12 }),
+          language === 'fr' ? 'RÉINITIALISER' : 'RESTABLECER'
+        )
       )
     ),
 
     // Tab Navigation Bar
     React.createElement('div', {
+      role: 'tablist',
+      'aria-label': language === 'fr' ? 'Sections principales' : 'Secciones principales',
       style: {
         display: 'flex',
         flexWrap: 'wrap',
@@ -120,67 +172,120 @@ const AppContent: React.FC = () => {
         marginBottom: '24px'
       }
     },
-      ([
-        { id: 'table', label: t('nav.table'), icon: Grid, color: 'var(--neon-cyan)', glow: 'var(--glow-cyan)' },
-        { id: 'fusion', label: t('nav.fusion'), icon: Flame, color: 'var(--neon-purple)', glow: 'var(--glow-purple)' },
-        { id: 'quantum', label: t('nav.quantum'), icon: Zap, color: 'var(--neon-magenta)', glow: 'var(--glow-magenta)' },
-        { id: 'physchem', label: t('nav.physchem'), icon: Beaker, color: 'var(--neon-yellow)', glow: 'var(--glow-yellow)' },
-        { id: 'virtuallab', label: language === 'fr' ? 'Labo Virtuel' : 'Lab Virtual', icon: FlaskConical, color: 'var(--neon-orange)', glow: 'var(--glow-orange)' },
-        { id: 'quests', label: language === 'fr' ? 'Quêtes' : 'Misiones', icon: Trophy, color: 'var(--neon-green)', glow: 'var(--glow-green)' }
-      ] as const).map(tab => {
-        const active = activeTab === tab.id;
-        const Icon = tab.icon;
-        return React.createElement('button', {
-          key: tab.id,
-          onClick: () => setActiveTab(tab.id),
-          style: {
-            padding: '12px 24px',
-            background: active ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
-            border: `1px solid ${active ? tab.color : 'var(--glass-border)'}`,
-            borderRadius: '6px',
-            color: active ? '#fff' : 'var(--text-secondary)',
-            fontFamily: 'var(--font-title)',
-            fontSize: '12px',
-            fontWeight: 'bold',
-            letterSpacing: '1px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            boxShadow: active ? tab.glow : 'none',
-            transition: 'all 0.2s'
-          }
-        },
-          React.createElement(Icon, { size: 15, style: { color: active ? tab.color : 'inherit' } }),
-          tab.label.toUpperCase()
-        );
-      })
+      (() => {
+        const navTabs = [
+          { id: 'table', label: t('nav.table'), icon: Grid, color: 'var(--neon-cyan)', glow: 'var(--glow-cyan)' },
+          { id: 'fusion', label: t('nav.fusion'), icon: Flame, color: 'var(--neon-purple)', glow: 'var(--glow-purple)' },
+          { id: 'quantum', label: t('nav.quantum'), icon: Zap, color: 'var(--neon-magenta)', glow: 'var(--glow-magenta)' },
+          { id: 'physchem', label: t('nav.physchem'), icon: Beaker, color: 'var(--neon-yellow)', glow: 'var(--glow-yellow)' },
+          { id: 'virtuallab', label: language === 'fr' ? 'Labo Virtuel' : 'Lab Virtual', icon: FlaskConical, color: 'var(--neon-orange)', glow: 'var(--glow-orange)' },
+          { id: 'quests', label: language === 'fr' ? 'Quêtes' : 'Misiones', icon: Trophy, color: 'var(--neon-green)', glow: 'var(--glow-green)' }
+        ] as const;
+
+        const focusNavTabAt = (index: number) => {
+          const wrapped = (index + navTabs.length) % navTabs.length;
+          const nextTab = navTabs[wrapped];
+          setActiveTab(nextTab.id);
+          requestAnimationFrame(() => {
+            document.getElementById(`main-tab-${nextTab.id}`)?.focus();
+          });
+        };
+
+        return navTabs.map((tab, i) => {
+          const active = activeTab === tab.id;
+          const Icon = tab.icon;
+          return React.createElement('button', {
+            key: tab.id,
+            id: `main-tab-${tab.id}`,
+            role: 'tab',
+            type: 'button',
+            'aria-selected': active,
+            'aria-controls': 'main-tabpanel',
+            tabIndex: active ? 0 : -1,
+            onClick: () => setActiveTab(tab.id),
+            onKeyDown: (e: React.KeyboardEvent) => {
+              if (e.key === 'ArrowRight') { e.preventDefault(); focusNavTabAt(i + 1); }
+              else if (e.key === 'ArrowLeft') { e.preventDefault(); focusNavTabAt(i - 1); }
+            },
+            style: {
+              padding: '12px 24px',
+              background: active ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
+              border: `1px solid ${active ? tab.color : 'var(--glass-border)'}`,
+              borderRadius: '6px',
+              color: active ? '#fff' : 'var(--text-secondary)',
+              fontFamily: 'var(--font-title)',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              letterSpacing: '1px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              boxShadow: active ? tab.glow : 'none',
+              transition: 'all 0.2s'
+            }
+          },
+            React.createElement(Icon, { size: 15, style: { color: active ? tab.color : 'inherit' } }),
+            tab.label.toUpperCase()
+          );
+        });
+      })()
     ),
 
     // Active Viewport Tab Content
-    React.createElement('main', { style: { flex: '1' } },
+    React.createElement('main', {
+      id: 'main-tabpanel',
+      role: 'tabpanel',
+      'aria-labelledby': `main-tab-${activeTab}`,
+      style: { flex: '1', minWidth: 0 }
+    },
       activeTab === 'table' && React.createElement(TableGrid, {
         onSelectElement: (el) => setSelectedElement(el),
         onAddToFusion: handleAddToFusion
       }),
-      activeTab === 'fusion' && React.createElement(FusionCore, {
-        selectedReactant1: reactant1,
-        selectedReactant2: reactant2,
-        setSelectedReactant1: setReactant1,
-        setSelectedReactant2: setReactant2
-      }),
-      activeTab === 'quantum' && React.createElement(QuantumVisualizer, null),
-      activeTab === 'physchem' && React.createElement(PhysChemLab, null),
-      activeTab === 'virtuallab' && React.createElement(VirtualLab, null),
+      activeTab === 'fusion' && React.createElement(ErrorBoundary, {
+        label: 'Simulateur de Fusion',
+        resetKey: 'fusion',
+        onNavigateHome: () => setActiveTab('table')
+      },
+        React.createElement(FusionCore, {
+          selectedReactant1: reactant1,
+          selectedReactant2: reactant2,
+          setSelectedReactant1: setReactant1,
+          setSelectedReactant2: setReactant2
+        })
+      ),
+      activeTab === 'quantum' && React.createElement(ErrorBoundary, {
+        label: 'Visualiseur Quantique',
+        resetKey: 'quantum',
+        onNavigateHome: () => setActiveTab('table')
+      }, React.createElement(QuantumVisualizer, null)),
+      activeTab === 'physchem' && React.createElement(ErrorBoundary, {
+        label: 'Laboratoire Physique-Chimie',
+        resetKey: 'physchem',
+        onNavigateHome: () => setActiveTab('table')
+      }, React.createElement(PhysChemLab, null)),
+      activeTab === 'virtuallab' && React.createElement(ErrorBoundary, {
+        label: 'Laboratoire Virtuel',
+        resetKey: 'virtuallab',
+        onNavigateHome: () => setActiveTab('table')
+      }, React.createElement(VirtualLab, null)),
       activeTab === 'quests' && React.createElement(QuestSystem, null)
     ),
 
     // Details Modal popup for single element properties
-    selectedElement && React.createElement(DetailModal, {
-      element: selectedElement,
-      onClose: () => setSelectedElement(null),
-      onAddToFusion: handleAddToFusion
-    }),
+    selectedElement && React.createElement(ErrorBoundary, {
+      label: `Fiche Élément (${selectedElement.s})`,
+      resetKey: selectedElement.s,
+      onNavigateHome: () => setSelectedElement(null),
+      homeLabel: 'Fermer la fiche'
+    },
+      React.createElement(DetailModal, {
+        element: selectedElement,
+        onClose: () => setSelectedElement(null),
+        onAddToFusion: handleAddToFusion
+      })
+    ),
 
     // Telemetry Footer
     React.createElement('footer', {
@@ -200,7 +305,14 @@ const AppContent: React.FC = () => {
 };
 
 export default function App() {
-  return React.createElement(LanguageProvider, null,
-    React.createElement(AppContent, null)
+  return React.createElement(ErrorBoundary, {
+    label: 'Angie Scientific',
+    description: 'L\'application a rencontré une erreur inattendue. Vos données enregistrées (langue, progression) sont conservées. Rechargez pour repartir sur une base saine.',
+    onNavigateHome: () => window.location.reload(),
+    homeLabel: 'Recharger l\'application'
+  },
+    React.createElement(LanguageProvider, null,
+      React.createElement(AppContent, null)
+    )
   );
 }

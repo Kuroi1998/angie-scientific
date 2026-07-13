@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { resolveCssColor } from '../../utils/resolveCssColor';
+import { resolveCssFont } from '../../utils/resolveCssFont';
 
 export const KineticsEquilibrium: React.FC = () => {
   const { t } = useLanguage();
@@ -74,6 +76,10 @@ export const KineticsEquilibrium: React.FC = () => {
 
     const w = canvas.width;
     const h = canvas.height;
+    const textSecondary = resolveCssColor('var(--text-secondary)', '#8f9bb3');
+    const neonMagenta = resolveCssColor('var(--neon-magenta)', '#ff007f');
+    const neonGreen = resolveCssColor('var(--neon-green)', '#39ff14');
+    const monoFont = resolveCssFont('9px var(--font-mono)');
 
     ctx.clearRect(0, 0, w, h);
 
@@ -97,8 +103,8 @@ export const KineticsEquilibrium: React.FC = () => {
     ctx.stroke();
 
     // Labels
-    ctx.fillStyle = 'var(--text-secondary)';
-    ctx.font = '9px var(--font-mono)';
+    ctx.fillStyle = textSecondary;
+    ctx.font = monoFont;
     ctx.fillText('CONC (M)', 5, 18);
     ctx.fillText('TIME (t)', w - 50, h - 10);
 
@@ -111,7 +117,7 @@ export const KineticsEquilibrium: React.FC = () => {
 
     // Draw curve A (Reactant)
     ctx.beginPath();
-    ctx.strokeStyle = 'var(--neon-magenta)';
+    ctx.strokeStyle = neonMagenta;
     ctx.lineWidth = 2.5;
     ctx.moveTo(getX(0), getY(hist[0].a));
     for (let i = 1; i < hist.length; i++) {
@@ -121,7 +127,7 @@ export const KineticsEquilibrium: React.FC = () => {
 
     // Draw curve C (Product)
     ctx.beginPath();
-    ctx.strokeStyle = 'var(--neon-green)';
+    ctx.strokeStyle = neonGreen;
     ctx.lineWidth = 2.5;
     ctx.moveTo(getX(0), getY(hist[0].c));
     for (let i = 1; i < hist.length; i++) {
@@ -202,6 +208,8 @@ export const KineticsEquilibrium: React.FC = () => {
         ref: canvasRef,
         width: 320,
         height: 180,
+        role: 'img',
+        'aria-label': `Concentrations: A = ${concA.toFixed(1)} M, B = ${concB.toFixed(1)} M, C = ${concC.toFixed(1)} M`,
         style: { background: '#000', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '4px' }
       }),
 

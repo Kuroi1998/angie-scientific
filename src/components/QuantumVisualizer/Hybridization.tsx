@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { resolveCssColor } from '../../utils/resolveCssColor';
+import { resolveCssFont } from '../../utils/resolveCssFont';
 
 type HybridType = 'sp' | 'sp2' | 'sp3';
 
@@ -18,6 +20,7 @@ export const Hybridization: React.FC = () => {
     const h = canvas.height;
     const cx = w / 2;
     const cy = h / 2;
+    const monoFont = resolveCssFont('10px var(--font-mono)');
 
     ctx.clearRect(0, 0, w, h);
 
@@ -51,14 +54,16 @@ export const Hybridization: React.FC = () => {
       ctx.closePath();
 
       // Create a nice gradient
+      const resolvedColor1 = resolveCssColor(color1, '#00f3ff');
+      const resolvedColor2 = resolveCssColor(color2, 'rgba(0, 243, 255, 0.1)');
       const grad = ctx.createRadialGradient(25, 0, 0, 20, 0, 60);
-      grad.addColorStop(0, color1);
-      grad.addColorStop(1, color2);
+      grad.addColorStop(0, resolvedColor1);
+      grad.addColorStop(1, resolvedColor2);
       ctx.fillStyle = grad;
       ctx.fill();
 
       // Add a thin border
-      ctx.strokeStyle = color1;
+      ctx.strokeStyle = resolvedColor1;
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
@@ -72,7 +77,7 @@ export const Hybridization: React.FC = () => {
 
       // Draw angle text
       ctx.fillStyle = '#fff';
-      ctx.font = '10px var(--font-mono)';
+      ctx.font = monoFont;
       ctx.fillText('180°', cx - 12, cy - 20);
     } 
     else if (hybrid === 'sp2') {
@@ -87,7 +92,7 @@ export const Hybridization: React.FC = () => {
       ctx.arc(cx, cy, 30, 0, (2 * Math.PI) / 3);
       ctx.stroke();
       ctx.fillStyle = '#fff';
-      ctx.font = '10px var(--font-mono)';
+      ctx.font = monoFont;
       ctx.fillText('120°', cx + 18, cy + 24);
     } 
     else if (hybrid === 'sp3') {
@@ -103,7 +108,7 @@ export const Hybridization: React.FC = () => {
 
       // Label angle
       ctx.fillStyle = '#fff';
-      ctx.font = '10px var(--font-mono)';
+      ctx.font = monoFont;
       ctx.fillText('109.5°', cx - 18, cy + 25);
     }
 
@@ -199,6 +204,8 @@ export const Hybridization: React.FC = () => {
       ref: canvasRef,
       width: 250,
       height: 200,
+      role: 'img',
+      'aria-label': `${t('quantum.hybrid')} ${hybrid.toUpperCase()} — ${details?.geom ?? ''}, ${details?.angle ?? ''}`,
       style: {
         display: 'block',
         borderRadius: '4px',

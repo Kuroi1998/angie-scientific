@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLocalStorageState } from '../../hooks/useLocalStorageState';
 import elementsData from '../../engines/data/elements.json';
 import { Search, RotateCcw, Filter } from 'lucide-react';
+
+const isStringArray = (raw: unknown): raw is string[] =>
+  Array.isArray(raw) && raw.every(item => typeof item === 'string');
 
 export interface ElementType {
   n: number;
@@ -43,11 +47,24 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
   // Search & Filter state
   const [search, setSearch] = useState('');
   const [suggestions, setSuggestions] = useState<ElementType[]>([]);
-  const [searchHistory, setSearchHistory] = useState<string[]>(() => {
-    const saved = localStorage.getItem('angie_sci_search_history');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
+  const [, setSearchHistory] = useLocalStorageState<string[]>(
+    'searchHistory',
+    [],
+    {
+      validate: isStringArray,
+      legacyKey: 'angie_sci_search_history',
+      parseLegacy: (raw) => {
+        try {
+          const parsed: unknown = JSON.parse(raw);
+          return isStringArray(parsed) ? parsed : undefined;
+        } catch {
+          return undefined;
+        }
+      },
+    }
+  );
+
+
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedState, setSelectedState] = useState<string>('all');
   
@@ -80,9 +97,7 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
     const cleanQuery = queryStr.trim();
 
     // Add to history
-    const newHistory = [cleanQuery, ...searchHistory.filter(h => h !== cleanQuery)].slice(0, 5);
-    setSearchHistory(newHistory);
-    localStorage.setItem('angie_sci_search_history', JSON.stringify(newHistory));
+    setSearchHistory(prev => [cleanQuery, ...prev.filter(h => h !== cleanQuery)].slice(0, 5));
 
     // Find exact match first (symbol, name, or atomic number)
     const matched = elements.find(el => {
@@ -204,7 +219,7 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
       // Search Box
       React.createElement('div', { style: { position: 'relative', flex: '1', minWidth: '280px' } },
         React.createElement('div', { style: { display: 'flex', gap: '8px' } },
-          React.createElement('div', { style: { position: 'relative', flex: '1' } },
+          React.createElement('div', { style: { position: 'relative', flex: '1', minWidth: 0 } },
             React.createElement('input', {
               type: 'text',
               value: search,
@@ -261,17 +276,23 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
             overflow: 'hidden'
           }
         },
-          suggestions.map(el => React.createElement('div', {
+          suggestions.map(el => React.createElement('button', {
             key: el.n,
+            type: 'button',
             onClick: () => {
               onSelectElement(el);
               setSearch('');
               setSuggestions([]);
             },
             style: {
+              width: '100%',
               padding: '10px 16px',
               cursor: 'pointer',
+              border: 'none',
               borderBottom: '1px solid rgba(0, 243, 255, 0.1)',
+              background: 'transparent',
+              color: 'inherit',
+              font: 'inherit',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
@@ -292,12 +313,14 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
       React.createElement('div', {
         style: {
           display: 'flex',
+          flexWrap: 'wrap',
           gap: '24px',
           alignItems: 'center',
           fontFamily: 'var(--font-mono)',
           fontSize: '13px',
           color: 'var(--neon-cyan)',
-          minWidth: '300px',
+          minWidth: '220px',
+          maxWidth: '100%',
           background: 'rgba(0, 243, 255, 0.03)',
           borderLeft: '2px solid var(--neon-cyan)',
           padding: '8px 16px',
@@ -428,15 +451,29 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
       )
     ),
 
-    // Grid Layout Area
+    // Scroll hint, shown only on narrow viewports (see responsive.css)
+    React.createElement('p', {
+      className: 'periodic-grid-scroll-hint',
+      style: {
+        fontSize: '10px',
+        fontFamily: 'var(--font-mono)',
+        color: 'var(--text-secondary)',
+        textAlign: 'center',
+        margin: '0 0 8px 0'
+      }
+    }, language === 'fr' ? '← Faites défiler pour voir tous les éléments →' : '← Desliza para ver todos los elementos →'),
+
+    // Grid Layout Area. `minmax(45px, 1fr)` keeps every cell readable/tappable —
+    // on a narrow viewport the grid's intrinsic width exceeds its box, so this
+    // container (not the whole page) scrolls horizontally instead of squishing cells.
     React.createElement('div', {
+      className: 'periodic-grid-scroll',
       style: {
         display: 'grid',
         gridTemplateColumns: 'repeat(18, minmax(45px, 1fr))',
         gap: '6px',
         overflowX: 'auto',
-        paddingBottom: '16px',
-        minWidth: '850px'
+        paddingBottom: '16px'
       }
     },
       elements.map(el => {
@@ -445,68 +482,83 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
         const catObj = categories.find(c => c.id === el.cat);
         const catColor = catObj ? catObj.color : 'var(--cat-unknown)';
 
-        // Render individual element cell
+        // Render individual element cell. Wraps a real <button> (select action) and a
+        // sibling overlay button (quick-add to fusion) — buttons cannot be nested in HTML.
         return React.createElement('div', {
           key: el.n,
-          style: {
-            ...gridPos,
-            border: `1px solid ${active ? catColor : 'rgba(255, 255, 255, 0.05)'}`,
-            borderRadius: '4px',
-            background: active 
-              ? `linear-gradient(135deg, rgba(20,20,30,0.8), rgba(${catColor === 'var(--cat-alkali)' ? '255,65,54' : '0,243,255'},0.04))`
-              : 'rgba(255, 255, 255, 0.01)',
-            opacity: active ? 1 : 0.2,
-            aspectRatio: '1',
-            padding: '4px',
-            cursor: active ? 'pointer' : 'default',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            position: 'relative',
-            boxShadow: active && hoveredElement?.n === el.n ? `0 0 12px ${catColor}` : 'none',
-            transform: active && hoveredElement?.n === el.n ? 'scale(1.05)' : 'scale(1)',
-            transition: 'all 0.15s ease-in-out',
-            zIndex: hoveredElement?.n === el.n ? '10' : '1'
-          },
-          onMouseEnter: () => active && setHoveredElement(el),
-          onMouseLeave: () => active && setHoveredElement(null),
-          onClick: () => active && onSelectElement(el)
+          style: { ...gridPos, position: 'relative' }
         },
-          // Atomic Number
-          React.createElement('span', {
+          React.createElement('button', {
+            type: 'button',
+            disabled: !active,
+            'aria-label': `${el.n} — ${language === 'es' ? el.nameES : el.nameFR} (${el.s})`,
             style: {
-              fontSize: '9px',
-              fontFamily: 'var(--font-mono)',
-              color: active ? 'var(--text-secondary)' : 'var(--text-muted)',
-              alignSelf: 'flex-start'
-            }
-          }, el.n),
-          // Symbol
-          React.createElement('span', {
-            style: {
-              fontSize: '16px',
-              fontWeight: '900',
-              fontFamily: 'var(--font-title)',
-              color: active ? '#fff' : 'var(--text-muted)',
-              textAlign: 'center',
-              textShadow: active ? `0 0 8px ${catColor}` : 'none'
-            }
-          }, el.s),
-          // Atomic Mass or Name abbreviated
-          React.createElement('span', {
-            style: {
-              fontSize: '7px',
-              fontFamily: 'var(--font-mono)',
-              color: active ? 'var(--text-secondary)' : 'var(--text-muted)',
-              textAlign: 'center',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden'
-            }
-          }, el.mass.toFixed(2)),
-          
-          // Action button overlay on hover
+              width: '100%',
+              height: '100%',
+              border: `1px solid ${active ? catColor : 'rgba(255, 255, 255, 0.05)'}`,
+              borderRadius: '4px',
+              background: active
+                ? `linear-gradient(135deg, rgba(20,20,30,0.8), rgba(${catColor === 'var(--cat-alkali)' ? '255,65,54' : '0,243,255'},0.04))`
+                : 'rgba(255, 255, 255, 0.01)',
+              opacity: active ? 1 : 0.2,
+              aspectRatio: '1',
+              padding: '4px',
+              cursor: active ? 'pointer' : 'default',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              boxShadow: active && hoveredElement?.n === el.n ? `0 0 12px ${catColor}` : 'none',
+              transform: active && hoveredElement?.n === el.n ? 'scale(1.05)' : 'scale(1)',
+              transition: 'all 0.15s ease-in-out',
+              position: 'relative',
+              zIndex: hoveredElement?.n === el.n ? '10' : '1',
+              font: 'inherit',
+              textAlign: 'left'
+            },
+            onMouseEnter: () => active && setHoveredElement(el),
+            onMouseLeave: () => active && setHoveredElement(null),
+            onFocus: () => active && setHoveredElement(el),
+            onBlur: () => active && setHoveredElement(null),
+            onClick: () => active && onSelectElement(el)
+          },
+            // Atomic Number
+            React.createElement('span', {
+              style: {
+                fontSize: '9px',
+                fontFamily: 'var(--font-mono)',
+                color: active ? 'var(--text-secondary)' : 'var(--text-muted)',
+                alignSelf: 'flex-start'
+              }
+            }, el.n),
+            // Symbol
+            React.createElement('span', {
+              style: {
+                fontSize: '16px',
+                fontWeight: '900',
+                fontFamily: 'var(--font-title)',
+                color: active ? '#fff' : 'var(--text-muted)',
+                textAlign: 'center',
+                textShadow: active ? `0 0 8px ${catColor}` : 'none'
+              }
+            }, el.s),
+            // Atomic Mass or Name abbreviated
+            React.createElement('span', {
+              style: {
+                fontSize: '7px',
+                fontFamily: 'var(--font-mono)',
+                color: active ? 'var(--text-secondary)' : 'var(--text-muted)',
+                textAlign: 'center',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden'
+              }
+            }, el.mass.toFixed(2))
+          ),
+
+          // Action button overlay on hover/focus
           active && hoveredElement?.n === el.n && onAddToFusion && React.createElement('button', {
+            type: 'button',
             title: t('fusion.add'),
+            'aria-label': `${t('fusion.add')}: ${el.s}`,
             onClick: (e) => {
               e.stopPropagation();
               onAddToFusion(el);
@@ -527,7 +579,8 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: 'var(--glow-magenta)'
+              boxShadow: 'var(--glow-magenta)',
+              zIndex: 11
             }
           }, "+")
         );
@@ -583,8 +636,10 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
         background: 'rgba(10, 10, 15, 0.5)'
       }
     },
-      categories.map(cat => React.createElement('div', {
+      categories.map(cat => React.createElement('button', {
         key: cat.id,
+        type: 'button',
+        'aria-pressed': selectedCategory === cat.id,
         style: {
           display: 'flex',
           alignItems: 'center',
@@ -592,7 +647,11 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
           fontSize: '11px',
           fontFamily: 'var(--font-title)',
           cursor: 'pointer',
-          opacity: selectedCategory === 'all' || selectedCategory === cat.id ? 1 : 0.4
+          opacity: selectedCategory === 'all' || selectedCategory === cat.id ? 1 : 0.4,
+          background: 'transparent',
+          border: 'none',
+          padding: 0,
+          color: 'inherit'
         },
         onClick: () => setSelectedCategory(selectedCategory === cat.id ? 'all' : cat.id)
       },
