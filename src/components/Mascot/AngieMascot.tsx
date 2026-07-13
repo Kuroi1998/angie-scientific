@@ -1,11 +1,15 @@
 import React from 'react';
 import { useMascot } from './MascotContext';
+import { useUserProgress } from '../UserProgressProvider';
 import { X, Settings2 } from 'lucide-react';
 
 export const AngieMascot: React.FC = () => {
   const { emotion, currentMessage, isVisible, hideMessage, toggleVisibility } = useMascot();
-  // We'll use profile settings later to disable sound/animations completely
-  // const { profile } = useUserProgress();
+  const { profile } = useUserProgress();
+
+  if (profile && profile.mascotEnabled === false) {
+    return null;
+  }
 
   if (!isVisible) {
     return (

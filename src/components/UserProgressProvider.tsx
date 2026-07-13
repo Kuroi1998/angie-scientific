@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { UserProfile, UserProgress } from '../data/educational/models';
-import { fetchUserData, updateProfile, updateProgress, CURRENT_USER_ID } from '../api/progress';
+import { fetchUserData, updateProfile, updateProgress, getUserId } from '../api/progress';
 
 interface ProgressContextType {
   profile: UserProfile | null;
@@ -11,6 +11,7 @@ interface ProgressContextType {
   addSuccessfulReaction: (reactionId: string) => Promise<void>;
   unlockBadge: (badgeId: string) => Promise<void>;
   addExperience: (points: number) => Promise<void>;
+  solveRiddle: (riddleId: string) => Promise<void>;
 }
 
 const ProgressContext = createContext<ProgressContextType | undefined>(undefined);
@@ -25,13 +26,19 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   const loadData = async () => {
+    const userId = getUserId();
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
-      const data = await fetchUserData(CURRENT_USER_ID);
+      const data = await fetchUserData(userId);
       setProfile(data.profile);
       setProgress(data.progress);
     } catch (error) {
       console.error("Erreur chargement profil serveur", error);
+      alert("Erreur de connexion au serveur pour récupérer le profil.");
     } finally {
       setLoading(false);
     }
@@ -39,14 +46,52 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const saveProfile = async (updates: Partial<UserProfile>) => {
     if (!profile) return;
+    const userId = getUserId();
+    if (!userId) return;
     const newProfile = { ...profile, ...updates };
+    const oldProfile = profile;
     setProfile(newProfile);
-    await updateProfile(CURRENT_USER_ID, updates);
+    try {
+      await updateProfile(userId, updates);
+    } catch (error) {
+      console.error("Erreur de sauvegarde profil", error);
+      setProfile(oldProfile); // Rollback
+      alert("Erreur réseau: impossible de sauvegarder les préférences.");
+    }
+  };
+
+  const checkBadges = (currentProgress: UserProgress): string[] => {
+    const newBadges: string[] = [];
+    if (currentProgress.discoveredElements.length >= 5 && !currentProgress.unlockedBadges.includes('b1')) newBadges.push('b1');
+    if (currentProgress.discoveredElements.length >= 20 && !currentProgress.unlockedBadges.includes('b2')) newBadges.push('b2');
+    if (currentProgress.successfulReactions.length >= 1 && !currentProgress.unlockedBadges.includes('b4')) newBadges.push('b4');
+    if (currentProgress.solvedRiddles.length >= 5 && !currentProgress.unlockedBadges.includes('b6')) newBadges.push('b6');
+    return newBadges;
   };
 
   const saveProgress = async (newProgress: UserProgress) => {
+    const userId = getUserId();
+    if (!userId) return;
+
+    // Auto-unlock badges logic
+    const autoUnlocked = checkBadges(newProgress);
+    if (autoUnlocked.length > 0) {
+      newProgress = {
+        ...newProgress,
+        unlockedBadges: [...newProgress.unlockedBadges, ...autoUnlocked],
+        experiencePoints: newProgress.experiencePoints + (autoUnlocked.length * 100)
+      };
+    }
+
+    const oldProgress = progress;
     setProgress(newProgress);
-    await updateProgress(CURRENT_USER_ID, newProgress);
+    try {
+      await updateProgress(userId, newProgress);
+    } catch (error) {
+      console.error("Erreur de sauvegarde progression", error);
+      setProgress(oldProgress); // Rollback
+      alert("Erreur réseau: progression locale non sauvegardée !");
+    }
   };
 
   const addDiscoveredElement = async (elementId: string) => {
@@ -76,6 +121,15 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
     });
   };
 
+  const solveRiddle = async (riddleId: string) => {
+    if (!progress || progress.solvedRiddles.includes(riddleId)) return;
+    await saveProgress({
+      ...progress,
+      solvedRiddles: [...progress.solvedRiddles, riddleId],
+      experiencePoints: progress.experiencePoints + 30
+    });
+  };
+
   const addExperience = async (points: number) => {
     if (!progress) return;
     await saveProgress({
@@ -86,7 +140,7 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   return (
     <ProgressContext.Provider value={{
-      profile, progress, loading, saveProfile, addDiscoveredElement, addSuccessfulReaction, unlockBadge, addExperience
+      profile, progress, loading, saveProfile, addDiscoveredElement, addSuccessfulReaction, unlockBadge, addExperience, solveRiddle
     }}>
       {children}
     </ProgressContext.Provider>

@@ -20,9 +20,9 @@ app.get('/api/users/:userId', async (req, res) => {
       // Auto-create a temporary anonymous profile if not exists (for child UX simplicity)
       await db.run(
         `INSERT INTO users (id, username) VALUES (?, ?)`,
-        [userId, \`Apprenti_\${userId.substring(0,4)}\`]
+        [userId, `Apprenti_${userId.substring(0,4)}`]
       );
-      await db.run(\`INSERT INTO user_progress (userId) VALUES (?)\`, [userId]);
+      await db.run(`INSERT INTO user_progress (userId) VALUES (?)`, [userId]);
       user = await db.get('SELECT * FROM users WHERE id = ?', [userId]);
     }
     
@@ -56,9 +56,9 @@ app.put('/api/users/:userId', async (req, res) => {
     const { learningLevel, mascotEnabled, mascotSoundEnabled, globalSoundEnabled, reducedMotion } = req.body;
 
     await db.run(
-      \`UPDATE users 
+      `UPDATE users 
        SET learningLevel = ?, mascotEnabled = ?, mascotSoundEnabled = ?, globalSoundEnabled = ?, reducedMotion = ?
-       WHERE id = ?\`,
+       WHERE id = ?`,
       [learningLevel, mascotEnabled ? 1 : 0, mascotSoundEnabled ? 1 : 0, globalSoundEnabled ? 1 : 0, reducedMotion ? 1 : 0, userId]
     );
 
@@ -80,9 +80,9 @@ app.put('/api/progress/:userId', async (req, res) => {
     } = req.body;
 
     await db.run(
-      \`UPDATE user_progress 
+      `UPDATE user_progress 
        SET discoveredElements = ?, successfulReactions = ?, completedQuests = ?, unlockedBadges = ?, solvedRiddles = ?, experiencePoints = ?
-       WHERE userId = ?\`,
+       WHERE userId = ?`,
       [
         JSON.stringify(discoveredElements),
         JSON.stringify(successfulReactions),
@@ -102,5 +102,5 @@ app.put('/api/progress/:userId', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`✅ Angie Scientific Backend running on http://localhost:\${PORT}\`);
+  console.log(`✅ Angie Scientific Backend running on http://localhost:${PORT}`);
 });

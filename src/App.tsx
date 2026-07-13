@@ -16,6 +16,8 @@ import { Grid, Flame, Zap, Beaker, Globe, Trophy, FlaskConical, RotateCcw } from
 import { UserProgressProvider } from './components/UserProgressProvider';
 import { MascotProvider } from './components/Mascot/MascotContext';
 import { AngieMascot } from './components/Mascot/AngieMascot';
+import { LoginScreen } from './components/LoginScreen';
+import { getUserId, removeUserId } from './api/progress';
 import './styles/theme.css';
 import './styles/animations.css';
 import './styles/responsive.css';
@@ -48,6 +50,12 @@ const AppContent: React.FC = () => {
     );
     if (!confirmed) return;
     clearAllStoredValues();
+    removeUserId();
+    window.location.reload();
+  };
+
+  const handleLogout = () => {
+    removeUserId();
     window.location.reload();
   };
 
@@ -135,6 +143,25 @@ const AppContent: React.FC = () => {
         },
           React.createElement(Globe, { size: 14 }),
           language === 'fr' ? "FRANÇAIS" : "ESPAÑOL"
+        ),
+
+        // Logout
+        React.createElement('button', {
+          onClick: handleLogout,
+          title: language === 'fr' ? 'Se déconnecter' : 'Cerrar sesión',
+          style: {
+            padding: '8px 16px',
+            background: 'rgba(255, 0, 127, 0.1)',
+            border: '1px solid var(--neon-magenta)',
+            borderRadius: '4px',
+            color: 'var(--neon-magenta)',
+            fontFamily: 'var(--font-title)',
+            fontSize: '11px',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }
+        },
+          language === 'fr' ? "DÉCONNEXION" : "SALIR"
         ),
 
         // Reset local data
@@ -308,6 +335,14 @@ const AppContent: React.FC = () => {
 };
 
 export default function App() {
+  const userId = getUserId();
+
+  if (!userId) {
+    return React.createElement(LanguageProvider, null, 
+      React.createElement(LoginScreen, null)
+    );
+  }
+
   return React.createElement(ErrorBoundary, {
     label: 'Angie Scientific',
     description: 'L\'application a rencontré une erreur inattendue. Vos données enregistrées (langue, progression) sont conservées. Rechargez pour repartir sur une base saine.',

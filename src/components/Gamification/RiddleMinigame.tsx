@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUserProgress } from '../UserProgressProvider';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useMascot } from '../Mascot/MascotContext';
-import { HelpCircle, Check, X } from 'lucide-react';
+import { HelpCircle, Check, X, Trophy } from 'lucide-react';
 import type { Riddle } from '../../data/educational/models';
 import confetti from 'canvas-confetti';
 
@@ -30,33 +30,52 @@ const RIDDLES: Riddle[] = [
 ];
 
 export const RiddleMinigame: React.FC = () => {
-  const { profile, addExperience } = useUserProgress();
+  const { profile, progress, solveRiddle } = useUserProgress();
   const { language } = useLanguage();
   const { showMessage } = useMascot();
-  const [currentRiddle, setCurrentRiddle] = useState<Riddle | null>(RIDDLES[0]);
+  
+  const [currentRiddle, setCurrentRiddle] = useState<Riddle | null>(null);
   const [userAnswer, setUserAnswer] = useState('');
   const [status, setStatus] = useState<'idle'|'correct'|'wrong'>('idle');
 
+  useEffect(() => {
+    if (progress && status !== 'correct') {
+      const unsolved = RIDDLES.find(r => !progress.solvedRiddles.includes(r.id));
+      setCurrentRiddle(unsolved || null);
+    }
+  }, [progress, status]);
+
+  if (!progress) return null;
+
+  if (!currentRiddle && progress.solvedRiddles.length >= RIDDLES.length) {
+    return (
+      <div style={{ background: 'rgba(57, 255, 20, 0.1)', padding: '16px', borderRadius: '8px', border: '1px solid var(--neon-green)', marginBottom: '20px', textAlign: 'center' }}>
+        <h3 style={{ fontFamily: 'var(--font-title)', color: 'var(--neon-green)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', margin: '0 0 12px 0' }}>
+          <Trophy size={18} />
+          {language === 'fr' ? 'Champion des Devinettes !' : '¡Campeón de Acertijos!'}
+        </h3>
+        <p style={{ margin: '0', fontSize: '14px', color: '#fff' }}>
+          {language === 'fr' ? "Tu as résolu toutes les énigmes actuelles." : "Has resuelto todos los acertijos actuales."}
+        </p>
+      </div>
+    );
+  }
+
   if (!currentRiddle) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (userAnswer.trim().toLowerCase() === currentRiddle.answerElementSymbol.toLowerCase()) {
       setStatus('correct');
       
-      // Animations & Sounds
-      if (profile?.globalSoundEnabled !== false) {
-        // playSuccessSound(); // Mock audio
-      }
       if (profile?.reducedMotion !== true) {
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       }
 
       showMessage(language === 'fr' ? currentRiddle.explanationFr : currentRiddle.explanationEs, 5000, 'impressed');
-      addExperience(50);
+      await solveRiddle(currentRiddle.id);
+      
       setTimeout(() => {
-        const next = RIDDLES.find(r => r.id !== currentRiddle.id);
-        setCurrentRiddle(next || null);
         setStatus('idle');
         setUserAnswer('');
       }, 5000);

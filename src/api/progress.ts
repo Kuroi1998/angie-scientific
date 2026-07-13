@@ -2,10 +2,19 @@ import type { UserProfile, UserProgress } from '../data/educational/models';
 
 const API_BASE = 'http://localhost:3001/api';
 
-// For this MVP, we simulate a logged-in user with a static ID. 
-// In a real app, this would come from an Auth system.
-export const CURRENT_USER_ID = 'user_001';
+const USER_ID_KEY = 'angie_scientific_user_id';
 
+export const getUserId = (): string | null => {
+  return localStorage.getItem(USER_ID_KEY);
+};
+
+export const setUserId = (id: string) => {
+  localStorage.setItem(USER_ID_KEY, id);
+};
+
+export const removeUserId = () => {
+  localStorage.removeItem(USER_ID_KEY);
+};
 export const fetchUserData = async (userId: string): Promise<{ profile: UserProfile, progress: UserProgress }> => {
   const response = await fetch(`${API_BASE}/users/${userId}`);
   if (!response.ok) throw new Error('Failed to fetch user data');
