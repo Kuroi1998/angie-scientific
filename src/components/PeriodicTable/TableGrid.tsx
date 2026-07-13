@@ -3,6 +3,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 import { useLocalStorageState } from '../../hooks/useLocalStorageState';
 import elementsData from '../../engines/data/elements.json';
 import { Search, RotateCcw, Filter } from 'lucide-react';
+import { RiddleMinigame } from '../Gamification/RiddleMinigame';
 
 const isStringArray = (raw: unknown): raw is string[] =>
   Array.isArray(raw) && raw.every(item => typeof item === 'string');
@@ -214,6 +215,9 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
   ];
 
   return React.createElement('div', { className: 'table-container animate-fade-in' },
+    // Riddle Minigame
+    React.createElement(RiddleMinigame, null),
+    
     // Header Toolbar
     React.createElement('div', { className: 'toolbar glass-panel', style: { padding: '16px', marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center', justifyContent: 'space-between' } },
       // Search Box

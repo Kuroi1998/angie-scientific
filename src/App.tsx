@@ -8,11 +8,14 @@ import { FusionCore } from './components/ReactionSimulator/FusionCore';
 import { QuantumVisualizer } from './components/QuantumVisualizer/QuantumVisualizer';
 import { PhysChemLab } from './components/PhysicsChemistry/PhysChemLab';
 import { VirtualLab } from './components/VirtualLab/VirtualLab';
-import { QuestSystem } from './components/Gamification/QuestSystem';
+import { DiscoveryAlbum } from './components/Gamification/DiscoveryAlbum';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import { useLocalStorageState } from './hooks/useLocalStorageState';
 import { clearAllStoredValues } from './utils/localStorage';
 import { Grid, Flame, Zap, Beaker, Globe, Trophy, FlaskConical, RotateCcw } from 'lucide-react';
+import { UserProgressProvider } from './components/UserProgressProvider';
+import { MascotProvider } from './components/Mascot/MascotContext';
+import { AngieMascot } from './components/Mascot/AngieMascot';
 import './styles/theme.css';
 import './styles/animations.css';
 import './styles/responsive.css';
@@ -270,7 +273,7 @@ const AppContent: React.FC = () => {
         resetKey: 'virtuallab',
         onNavigateHome: () => setActiveTab('table')
       }, React.createElement(VirtualLab, null)),
-      activeTab === 'quests' && React.createElement(QuestSystem, null)
+      activeTab === 'quests' && React.createElement(DiscoveryAlbum, null)
     ),
 
     // Details Modal popup for single element properties
@@ -311,8 +314,13 @@ export default function App() {
     onNavigateHome: () => window.location.reload(),
     homeLabel: 'Recharger l\'application'
   },
-    React.createElement(LanguageProvider, null,
-      React.createElement(AppContent, null)
+    React.createElement(UserProgressProvider, null,
+      React.createElement(MascotProvider, null,
+        React.createElement(LanguageProvider, null,
+          React.createElement(AppContent, null),
+          React.createElement(AngieMascot, null)
+        )
+      )
     )
   );
 }

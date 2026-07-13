@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 import type { ElementType } from '../PeriodicTable/TableGrid';
 import { AtomModelCanvas } from './AtomModelCanvas';
-import { X, Info, Shield, Layers, HelpCircle, GitCommit } from 'lucide-react';
+import { X, Info, Shield, Layers, HelpCircle, GitCommit, Star } from 'lucide-react';
 import { LewisVisualizer } from './LewisVisualizer';
+import { useUserProgress } from '../UserProgressProvider';
 
 interface DetailModalProps {
   element: ElementType;
@@ -19,8 +20,9 @@ const TITLE_ID = 'element-detail-modal-title';
 
 export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAddToFusion }) => {
   const { language, t } = useLanguage();
+  const { profile } = useUserProgress();
   const isNobleGas = NOBLE_GASES.includes(element.s);
-  const [activeTab, setActiveTab] = useState<TabType>('general');
+  const [activeTab, setActiveTab] = useState<TabType | 'superpowers'>('general');
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   // Keeps the effect below mount/unmount-only (no re-subscribing on every parent
   // render, since onClose is a fresh closure each time) while still always
@@ -221,12 +223,13 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAd
             (() => {
               const tabs = ([
                 { id: 'general', label: t('element.general'), icon: Info },
+                { id: 'superpowers', label: language === 'fr' ? 'Super-Pouvoirs' : 'Superpoderes', icon: Star },
                 { id: 'atomic', label: t('element.atomic'), icon: Layers },
                 { id: 'quantum', label: t('element.quantum'), icon: Shield },
                 // Hide Bonds tab for noble gases — they don't form covalent bonds
                 ...(isNobleGas ? [] : [{ id: 'bonds', label: language === 'fr' ? 'Liaisons' : 'Enlaces', icon: GitCommit }]),
                 { id: 'history', label: t('element.history'), icon: HelpCircle }
-              ] as { id: TabType; label: string; icon: React.ElementType }[]);
+              ] as { id: TabType | 'superpowers'; label: string; icon: React.ElementType }[]);
 
               const focusTabAt = (index: number) => {
                 const wrapped = (index + tabs.length) % tabs.length;
@@ -303,6 +306,20 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAd
               React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed rgba(255,255,255,0.05)', paddingBottom: '6px' } },
                 React.createElement('span', { style: { color: 'var(--text-secondary)' } }, t('element.abundance')),
                 React.createElement('span', null, displayVal(element.ab, 'mg/kg'))
+              )
+            ),
+
+            activeTab === 'superpowers' && React.createElement('div', { className: 'tab-content', style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
+              React.createElement('div', { style: { background: 'rgba(255, 215, 0, 0.1)', border: '1px solid gold', padding: '16px', borderRadius: '8px' } },
+                React.createElement('h3', { style: { color: 'gold', margin: '0 0 8px 0', fontFamily: 'var(--font-title)', display: 'flex', alignItems: 'center', gap: '8px' } }, 
+                  React.createElement(Star, { size: 18 }),
+                  language === 'fr' ? "Le super-pouvoir de cet élément !" : "¡El superpoder de este elemento!"
+                ),
+                React.createElement('p', { style: { color: '#fff', fontSize: '14px', lineHeight: 1.5, margin: 0 } },
+                  profile?.learningLevel === 'discovery' 
+                    ? (language === 'fr' ? "Cet élément est incroyable ! Il est utilisé partout autour de toi." : "¡Este elemento es increíble! Se usa en todas partes.")
+                    : (language === 'fr' ? desc : desc) // Placeholder for actual educational facts DB
+                )
               )
             ),
 
