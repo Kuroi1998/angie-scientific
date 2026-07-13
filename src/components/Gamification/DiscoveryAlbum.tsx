@@ -1,8 +1,8 @@
 import React from 'react';
 import { useUserProgress } from '../UserProgressProvider';
 import { useLanguage } from '../../hooks/useLanguage';
-import { Trophy, Star, BookOpen, Lock } from 'lucide-react';
-import { Badge } from '../../data/educational/models';
+import { Trophy, BookOpen, Lock } from 'lucide-react';
+import type { Badge } from '../../data/educational/models';
 
 const BADGES: Badge[] = [
   { id: 'b1', nameFr: 'Apprenti Chimiste', nameEs: 'Aprendiz', descriptionFr: 'A découvert 5 éléments', descriptionEs: 'Descubrió 5 elementos', iconName: 'Star', rarity: 'common', conditionType: 'elements_discovered', conditionCount: 5 },

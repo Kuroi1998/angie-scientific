@@ -3,7 +3,7 @@ import { useUserProgress } from '../UserProgressProvider';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useMascot } from '../Mascot/MascotContext';
 import { HelpCircle, Check, X } from 'lucide-react';
-import { Riddle } from '../../data/educational/models';
+import type { Riddle } from '../../data/educational/models';
 import confetti from 'canvas-confetti';
 
 const RIDDLES: Riddle[] = [
@@ -30,9 +30,9 @@ const RIDDLES: Riddle[] = [
 ];
 
 export const RiddleMinigame: React.FC = () => {
-  const { progress, addExperience } = useUserProgress();
+  const { profile, addExperience } = useUserProgress();
   const { language } = useLanguage();
-  const { showMessage, setEmotion } = useMascot();
+  const { showMessage } = useMascot();
   const [currentRiddle, setCurrentRiddle] = useState<Riddle | null>(RIDDLES[0]);
   const [userAnswer, setUserAnswer] = useState('');
   const [status, setStatus] = useState<'idle'|'correct'|'wrong'>('idle');

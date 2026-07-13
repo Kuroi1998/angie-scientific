@@ -1,4 +1,4 @@
-import { UserProfile, UserProgress } from '../data/educational/models';
+import type { UserProfile, UserProgress } from '../data/educational/models';
 
 const API_BASE = 'http://localhost:3001/api';
 

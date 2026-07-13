@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { UserProfile, UserProgress } from '../data/educational/models';
+import type { UserProfile, UserProgress } from '../data/educational/models';
 import { fetchUserData, updateProfile, updateProgress, CURRENT_USER_ID } from '../api/progress';
 
 interface ProgressContextType {

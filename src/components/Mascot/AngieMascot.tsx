@@ -1,6 +1,5 @@
 import React from 'react';
 import { useMascot } from './MascotContext';
-import { useUserProgress } from '../UserProgressProvider';
 import { X, Settings2 } from 'lucide-react';
 
 export const AngieMascot: React.FC = () => {

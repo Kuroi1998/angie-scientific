@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
-import { MascotMessage } from '../../data/educational/models';
 
 type Emotion = 'neutral' | 'happy' | 'impressed' | 'thinking' | 'encouraging' | 'surprised' | 'worried';
 
@@ -19,7 +18,7 @@ export const MascotProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [emotion, setEmotion] = useState<Emotion>('neutral');
   const [currentMessage, setCurrentMessage] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(true);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hideMessage = useCallback(() => {
     setCurrentMessage(null);
