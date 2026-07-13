@@ -1,11 +1,13 @@
 import React from 'react';
 import { useMascot } from './MascotContext';
 import { useUserProgress } from '../UserProgressProvider';
+import { useLanguage } from '../../hooks/useLanguage';
 import { X, Settings2 } from 'lucide-react';
 
 export const AngieMascot: React.FC = () => {
-  const { emotion, currentMessage, isVisible, hideMessage, toggleVisibility } = useMascot();
+  const { emotion, currentMessage, isVisible, hideMessage, toggleVisibility, showMessage } = useMascot();
   const { profile } = useUserProgress();
+  const { language } = useLanguage();
 
   if (profile && profile.mascotEnabled === false) {
     return null;
@@ -69,7 +71,24 @@ export const AngieMascot: React.FC = () => {
         className={`mascot-avatar ${emotion === 'happy' ? 'animate-bounce' : emotion === 'worried' ? 'animate-shake' : 'animate-float'}`}
         style={{ cursor: 'pointer', position: 'relative' }}
         onClick={() => {
-          // Click on Angie -> Open settings or show random fact
+          const isFr = language === 'fr';
+          const factsFr = [
+            "Savais-tu que l'eau se dilate en gelant ?",
+            "L'hélium est le deuxième élément le plus abondant de l'univers !",
+            "Le carbone est à la base de toute forme de vie connue sur Terre.",
+            "L'or est tellement malléable qu'un seul gramme peut être étiré sur 3 kilomètres !",
+            "As-tu découvert de nouveaux éléments aujourd'hui ?"
+          ];
+          const factsEs = [
+            "¿Sabías que el agua se expande al congelarse?",
+            "¡El helio es el segundo elemento más abundante del universo!",
+            "El carbono es la base de todas las formas de vida conocidas en la Tierra.",
+            "¡El oro es tan maleable que un solo gramo puede estirarse hasta 3 kilómetros!",
+            "¿Has descubierto nuevos elementos hoy?"
+          ];
+          const facts = isFr ? factsFr : factsEs;
+          const randomFact = facts[Math.floor(Math.random() * facts.length)];
+          showMessage(randomFact, 4000, 'happy');
         }}
       >
         {/* Simple SVG Avatar */}
