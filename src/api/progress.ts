@@ -1,8 +1,8 @@
 import type { UserProfile, UserProgress } from '../data/educational/models';
 
-const API_BASE = 'http://localhost:3001/api';
-
 const USER_ID_KEY = 'angie_scientific_user_id';
+const PROFILES_KEY = 'angie_scientific_profiles';
+const PROGRESS_KEY = 'angie_scientific_progress';
 
 export const getUserId = (): string | null => {
   return localStorage.getItem(USER_ID_KEY);
@@ -15,26 +15,65 @@ export const setUserId = (id: string) => {
 export const removeUserId = () => {
   localStorage.removeItem(USER_ID_KEY);
 };
+
+const getDefaultProfile = (username: string): UserProfile => ({
+  id: username,
+  username,
+  avatar: 'default',
+  language: 'fr',
+  theme: 'dark'
+});
+
+const getDefaultProgress = (userId: string): UserProgress => ({
+  userId,
+  experiencePoints: 0,
+  unlockedBadges: [],
+  discoveredElements: [],
+  successfulReactions: [],
+  solvedRiddles: []
+});
+
 export const fetchUserData = async (userId: string): Promise<{ profile: UserProfile, progress: UserProgress }> => {
-  const response = await fetch(`${API_BASE}/users/${userId}`);
-  if (!response.ok) throw new Error('Failed to fetch user data');
-  return response.json();
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 200));
+
+  const profilesStr = localStorage.getItem(PROFILES_KEY);
+  const profiles = profilesStr ? JSON.parse(profilesStr) : {};
+  
+  const progressStr = localStorage.getItem(PROGRESS_KEY);
+  const allProgress = progressStr ? JSON.parse(progressStr) : {};
+
+  let profile = profiles[userId];
+  if (!profile) {
+    profile = getDefaultProfile(userId);
+    profiles[userId] = profile;
+    localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+  }
+
+  let progress = allProgress[userId];
+  if (!progress) {
+    progress = getDefaultProgress(userId);
+    allProgress[userId] = progress;
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(allProgress));
+  }
+
+  return { profile, progress };
 };
 
 export const updateProfile = async (userId: string, profile: Partial<UserProfile>): Promise<void> => {
-  const response = await fetch(`${API_BASE}/users/${userId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(profile)
-  });
-  if (!response.ok) throw new Error('Failed to update profile');
+  const profilesStr = localStorage.getItem(PROFILES_KEY);
+  const profiles = profilesStr ? JSON.parse(profilesStr) : {};
+  
+  if (profiles[userId]) {
+    profiles[userId] = { ...profiles[userId], ...profile };
+    localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+  }
 };
 
 export const updateProgress = async (userId: string, progress: UserProgress): Promise<void> => {
-  const response = await fetch(`${API_BASE}/progress/${userId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(progress)
-  });
-  if (!response.ok) throw new Error('Failed to update progress');
+  const progressStr = localStorage.getItem(PROGRESS_KEY);
+  const allProgress = progressStr ? JSON.parse(progressStr) : {};
+  
+  allProgress[userId] = progress;
+  localStorage.setItem(PROGRESS_KEY, JSON.stringify(allProgress));
 };
