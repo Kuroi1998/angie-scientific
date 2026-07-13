@@ -469,7 +469,7 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
               onFocus: () => active && setHoveredElement(el),
               onBlur: (e) => {
                 if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                  active && setHoveredElement(null);
+                  if (active) setHoveredElement(null);
                 }
               }
             },

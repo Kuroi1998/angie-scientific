@@ -102,6 +102,7 @@ export const QuizMode: React.FC = () => {
     } else if (mode === 'exam' && timeLeft <= 0) {
       endGame();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, timeLeft]);
 
   const endGame = () => {

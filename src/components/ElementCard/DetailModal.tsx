@@ -62,7 +62,8 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAd
     
     const t = setTimeout(() => showMessage(fact.childFriendlyText, 6000, emotion), 400);
     return () => clearTimeout(t);
-  }, [element.n, language]); // showMessage omitted intentionally
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [element.n, language, profile?.mascotEnabled]);
 
   // Map category to color
   const getCategoryColor = (cat: string) => {
