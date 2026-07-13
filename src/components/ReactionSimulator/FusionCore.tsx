@@ -5,7 +5,10 @@ import type { ReactionResult } from '../../engines/chemistryEngine';
 import { Stoichiometry } from './Stoichiometry';
 import { EnergyDiagram } from './EnergyDiagram';
 import { ChemicalEquation } from './ChemicalEquation';
-import { Flame, ShieldAlert, Sparkles, RefreshCw } from 'lucide-react';
+import { Flame, ShieldAlert, Sparkles, RefreshCw, Info } from 'lucide-react';
+import { useUserProgress } from '../UserProgressProvider';
+import { useMascot } from '../Mascot/MascotContext';
+import confetti from 'canvas-confetti';
 
 interface FusionCoreProps {
   selectedReactant1: string | null;
@@ -21,6 +24,8 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
   setSelectedReactant2
 }) => {
   const { t, language } = useLanguage();
+  const { profile, addSuccessfulReaction } = useUserProgress();
+  const { showMessage, setEmotion } = useMascot();
   const [reactionResult, setReactionResult] = useState<ReactionResult | null>(null);
   const [customInput, setCustomInput] = useState<string>('');
 
@@ -37,7 +42,6 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
     { s: 'I', name: 'Iodine' }
   ];
 
-  // Predict reaction whenever reactants change
   useEffect(() => {
     if (selectedReactant1 && selectedReactant2) {
       if (selectedReactant1 === selectedReactant2) {
@@ -46,6 +50,42 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
       }
       const result = predictReaction(selectedReactant1, selectedReactant2);
       setReactionResult(result);
+      
+      if (result) {
+        const prod = result.products[0]?.symbol;
+        if (result.stable) {
+          addSuccessfulReaction(prod);
+          
+          if (profile?.reducedMotion !== true) {
+            confetti({ particleCount: 50, spread: 45, origin: { y: 0.4 } });
+          }
+
+          // Cuisine Moléculaire
+          if (prod === 'H2O') {
+            showMessage(language === 'fr' ? "Bravo ! Tu as créé de l'Eau. C'est ce qu'il y a dans ta gourde !" : "¡Bravo! Has creado Agua.");
+            setEmotion('happy');
+          } else if (prod === 'NaCl') {
+            showMessage(language === 'fr' ? "Super ! Le NaCl, c'est le sel que l'on met sur les frites !" : "¡Súper! NaCl es la sal de mesa.");
+            setEmotion('happy');
+          } else if (prod === 'CO2') {
+            showMessage(language === 'fr' ? "Le dioxyde de carbone, c'est ce qui fait les bulles dans les sodas !" : "El CO2 es lo que hace las burbujas.");
+            setEmotion('impressed');
+          } else {
+            showMessage(language === 'fr' ? "Réaction réussie !" : "¡Reacción exitosa!", 3000, 'happy');
+          }
+        } else {
+          // Coin spectaculaire (instable)
+          showMessage(language === 'fr' ? "Oups ! Cette réaction est instable et a fait BOUM ! Attention dans un vrai labo !" : "¡Oops! Reacción inestable.");
+          setEmotion('surprised');
+          
+          // Trigger shake animation via DOM class
+          const chamber = document.getElementById('reactor-chamber');
+          if (chamber) {
+            chamber.classList.add('animate-shake');
+            setTimeout(() => chamber.classList.remove('animate-shake'), 500);
+          }
+        }
+      }
     } else {
       setReactionResult(null);
     }
@@ -72,6 +112,7 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
     
     // Reactor chamber display
     React.createElement('div', {
+      id: 'reactor-chamber',
       className: 'glass-panel scanline-container',
       style: {
         padding: '24px',
@@ -369,6 +410,25 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
               React.createElement('div', null,
                 React.createElement('span', { style: { display: 'block', fontSize: '9px', color: 'var(--text-secondary)' } }, "GIBBS FREE (ΔG)"),
                 React.createElement('span', { style: { fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 'bold', color: reactionResult.stable ? 'var(--neon-green)' : 'var(--neon-magenta)' } }, `${reactionResult.dG} kJ`)
+              )
+            ),
+
+            // Simplified info for kids
+            profile?.learningLevel === 'discovery' && React.createElement('div', {
+              style: {
+                marginTop: '16px', padding: '12px',
+                background: 'rgba(0, 243, 255, 0.05)',
+                border: '1px solid var(--neon-cyan)',
+                borderRadius: '8px', color: '#fff',
+                fontSize: '13px', textAlign: 'left',
+                display: 'flex', gap: '8px', alignItems: 'flex-start'
+              }
+            },
+              React.createElement(Info, { size: 16, style: { color: 'var(--neon-cyan)', flexShrink: 0 } }),
+              React.createElement('p', { style: { margin: 0, lineHeight: 1.4 } },
+                reactionResult.products[0]?.symbol === 'H2O' ? "L'eau est indispensable à la vie !" :
+                reactionResult.products[0]?.symbol === 'NaCl' ? "Le sel de table !" :
+                "Tu as fait une belle découverte scientifique."
               )
             ),
 
