@@ -4,6 +4,22 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { LanguageProvider } from '../../hooks/useLanguage';
 import { FusionCore } from './FusionCore';
+import { vi } from 'vitest';
+
+vi.mock('../UserProgressProvider', () => ({
+  useUserProgress: () => ({
+    profile: { learningLevel: 'discovery' },
+    progress: { discoveredElements: [], unlockedBadges: [], successfulReactions: [] },
+    addSuccessfulReaction: vi.fn(),
+  }),
+}));
+
+vi.mock('../Mascot/MascotContext', () => ({
+  useMascot: () => ({
+    showMessage: vi.fn(),
+    setEmotion: vi.fn(),
+  }),
+}));
 
 afterEach(cleanup);
 

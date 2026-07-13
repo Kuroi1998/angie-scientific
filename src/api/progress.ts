@@ -7,13 +7,13 @@ const API_BASE = 'http://localhost:3001/api';
 export const CURRENT_USER_ID = 'user_001';
 
 export const fetchUserData = async (userId: string): Promise<{ profile: UserProfile, progress: UserProgress }> => {
-  const response = await fetch(\`\${API_BASE}/users/\${userId}\`);
+  const response = await fetch(`${API_BASE}/users/${userId}`);
   if (!response.ok) throw new Error('Failed to fetch user data');
   return response.json();
 };
 
 export const updateProfile = async (userId: string, profile: Partial<UserProfile>): Promise<void> => {
-  const response = await fetch(\`\${API_BASE}/users/\${userId}\`, {
+  const response = await fetch(`${API_BASE}/users/${userId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(profile)
@@ -22,7 +22,7 @@ export const updateProfile = async (userId: string, profile: Partial<UserProfile
 };
 
 export const updateProgress = async (userId: string, progress: UserProgress): Promise<void> => {
-  const response = await fetch(\`\${API_BASE}/progress/\${userId}\`, {
+  const response = await fetch(`${API_BASE}/progress/${userId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(progress)
