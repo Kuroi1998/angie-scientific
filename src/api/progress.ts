@@ -19,9 +19,11 @@ export const removeUserId = () => {
 const getDefaultProfile = (username: string): UserProfile => ({
   id: username,
   username,
-  avatar: 'default',
-  language: 'fr',
-  theme: 'dark'
+  learningLevel: 'discovery',
+  mascotEnabled: true,
+  mascotSoundEnabled: true,
+  globalSoundEnabled: true,
+  reducedMotion: false
 });
 
 const getDefaultProgress = (userId: string): UserProgress => ({
@@ -30,7 +32,8 @@ const getDefaultProgress = (userId: string): UserProgress => ({
   unlockedBadges: [],
   discoveredElements: [],
   successfulReactions: [],
-  solvedRiddles: []
+  solvedRiddles: [],
+  completedQuests: []
 });
 
 export const fetchUserData = async (userId: string): Promise<{ profile: UserProfile, progress: UserProgress }> => {
