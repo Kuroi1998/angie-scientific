@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AudioManager } from '../../services/Audio/AudioManager';
 import { useLanguage } from '../../hooks/useLanguage';
 import { predictReaction } from '../../engines/chemistryEngine';
 import type { ReactionResult } from '../../engines/chemistryEngine';
@@ -8,7 +9,7 @@ import { ChemicalEquation } from './ChemicalEquation';
 import { Flame, ShieldAlert, Sparkles, RefreshCw, Info } from 'lucide-react';
 import { useUserProgress } from '../UserProgressProvider';
 import { useMascot } from '../Mascot/MascotContext';
-import confetti from 'canvas-confetti';
+import { ParticleEngine } from '../../services/Visuals/ParticleEngine';
 
 interface FusionCoreProps {
   selectedReactant1: string | null;
@@ -53,10 +54,11 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
       if (result) {
         const prod = result.products[0]?.symbol;
         if (result.stable) {
+          AudioManager.getInstance().playSuccess();
           addSuccessfulReaction(prod);
           
           if (profile?.reducedMotion !== true) {
-            confetti({ particleCount: 50, spread: 45, origin: { y: 0.4 } });
+            ParticleEngine.getInstance().fireFusionSuccess();
           }
 
           if (prod === 'H2O') {
@@ -72,9 +74,14 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
             showMessage(language === 'fr' ? "Réaction réussie !" : "¡Reacción exitosa!", 3000, 'happy');
           }
         } else {
+          AudioManager.getInstance().playError();
           showMessage(language === 'fr' ? "Oups ! Cette réaction est instable et a fait BOUM ! Attention dans un vrai labo !" : "¡Oops! Reacción inestable.");
           setEmotion('surprised');
           
+          if (profile?.reducedMotion !== true) {
+            ParticleEngine.getInstance().fireReactionExplosion();
+          }
+
           const chamber = document.getElementById('reactor-chamber');
           if (chamber) {
             chamber.classList.add('animate-shake');

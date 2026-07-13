@@ -75,6 +75,16 @@
   100% { opacity: 1; transform: scale(1); }
 }
 
+@keyframes slide-in-fade {
+  from { opacity: 0; transform: translateY(15px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes slide-out-fade {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-15px) scale(0.98); }
+}
+
 
 /* Class Utilities */
 .animate-fade-in {
@@ -129,11 +139,19 @@
   animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.tab-slide-in {
+  animation: slide-in-fade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.tab-slide-out {
+  animation: slide-out-fade 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 .modal-anim {
   animation: modal-scale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* Respect the user's OS/browser preference: stop purely decorative, endless
+/* Respect the user's OS/browser preference OR explicit app setting: stop purely decorative, endless
    animations (pulse, flicker, scanline) and make the remaining one-shot
    transitions near-instant instead of fully removing them (so content still
    appears, just without the motion). */
@@ -146,8 +164,25 @@
 
   .animate-fade-in,
   .tab-content,
+  .tab-slide-in,
+  .tab-slide-out,
   .modal-anim {
     animation-duration: 0.01ms;
     animation-iteration-count: 1;
   }
+}
+
+html[data-reduced-motion="true"] .animate-pulse-glow,
+html[data-reduced-motion="true"] .animate-flicker,
+html[data-reduced-motion="true"] .scanline-container::after {
+  animation: none !important;
+}
+
+html[data-reduced-motion="true"] .animate-fade-in,
+html[data-reduced-motion="true"] .tab-content,
+html[data-reduced-motion="true"] .tab-slide-in,
+html[data-reduced-motion="true"] .tab-slide-out,
+html[data-reduced-motion="true"] .modal-anim {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
 }

@@ -25,7 +25,10 @@ export const WelcomeModal: React.FC = () => {
       justifyContent: 'center',
       zIndex: 9999,
       padding: '20px'
-    }
+    },
+    role: 'dialog',
+    'aria-modal': 'true',
+    'aria-labelledby': 'welcome-title'
   },
     React.createElement('div', {
       className: 'glass-panel scanline-container animate-pulse-glow',
@@ -59,6 +62,7 @@ export const WelcomeModal: React.FC = () => {
       ),
 
       React.createElement('h1', {
+        id: 'welcome-title',
         style: {
           fontFamily: 'var(--font-title)',
           fontSize: '24px',

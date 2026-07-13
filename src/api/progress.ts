@@ -1,19 +1,21 @@
 import type { UserProfile, UserProgress } from '../data/educational/models';
+import { OfflineStorageService } from '../services/Storage/OfflineStorageService';
 
 const USER_ID_KEY = 'angie_scientific_user_id';
 const PROFILES_KEY = 'angie_scientific_profiles';
 const PROGRESS_KEY = 'angie_scientific_progress';
+const API_URL = 'http://localhost:3001/api';
 
 export const getUserId = (): string | null => {
-  return localStorage.getItem(USER_ID_KEY);
+  return OfflineStorageService.getItem<string>(USER_ID_KEY);
 };
 
 export const setUserId = (id: string) => {
-  localStorage.setItem(USER_ID_KEY, id);
+  OfflineStorageService.setItem(USER_ID_KEY, id);
 };
 
 export const removeUserId = () => {
-  localStorage.removeItem(USER_ID_KEY);
+  OfflineStorageService.removeItem(USER_ID_KEY);
 };
 
 const getDefaultProfile = (username: string): UserProfile => ({
@@ -37,46 +39,121 @@ const getDefaultProgress = (userId: string): UserProgress => ({
 });
 
 export const fetchUserData = async (userId: string): Promise<{ profile: UserProfile, progress: UserProgress }> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 200));
+  let cloudProfile: UserProfile | null = null;
+  let cloudProgress: UserProgress | null = null;
 
-  const profilesStr = localStorage.getItem(PROFILES_KEY);
-  const profiles = profilesStr ? JSON.parse(profilesStr) : {};
-  
-  const progressStr = localStorage.getItem(PROGRESS_KEY);
-  const allProgress = progressStr ? JSON.parse(progressStr) : {};
+  if (navigator.onLine) {
+    try {
+      const response = await fetch(`${API_URL}/users/${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        cloudProfile = data.profile;
+        cloudProgress = data.progress;
+      }
+    } catch (e) {
+      console.warn("Could not fetch from cloud, falling back to local storage", e);
+    }
+  }
 
+  const profiles = OfflineStorageService.getItem<Record<string, UserProfile>>(PROFILES_KEY) || {};
+  const allProgress = OfflineStorageService.getItem<Record<string, UserProgress>>(PROGRESS_KEY) || {};
+
+  // If we got cloud data, save it to local
+  if (cloudProfile && cloudProgress) {
+    profiles[userId] = cloudProfile;
+    allProgress[userId] = cloudProgress;
+    OfflineStorageService.setItem(PROFILES_KEY, profiles);
+    OfflineStorageService.setItem(PROGRESS_KEY, allProgress);
+    return { profile: cloudProfile, progress: cloudProgress };
+  }
+
+  // Fallback to local
   let profile = profiles[userId];
   if (!profile) {
     profile = getDefaultProfile(userId);
     profiles[userId] = profile;
-    localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+    OfflineStorageService.setItem(PROFILES_KEY, profiles);
   }
 
   let progress = allProgress[userId];
   if (!progress) {
     progress = getDefaultProgress(userId);
     allProgress[userId] = progress;
-    localStorage.setItem(PROGRESS_KEY, JSON.stringify(allProgress));
+    OfflineStorageService.setItem(PROGRESS_KEY, allProgress);
   }
 
   return { profile, progress };
 };
 
-export const updateProfile = async (userId: string, profile: Partial<UserProfile>): Promise<void> => {
-  const profilesStr = localStorage.getItem(PROFILES_KEY);
-  const profiles = profilesStr ? JSON.parse(profilesStr) : {};
-  
+export const updateProfile = async (userId: string, profileUpdates: Partial<UserProfile>): Promise<void> => {
+  // 1. Save local (Optimistic UI)
+  const profiles = OfflineStorageService.getItem<Record<string, UserProfile>>(PROFILES_KEY) || {};
   if (profiles[userId]) {
-    profiles[userId] = { ...profiles[userId], ...profile };
-    localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+    profiles[userId] = { ...profiles[userId], ...profileUpdates };
+    OfflineStorageService.setItem(PROFILES_KEY, profiles);
+  }
+
+  // 2. Try push to cloud
+  if (navigator.onLine) {
+    try {
+      await fetch(`${API_URL}/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profileUpdates)
+      });
+    } catch (e) {
+      console.warn("Could not sync profile to cloud, will sync later", e);
+    }
   }
 };
 
 export const updateProgress = async (userId: string, progress: UserProgress): Promise<void> => {
-  const progressStr = localStorage.getItem(PROGRESS_KEY);
-  const allProgress = progressStr ? JSON.parse(progressStr) : {};
-  
+  // 1. Save local
+  const allProgress = OfflineStorageService.getItem<Record<string, UserProgress>>(PROGRESS_KEY) || {};
   allProgress[userId] = progress;
-  localStorage.setItem(PROGRESS_KEY, JSON.stringify(allProgress));
+  OfflineStorageService.setItem(PROGRESS_KEY, allProgress);
+
+  // 2. Try push to cloud
+  if (navigator.onLine) {
+    try {
+      await fetch(`${API_URL}/progress/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(progress)
+      });
+    } catch (e) {
+      console.warn("Could not sync progress to cloud, will sync later", e);
+    }
+  }
+};
+
+export const syncWithCloud = async (userId: string): Promise<boolean> => {
+  if (!navigator.onLine) return false;
+  
+  const profiles = OfflineStorageService.getItem<Record<string, UserProfile>>(PROFILES_KEY) || {};
+  const allProgress = OfflineStorageService.getItem<Record<string, UserProgress>>(PROGRESS_KEY) || {};
+  
+  const profile = profiles[userId];
+  const progress = allProgress[userId];
+  
+  if (!profile || !progress) return false;
+
+  try {
+    await fetch(`${API_URL}/users/${userId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profile)
+    });
+    
+    await fetch(`${API_URL}/progress/${userId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(progress)
+    });
+    console.log("Synchronisation Cloud réussie pour l'utilisateur:", userId);
+    return true;
+  } catch (e) {
+    console.error("Échec de la synchronisation au cloud:", e);
+    return false;
+  }
 };

@@ -4,6 +4,7 @@ import { useLocalStorageState } from '../../hooks/useLocalStorageState';
 import elementsData from '../../engines/data/elements.json';
 import { Search, RotateCcw, Filter } from 'lucide-react';
 import { RiddleMinigame } from '../Gamification/RiddleMinigame';
+import { ZoomableContainer } from './ZoomableContainer';
 
 const isStringArray = (raw: unknown): raw is string[] =>
   Array.isArray(raw) && raw.every(item => typeof item === 'string');
@@ -430,134 +431,132 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
       )
     ),
 
-    // Scroll hint, shown only on narrow viewports (see responsive.css)
-    React.createElement('p', {
-      className: 'periodic-grid-scroll-hint',
-      style: {
-        fontSize: '10px',
-        fontFamily: 'var(--font-mono)',
-        color: 'var(--text-secondary)',
-        textAlign: 'center',
-        margin: '0 0 8px 0'
-      }
-    }, language === 'fr' ? '← Faites défiler pour voir tous les éléments →' : '← Desliza para ver todos los elementos →'),
-
-    // Grid Layout Area. `minmax(45px, 1fr)` keeps every cell readable/tappable —
-    // on a narrow viewport the grid's intrinsic width exceeds its box, so this
-    // container (not the whole page) scrolls horizontally instead of squishing cells.
+    // Grid Layout Area. Wrapped in ZoomableContainer for pinch-to-zoom and pan.
     React.createElement('div', {
-      className: 'periodic-grid-scroll',
       style: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(18, minmax(45px, 1fr))',
-        gap: '6px',
-        overflowX: 'auto',
-        paddingBottom: '16px'
+        height: '65vh', // provide a constrained height for the zoom container
+        minHeight: '400px',
+        width: '100%',
+        position: 'relative',
+        borderRadius: '8px',
+        border: '1px solid var(--glass-border)',
+        background: 'rgba(5, 5, 10, 0.3)',
+        boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.5)'
       }
     },
-      elements.map(el => {
-        const active = matchesFilters(el);
-        const gridPos = getGridPosition(el.n);
-        const catObj = categories.find(c => c.id === el.cat);
-        const catColor = catObj ? catObj.color : 'var(--cat-unknown)';
-
-        // Render individual element cell. Wraps a real <button> (select action) and a
-        // sibling overlay button (quick-add to fusion) — buttons cannot be nested in HTML.
-        return React.createElement('div', {
-          key: el.n,
-          style: { ...gridPos, position: 'relative' }
+      React.createElement(ZoomableContainer, null,
+        React.createElement('div', {
+          className: 'periodic-grid-scroll',
+          style: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(18, minmax(45px, 1fr))',
+            gap: '6px',
+            padding: '24px' // padding inside zoom area
+          }
         },
-          React.createElement('button', {
-            type: 'button',
-            disabled: !active,
-            'aria-label': `${el.n} — ${language === 'es' ? el.nameES : el.nameFR} (${el.s})`,
-            className: `element-cell ${active ? 'active' : ''}`,
-            style: {
-              '--cell-color': catColor,
-              '--cell-opacity': active ? 1 : 0.2,
-              '--cell-zindex': hoveredElement?.n === el.n ? 10 : 1
-            } as React.CSSProperties,
-            onMouseEnter: () => active && setHoveredElement(el),
-            onMouseLeave: () => active && setHoveredElement(null),
-            onFocus: () => active && setHoveredElement(el),
-            onBlur: () => active && setHoveredElement(null),
-            onClick: () => active && onSelectElement(el)
-          },
-            // Atomic Number
-            React.createElement('span', { className: 'element-cell-num' }, el.n),
-            // Symbol
-            React.createElement('span', { className: 'element-cell-sym' }, el.s),
-            // Atomic Mass or Name abbreviated
-            React.createElement('span', { className: 'element-cell-mass' }, el.mass.toFixed(2))
-          ),
+          elements.map(el => {
+            const active = matchesFilters(el);
+            const gridPos = getGridPosition(el.n);
+            const catObj = categories.find(c => c.id === el.cat);
+            const catColor = catObj ? catObj.color : 'var(--cat-unknown)';
 
-          // Action button overlay on hover/focus
-          active && hoveredElement?.n === el.n && onAddToFusion && React.createElement('button', {
-            type: 'button',
-            title: t('fusion.add'),
-            'aria-label': `${t('fusion.add')}: ${el.s}`,
-            onClick: (e) => {
-              e.stopPropagation();
-              onAddToFusion(el);
+            return React.createElement('div', {
+              key: el.n,
+              style: { ...gridPos, position: 'relative' },
+              className: 'element-cell-wrapper',
+              onMouseEnter: () => active && setHoveredElement(el),
+              onMouseLeave: () => active && setHoveredElement(null),
+              onFocus: () => active && setHoveredElement(el),
+              onBlur: (e) => {
+                if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                  active && setHoveredElement(null);
+                }
+              }
             },
+              React.createElement('button', {
+                type: 'button',
+                disabled: !active,
+                'aria-label': `${el.n} — ${language === 'es' ? el.nameES : el.nameFR} (${el.s})`,
+                className: `element-cell ${active ? 'active' : ''}`,
+                style: {
+                  '--cell-color': catColor,
+                  '--cell-opacity': active ? 1 : 0.2,
+                  '--cell-zindex': hoveredElement?.n === el.n ? 10 : 1
+                } as React.CSSProperties,
+                onClick: () => active && onSelectElement(el)
+              },
+                React.createElement('span', { className: 'element-cell-num' }, el.n),
+                React.createElement('span', { className: 'element-cell-sym' }, el.s),
+                React.createElement('span', { className: 'element-cell-mass' }, el.mass.toFixed(2))
+              ),
+
+              active && hoveredElement?.n === el.n && onAddToFusion && React.createElement('button', {
+                type: 'button',
+                title: t('fusion.add'),
+                'aria-label': `${t('fusion.add')}: ${el.s}`,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  onAddToFusion(el);
+                },
+                style: {
+                  position: 'absolute',
+                  top: '1px',
+                  right: '1px',
+                  width: '16px',
+                  height: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'var(--neon-magenta)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  boxShadow: 'var(--glow-magenta)',
+                  zIndex: 11
+                }
+              }, "+")
+            );
+          }),
+
+          React.createElement('div', {
+            key: 'la-placeholder',
             style: {
-              position: 'absolute',
-              top: '1px',
-              right: '1px',
-              width: '16px',
-              height: '16px',
-              borderRadius: '50%',
-              background: 'var(--neon-magenta)',
-              border: 'none',
-              color: '#fff',
-              fontSize: '10px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
+              gridRow: 6,
+              gridColumn: 3,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: 'var(--glow-magenta)',
-              zIndex: 11
+              border: '1px dashed var(--text-muted)',
+              borderRadius: '4px',
+              background: 'rgba(255,255,255,0.02)',
+              fontSize: '9px',
+              fontFamily: 'var(--font-title)',
+              color: 'var(--text-secondary)',
+              textAlign: 'center'
             }
-          }, "+")
-        );
-      }),
-
-      // Placeholders inside empty grid blocks to write Lanthanum / Actinium limits
-      React.createElement('div', {
-        key: 'la-placeholder',
-        style: {
-          gridRow: 6,
-          gridColumn: 3,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: '1px dashed var(--text-muted)',
-          borderRadius: '4px',
-          background: 'rgba(255,255,255,0.02)',
-          fontSize: '9px',
-          fontFamily: 'var(--font-title)',
-          color: 'var(--text-secondary)',
-          textAlign: 'center'
-        }
-      }, "57-71"),
-      React.createElement('div', {
-        key: 'ac-placeholder',
-        style: {
-          gridRow: 7,
-          gridColumn: 3,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: '1px dashed var(--text-muted)',
-          borderRadius: '4px',
-          background: 'rgba(255,255,255,0.02)',
-          fontSize: '9px',
-          fontFamily: 'var(--font-title)',
-          color: 'var(--text-secondary)',
-          textAlign: 'center'
-        }
-      }, "89-103")
+          }, "57-71"),
+          React.createElement('div', {
+            key: 'ac-placeholder',
+            style: {
+              gridRow: 7,
+              gridColumn: 3,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px dashed var(--text-muted)',
+              borderRadius: '4px',
+              background: 'rgba(255,255,255,0.02)',
+              fontSize: '9px',
+              fontFamily: 'var(--font-title)',
+              color: 'var(--text-secondary)',
+              textAlign: 'center'
+            }
+          }, "89-103")
+        )
+      )
     ),
 
     // Grid Category Legend

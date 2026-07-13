@@ -27,6 +27,26 @@ export const AtomModelCanvas: React.FC<AtomModelCanvasProps> = ({ shells, catego
     let cssHeight = 300;
     const angles = shells.map(() => Math.random() * Math.PI * 2);
 
+    let targetRotX = 0;
+    let targetRotY = 0;
+    let rotX = 0;
+    let rotY = 0;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (reducedMotion) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      targetRotY = (x / (rect.width / 2)) * Math.PI * 0.3; 
+      targetRotX = -(y / (rect.height / 2)) * Math.PI * 0.3;
+    };
+    const handleMouseLeave = () => {
+      targetRotX = 0;
+      targetRotY = 0;
+    };
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
+
     const resizeCanvas = () => {
       cssWidth = canvas.parentElement?.clientWidth || 300;
       cssHeight = canvas.parentElement?.clientHeight || 300;
@@ -46,6 +66,9 @@ export const AtomModelCanvas: React.FC<AtomModelCanvasProps> = ({ shells, catego
       const centerX = width / 2;
       const centerY = height / 2;
       const maxRadius = Math.min(width, height) * 0.45;
+
+      rotX += (targetRotX - rotX) * 0.1;
+      rotY += (targetRotY - rotY) * 0.1;
 
       ctx.clearRect(0, 0, width, height);
 
@@ -67,40 +90,58 @@ export const AtomModelCanvas: React.FC<AtomModelCanvasProps> = ({ shells, catego
       const shellCount = shells.length;
       const step = (maxRadius - 30) / Math.max(shellCount, 1);
 
+      // Collect electrons to sort by Z-index (for 3D overlap)
+      const electronsToDraw: {x: number, y: number, z: number}[] = [];
+
       for (let s = 0; s < shellCount; s++) {
         const radius = 30 + (s + 1) * step;
         const electronCount = shells[s];
 
-        // Draw Shell Circle Path
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        // Unique tilt per shell for a 3D atom look
+        const baseTiltX = Math.PI * 0.25; 
+        const shellRotZ = (s * Math.PI) / shellCount;
+        
+        const finalRotX = baseTiltX + rotX;
+        const finalRotY = rotY;
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        // ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle)
+        ctx.ellipse(centerX, centerY, radius, radius * Math.cos(finalRotX), shellRotZ + finalRotY, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Rotation speed decreases for outer shells (skipped entirely if reduced motion)
         if (!reducedMotion) {
           const speed = (0.02 / (s + 1)) + 0.005;
           angles[s] += speed;
         }
 
-        // Draw Electrons on this shell
         for (let e = 0; e < electronCount; e++) {
-          // Space electrons evenly around the orbit
           const angle = angles[s] + (e * Math.PI * 2) / electronCount;
-          const x = centerX + Math.cos(angle) * radius;
-          const y = centerY + Math.sin(angle) * radius;
+          // Calculate 3D position
+          const bx = Math.cos(angle) * radius;
+          const by = Math.sin(angle) * radius;
+          
+          // Apply shell base tilt
+          const z1 = by * Math.sin(baseTiltX);
+          const y1 = by * Math.cos(baseTiltX);
+          
+          // Apply shell Z rotation
+          const x2 = bx * Math.cos(shellRotZ) - y1 * Math.sin(shellRotZ);
+          const y2 = bx * Math.sin(shellRotZ) + y1 * Math.cos(shellRotZ);
+          
+          // Apply mouse rotations
+          const y3 = y2 * Math.cos(rotX) - z1 * Math.sin(rotX);
+          const z3 = y2 * Math.sin(rotX) + z1 * Math.cos(rotX);
+          
+          const x4 = x2 * Math.cos(rotY) + z3 * Math.sin(rotY);
+          const z4 = -x2 * Math.sin(rotY) + z3 * Math.cos(rotY);
 
-          // Draw Electron Glow
-          const grad = ctx.createRadialGradient(x, y, 0, x, y, 6);
-          grad.addColorStop(0, '#fff');
-          grad.addColorStop(0.3, resolvedCategoryColor);
-          grad.addColorStop(1, 'rgba(0,0,0,0)');
-
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.arc(x, y, 6, 0, Math.PI * 2);
-          ctx.fill();
+          electronsToDraw.push({
+            x: centerX + x4,
+            y: centerY + y3,
+            z: z4
+          });
         }
       }
 
@@ -124,6 +165,23 @@ export const AtomModelCanvas: React.FC<AtomModelCanvasProps> = ({ shells, catego
       ctx.textBaseline = 'middle';
       ctx.fillText(symbol, centerX, centerY);
 
+      // Draw sorted electrons
+      electronsToDraw.sort((a, b) => a.z - b.z).forEach(el => {
+        // Size scales slightly with Z
+        const scale = 1 + (el.z / maxRadius) * 0.3;
+        const eRadius = Math.max(2, 6 * scale);
+
+        const grad = ctx.createRadialGradient(el.x, el.y, 0, el.x, el.y, eRadius);
+        grad.addColorStop(0, '#fff');
+        grad.addColorStop(0.3, resolvedCategoryColor);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(el.x, el.y, eRadius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
       // Telemetry Shell Data Labels (rendered inside canvas)
       ctx.fillStyle = 'rgba(0, 243, 255, 0.4)';
       ctx.font = monoFont;
@@ -141,6 +199,8 @@ export const AtomModelCanvas: React.FC<AtomModelCanvasProps> = ({ shells, catego
       cancelled = true;
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', resizeCanvas);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, [shells, categoryColor, symbol]);
 

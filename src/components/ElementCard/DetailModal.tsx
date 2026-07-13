@@ -5,6 +5,8 @@ import { AtomModelCanvas } from './AtomModelCanvas';
 import { X, Info, Shield, Layers, HelpCircle, GitCommit, Star } from 'lucide-react';
 import { LewisVisualizer } from './LewisVisualizer';
 import { useUserProgress } from '../UserProgressProvider';
+import { useMascot } from '../Mascot/MascotContext';
+import { ElementFactRepository } from '../../services/Educational/ElementFactRepository';
 
 interface DetailModalProps {
   element: ElementType;
@@ -21,6 +23,7 @@ const TITLE_ID = 'element-detail-modal-title';
 export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAddToFusion }) => {
   const { language, t } = useLanguage();
   const { profile } = useUserProgress();
+  const { showMessage } = useMascot();
   const isNobleGas = NOBLE_GASES.includes(element.s);
   const [activeTab, setActiveTab] = useState<TabType | 'superpowers'>('general');
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -46,6 +49,20 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAd
       previouslyFocused?.focus();
     };
   }, []);
+
+  // Mascot element facts logic
+  useEffect(() => {
+    if (profile?.mascotEnabled === false) return;
+    
+    const fact = ElementFactRepository.getFactForElement(element.n, language || 'fr');
+    let emotion: any = 'happy';
+    if (fact.category === 'surprising') emotion = 'impressed';
+    else if (fact.category === 'reaction' || fact.category === 'safety') emotion = 'surprised';
+    else if (fact.category === 'discovery') emotion = 'thinking';
+    
+    const t = setTimeout(() => showMessage(fact.childFriendlyText, 6000, emotion), 400);
+    return () => clearTimeout(t);
+  }, [element.n, language]); // showMessage omitted intentionally
 
   // Map category to color
   const getCategoryColor = (cat: string) => {

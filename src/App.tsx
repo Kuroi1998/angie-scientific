@@ -5,13 +5,19 @@ import type { ElementType } from './components/PeriodicTable/TableGrid';
 import { DetailModal } from './components/ElementCard/DetailModal';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import { useLocalStorageState } from './hooks/useLocalStorageState';
-import { clearAllStoredValues } from './utils/localStorage';
-import { Grid, Flame, Zap, Beaker, Globe, Trophy, FlaskConical, RotateCcw, Loader2 } from 'lucide-react';
+import { Grid, Flame, Zap, Beaker, Trophy, FlaskConical, Loader2, GraduationCap, Palette, Settings } from 'lucide-react';
 import { UserProgressProvider } from './components/UserProgressProvider';
 import { MascotProvider } from './components/Mascot/MascotContext';
 import { AngieMascot } from './components/Mascot/AngieMascot';
 import { LoginScreen } from './components/LoginScreen';
-import { getUserId, removeUserId } from './api/progress';
+import { ReloadPrompt } from './components/ReloadPrompt';
+import { SettingsModal } from './components/SettingsModal';
+import { ThemeStoreModal } from './components/ThemeStoreModal';
+import { TransitionWrapper } from './components/TransitionWrapper';
+import { getUserId } from './api/progress';
+import { AudioManager } from './services/Audio/AudioManager';
+import { MusicManager } from './services/Audio/MusicManager';
+import { useUserProgress } from './components/UserProgressProvider';
 import './styles/theme.css';
 import './styles/animations.css';
 import './styles/responsive.css';
@@ -23,10 +29,11 @@ const QuantumVisualizer = React.lazy(() => import('./components/QuantumVisualize
 const PhysChemLab = React.lazy(() => import('./components/PhysicsChemistry/PhysChemLab').then(m => ({ default: m.PhysChemLab })));
 const VirtualLab = React.lazy(() => import('./components/VirtualLab/VirtualLab').then(m => ({ default: m.VirtualLab })));
 const DiscoveryAlbum = React.lazy(() => import('./components/Gamification/DiscoveryAlbum').then(m => ({ default: m.DiscoveryAlbum })));
+const QuizMode = React.lazy(() => import('./components/Gamification/QuizMode').then(m => ({ default: m.QuizMode })));
 
-type TabType = 'table' | 'fusion' | 'quantum' | 'physchem' | 'virtuallab' | 'quests';
+type TabType = 'table' | 'fusion' | 'quantum' | 'physchem' | 'virtuallab' | 'quests' | 'quiz';
 
-const TAB_IDS: TabType[] = ['table', 'fusion', 'quantum', 'physchem', 'virtuallab', 'quests'];
+const TAB_IDS: TabType[] = ['table', 'fusion', 'quantum', 'physchem', 'virtuallab', 'quests', 'quiz'];
 const isTabType = (raw: unknown): raw is TabType =>
   typeof raw === 'string' && (TAB_IDS as string[]).includes(raw);
 
@@ -37,36 +44,40 @@ const LoadingFallback = () => (
   </div>
 );
 
+import { useTutorial } from './hooks/useTutorial';
+
 const AppContent: React.FC = () => {
-  const { language, setLanguage, t } = useLanguage();
+  const { language, t } = useLanguage();
   const [activeTab, setActiveTab] = useLocalStorageState<TabType>('activeTab', 'table', { validate: isTabType });
   const [selectedElement, setSelectedElement] = useState<ElementType | null>(null);
+  useTutorial(activeTab);
 
   // Fusion Reactant slots managed at App level so elements can be added from the grid
   const [reactant1, setReactant1] = useState<string | null>(null);
   const [reactant2, setReactant2] = useState<string | null>(null);
+  
+  const [isThemeStoreOpen, setIsThemeStoreOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  
+  const { profile } = useUserProgress();
 
-  const toggleLanguage = () => {
-    if (language === 'fr') setLanguage('es');
-    else setLanguage('fr');
-  };
+  React.useEffect(() => {
+    const isEnabled = profile?.globalSoundEnabled ?? true;
+    AudioManager.getInstance().setEnabled(isEnabled);
+    MusicManager.getInstance().setEnabled(isEnabled);
+    
+    if (profile?.activeTheme) {
+      document.documentElement.setAttribute('data-theme', profile.activeTheme);
+    } else {
+      document.documentElement.setAttribute('data-theme', 'default');
+    }
 
-  const handleResetAllData = () => {
-    const confirmed = window.confirm(
-      language === 'fr'
-        ? 'Réinitialiser toutes les données locales (langue, progression des quêtes, historique de recherche, expériences complétées) ? Cette action est irréversible.'
-        : '¿Restablecer todos los datos locales (idioma, progreso de misiones, historial de búsqueda, experimentos completados)? Esta acción es irreversible.'
-    );
-    if (!confirmed) return;
-    clearAllStoredValues();
-    removeUserId();
-    window.location.reload();
-  };
-
-  const handleLogout = () => {
-    removeUserId();
-    window.location.reload();
-  };
+    if (profile?.reducedMotion) {
+      document.documentElement.setAttribute('data-reduced-motion', 'true');
+    } else {
+      document.documentElement.removeAttribute('data-reduced-motion');
+    }
+  }, [profile?.globalSoundEnabled, profile?.activeTheme, profile?.reducedMotion]);
 
   const handleAddToFusion = (el: ElementType) => {
     if (!reactant1) {
@@ -88,7 +99,8 @@ const AppContent: React.FC = () => {
     { id: 'quantum', label: t('nav.quantum'), icon: Zap, color: 'var(--neon-magenta)', glow: 'var(--glow-magenta)' },
     { id: 'physchem', label: t('nav.physchem'), icon: Beaker, color: 'var(--neon-yellow)', glow: 'var(--glow-yellow)' },
     { id: 'virtuallab', label: language === 'fr' ? 'Labo Virtuel' : 'Lab Virtual', icon: FlaskConical, color: 'var(--neon-orange)', glow: 'var(--glow-orange)' },
-    { id: 'quests', label: language === 'fr' ? 'Quêtes' : 'Misiones', icon: Trophy, color: 'var(--neon-green)', glow: 'var(--glow-green)' }
+    { id: 'quests', label: language === 'fr' ? 'Quêtes' : 'Misiones', icon: Trophy, color: 'var(--neon-green)', glow: 'var(--glow-green)' },
+    { id: 'quiz', label: 'Quiz', icon: GraduationCap, color: 'var(--neon-magenta)', glow: 'var(--glow-magenta)' }
   ] as const;
 
   const focusNavTabAt = (index: number) => {
@@ -112,18 +124,12 @@ const AppContent: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
-          <button className="btn btn-outline hover-lift" onClick={toggleLanguage}>
-            <Globe size={14} />
-            {language === 'fr' ? "FRANÇAIS" : "ESPAÑOL"}
+          <button className="btn btn-outline hover-lift" onClick={() => setIsThemeStoreOpen(true)} title={language === 'fr' ? 'Thèmes' : 'Temas'} style={{ padding: '8px', color: 'var(--neon-yellow)', borderColor: 'var(--neon-yellow)' }} aria-label={language === 'fr' ? 'Ouvrir les thèmes' : 'Abrir temas'}>
+            <Palette size={14} />
           </button>
-
-          <button className="btn btn-danger-outline hover-lift" onClick={handleLogout} title={language === 'fr' ? 'Se déconnecter' : 'Cerrar sesión'}>
-            {language === 'fr' ? "DÉCONNEXION" : "SALIR"}
-          </button>
-
-          <button className="btn btn-danger-ghost hover-lift" onClick={handleResetAllData} title={language === 'fr' ? 'Réinitialiser la langue, la progression des quêtes et l\'historique de recherche enregistrés localement' : 'Restablecer el idioma, el progreso de misiones y el historial de búsqueda guardados localmente'}>
-            <RotateCcw size={12} />
-            {language === 'fr' ? 'RÉINITIALISER' : 'RESTABLECER'}
+          
+          <button className="btn btn-outline hover-lift" onClick={() => setIsSettingsOpen(true)} title={language === 'fr' ? 'Paramètres' : 'Configuración'} style={{ padding: '8px' }} aria-label={language === 'fr' ? 'Ouvrir les paramètres' : 'Abrir configuración'}>
+            <Settings size={14} />
           </button>
         </div>
       </header>
@@ -141,7 +147,10 @@ const AppContent: React.FC = () => {
               aria-selected={active}
               aria-controls="main-tabpanel"
               tabIndex={active ? 0 : -1}
-              onClick={() => setActiveTab(tab.id as TabType)}
+              onClick={() => {
+                AudioManager.getInstance().playClick();
+                setActiveTab(tab.id as TabType);
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'ArrowRight') { e.preventDefault(); focusNavTabAt(i + 1); }
                 else if (e.key === 'ArrowLeft') { e.preventDefault(); focusNavTabAt(i - 1); }
@@ -162,40 +171,50 @@ const AppContent: React.FC = () => {
       </div>
 
       {/* Active Viewport Tab Content */}
-      <main id="main-tabpanel" role="tabpanel" aria-labelledby={`main-tab-${activeTab}`} style={{ flex: '1', minWidth: 0 }}>
-        <Suspense fallback={<LoadingFallback />}>
-          {activeTab === 'table' && (
-            <TableGrid onSelectElement={(el) => setSelectedElement(el)} onAddToFusion={handleAddToFusion} />
-          )}
-          {activeTab === 'fusion' && (
-            <ErrorBoundary label="Simulateur de Fusion" resetKey="fusion" onNavigateHome={() => setActiveTab('table')}>
-              <FusionCore
-                selectedReactant1={reactant1}
-                selectedReactant2={reactant2}
-                setSelectedReactant1={setReactant1}
-                setSelectedReactant2={setReactant2}
-              />
-            </ErrorBoundary>
-          )}
-          {activeTab === 'quantum' && (
-            <ErrorBoundary label="Visualiseur Quantique" resetKey="quantum" onNavigateHome={() => setActiveTab('table')}>
-              <QuantumVisualizer />
-            </ErrorBoundary>
-          )}
-          {activeTab === 'physchem' && (
-            <ErrorBoundary label="Laboratoire Physique-Chimie" resetKey="physchem" onNavigateHome={() => setActiveTab('table')}>
-              <PhysChemLab />
-            </ErrorBoundary>
-          )}
-          {activeTab === 'virtuallab' && (
-            <ErrorBoundary label="Laboratoire Virtuel" resetKey="virtuallab" onNavigateHome={() => setActiveTab('table')}>
-              <VirtualLab />
-            </ErrorBoundary>
-          )}
-          {activeTab === 'quests' && (
-            <DiscoveryAlbum />
-          )}
-        </Suspense>
+      <main id="main-tabpanel" role="tabpanel" aria-labelledby={`main-tab-${activeTab}`} style={{ flex: '1', minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+        <TransitionWrapper activeKey={activeTab}>
+          <Suspense fallback={<LoadingFallback />}>
+            {activeTab === 'table' && (
+              <TableGrid onSelectElement={(el) => {
+                AudioManager.getInstance().playClick();
+                setSelectedElement(el);
+              }} onAddToFusion={handleAddToFusion} />
+            )}
+            {activeTab === 'fusion' && (
+              <ErrorBoundary label="Simulateur de Fusion" resetKey="fusion" onNavigateHome={() => setActiveTab('table')}>
+                <FusionCore
+                  selectedReactant1={reactant1}
+                  selectedReactant2={reactant2}
+                  setSelectedReactant1={setReactant1}
+                  setSelectedReactant2={setReactant2}
+                />
+              </ErrorBoundary>
+            )}
+            {activeTab === 'quantum' && (
+              <ErrorBoundary label="Visualiseur Quantique" resetKey="quantum" onNavigateHome={() => setActiveTab('table')}>
+                <QuantumVisualizer />
+              </ErrorBoundary>
+            )}
+            {activeTab === 'physchem' && (
+              <ErrorBoundary label="Laboratoire Physique-Chimie" resetKey="physchem" onNavigateHome={() => setActiveTab('table')}>
+                <PhysChemLab />
+              </ErrorBoundary>
+            )}
+            {activeTab === 'virtuallab' && (
+              <ErrorBoundary label="Laboratoire Virtuel" resetKey="virtuallab" onNavigateHome={() => setActiveTab('table')}>
+                <VirtualLab />
+              </ErrorBoundary>
+            )}
+            {activeTab === 'quests' && (
+              <DiscoveryAlbum />
+            )}
+            {activeTab === 'quiz' && (
+              <ErrorBoundary label="Mode Quiz" resetKey="quiz" onNavigateHome={() => setActiveTab('table')}>
+                <QuizMode />
+              </ErrorBoundary>
+            )}
+          </Suspense>
+        </TransitionWrapper>
       </main>
 
       {/* Details Modal popup */}
@@ -213,6 +232,10 @@ const AppContent: React.FC = () => {
       <footer style={{ marginTop: '40px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px', textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-muted)' }}>
         // ANGIE QUANTUM LABS // ALL SIMULATIONS CALIBRATED FOR STP // ENERGETIC INTEGRITY SECURED
       </footer>
+
+      <ReloadPrompt />
+      {isThemeStoreOpen && <ThemeStoreModal onClose={() => setIsThemeStoreOpen(false)} />}
+      {isSettingsOpen && <SettingsModal onClose={() => setIsSettingsOpen(false)} />}
     </div>
   );
 };

@@ -33,6 +33,9 @@ export function setupHiDPICanvas(
 
 /** Whether the user's OS/browser is set to reduce motion. Safe to call outside the browser. */
 export function prefersReducedMotion(): boolean {
+  if (typeof document !== 'undefined' && document.documentElement.getAttribute('data-reduced-motion') === 'true') {
+    return true;
+  }
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
   try {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;

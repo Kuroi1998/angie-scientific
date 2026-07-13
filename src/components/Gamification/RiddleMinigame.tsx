@@ -4,7 +4,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 import { useMascot } from '../Mascot/MascotContext';
 import { HelpCircle, Check, X, Trophy } from 'lucide-react';
 import type { Riddle } from '../../data/educational/models';
-import confetti from 'canvas-confetti';
+import { ParticleEngine } from '../../services/Visuals/ParticleEngine';
 
 const RIDDLES: Riddle[] = [
   {
@@ -69,7 +69,7 @@ export const RiddleMinigame: React.FC = () => {
       setStatus('correct');
       
       if (profile?.reducedMotion !== true) {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        ParticleEngine.getInstance().fireFusionSuccess();
       }
 
       showMessage(language === 'fr' ? currentRiddle.explanationFr : currentRiddle.explanationEs, 5000, 'impressed');

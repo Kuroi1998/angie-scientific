@@ -6,32 +6,9 @@
   padding: 20px 40px;
 }
 
-/* CSS-only "scroll shadow" affordance: fading cyan hints appear at whichever
-   edge still has content to scroll to, and disappear once you reach that end. */
-.periodic-grid-scroll {
-  background:
-    linear-gradient(to right, var(--bg-primary) 30%, rgba(0, 0, 0, 0)),
-    linear-gradient(to right, rgba(0, 0, 0, 0), var(--bg-primary) 70%) 100% 0,
-    linear-gradient(to right, rgba(0, 243, 255, 0.35), rgba(0, 243, 255, 0)),
-    linear-gradient(to left, rgba(0, 243, 255, 0.35), rgba(0, 243, 255, 0)) 100% 0;
-  background-repeat: no-repeat;
-  background-color: var(--bg-primary);
-  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
-  background-attachment: local, local, scroll, scroll;
-}
-
-.periodic-grid-scroll-hint {
-  display: none;
-}
-
 @media (max-width: 640px) {
   .app-root {
     padding: 12px 14px;
-  }
-
-  /* Show a one-time textual hint that the periodic table scrolls horizontally. */
-  .periodic-grid-scroll-hint {
-    display: block;
   }
 
   /* Let card grids stack in a single column instead of their inline

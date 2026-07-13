@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { UserProfile, UserProgress } from '../data/educational/models';
-import { fetchUserData, updateProfile, updateProgress, getUserId } from '../api/progress';
+import { fetchUserData, updateProfile, updateProgress, getUserId, syncWithCloud } from '../api/progress';
 
 interface ProgressContextType {
   profile: UserProfile | null;
@@ -12,6 +12,8 @@ interface ProgressContextType {
   unlockBadge: (badgeId: string) => Promise<void>;
   addExperience: (points: number) => Promise<void>;
   solveRiddle: (riddleId: string) => Promise<void>;
+  unlockTheme: (themeId: string, cost: number) => Promise<boolean>;
+  equipTheme: (themeId: string) => Promise<void>;
 }
 
 const ProgressContext = createContext<ProgressContextType | undefined>(undefined);
@@ -23,6 +25,17 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   useEffect(() => {
     loadData();
+
+    const handleOnline = async () => {
+      const userId = getUserId();
+      if (userId) {
+        console.log("Réseau rétabli, synchronisation avec le cloud...");
+        await syncWithCloud(userId);
+      }
+    };
+
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
   }, []);
 
   const loadData = async () => {
@@ -138,9 +151,27 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
     });
   };
 
+  const unlockTheme = async (themeId: string, cost: number): Promise<boolean> => {
+    if (!progress) return false;
+    const unlocked = progress.unlockedThemes || ['default', 'high-contrast'];
+    if (unlocked.includes(themeId)) return true;
+    if (progress.experiencePoints < cost) return false;
+
+    await saveProgress({
+      ...progress,
+      unlockedThemes: [...unlocked, themeId],
+      experiencePoints: progress.experiencePoints - cost
+    });
+    return true;
+  };
+
+  const equipTheme = async (themeId: string) => {
+    await saveProfile({ activeTheme: themeId });
+  };
+
   return (
     <ProgressContext.Provider value={{
-      profile, progress, loading, saveProfile, addDiscoveredElement, addSuccessfulReaction, unlockBadge, addExperience, solveRiddle
+      profile, progress, loading, saveProfile, addDiscoveredElement, addSuccessfulReaction, unlockBadge, addExperience, solveRiddle, unlockTheme, equipTheme
     }}>
       {children}
     </ProgressContext.Provider>

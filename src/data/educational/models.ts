@@ -54,6 +54,7 @@ export interface UserProfile {
   mascotSoundEnabled: boolean;
   globalSoundEnabled: boolean;
   reducedMotion: boolean;
+  activeTheme?: string;
 }
 
 export interface UserProgress {
@@ -63,5 +64,6 @@ export interface UserProgress {
   completedQuests: string[];
   unlockedBadges: string[];
   solvedRiddles: string[];
+  unlockedThemes?: string[];
   experiencePoints: number;
 }

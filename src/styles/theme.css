@@ -48,6 +48,99 @@
   --shadow-inset: inset 0 0 15px rgba(0, 243, 255, 0.05);
 }
 
+/* THEMES */
+[data-theme="cyberpunk"] {
+  --bg-primary: #0a0118;
+  --bg-secondary: #130026;
+  --bg-tertiary: #1f003b;
+  --glass-bg: rgba(20, 0, 40, 0.75);
+  --glass-border: rgba(57, 255, 20, 0.3);
+  --glass-border-hover: rgba(57, 255, 20, 0.6);
+
+  --neon-cyan: #39ff14; /* Swapped to green for cyberpunk feel */
+  --neon-magenta: #ff00ff;
+  --neon-purple: #9d00ff;
+  --neon-green: #39ff14;
+  --neon-yellow: #ffe600;
+  --neon-orange: #ff3300;
+
+  --text-primary: #f0f0f0;
+  --text-secondary: #b3a0cc;
+  --text-muted: #6e5099;
+  --text-neon: #39ff14;
+
+  --glow-cyan: 0 0 10px rgba(57, 255, 20, 0.5), 0 0 20px rgba(57, 255, 20, 0.2);
+  --shadow-inset: inset 0 0 15px rgba(57, 255, 20, 0.1);
+}
+
+[data-theme="retro"] {
+  --font-title: var(--font-mono);
+  --font-body: var(--font-mono);
+  
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #111111;
+  --glass-bg: rgba(0, 20, 0, 0.8);
+  --glass-border: rgba(0, 255, 0, 0.4);
+  --glass-border-hover: rgba(0, 255, 0, 0.8);
+
+  --neon-cyan: #00ff00;
+  --neon-magenta: #00ff00;
+  --neon-purple: #00ff00;
+  --neon-green: #00ff00;
+  --neon-yellow: #00ff00;
+  --neon-orange: #00ff00;
+
+  --text-primary: #00ff00;
+  --text-secondary: #00cc00;
+  --text-muted: #006600;
+  --text-neon: #00ff00;
+
+  --cat-alkali: 120, 100%, 50%;
+  --cat-alkaline: 120, 100%, 50%;
+  --cat-transition: 120, 100%, 50%;
+  --cat-lanthanide: 120, 100%, 50%;
+  --cat-actinide: 120, 100%, 50%;
+  --cat-post-transition: 120, 100%, 50%;
+  --cat-metalloid: 120, 100%, 50%;
+  --cat-nonmetal: 120, 100%, 50%;
+  --cat-noble: 120, 100%, 50%;
+  --cat-unknown: 120, 100%, 50%;
+
+  --glow-cyan: 0 0 8px rgba(0, 255, 0, 0.6);
+  --glow-magenta: 0 0 8px rgba(0, 255, 0, 0.6);
+  --glow-purple: 0 0 8px rgba(0, 255, 0, 0.6);
+  --glow-green: 0 0 8px rgba(0, 255, 0, 0.6);
+  --shadow-inset: none;
+}
+
+[data-theme="high-contrast"] {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #2d2d2d;
+  --glass-bg: #1e1e1e;
+  --glass-border: #ffffff;
+  --glass-border-hover: #ff9900;
+
+  --neon-cyan: #ff9900;
+  --neon-magenta: #ff9900;
+  --neon-purple: #ff9900;
+  --neon-green: #ff9900;
+  --neon-yellow: #ff9900;
+  --neon-orange: #ff9900;
+
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #a0a0a0;
+  --text-neon: #ff9900;
+
+  --glow-cyan: none;
+  --glow-magenta: none;
+  --glow-purple: none;
+  --glow-green: none;
+  --shadow-inset: none;
+}
+
 /* Base resets & layouts */
 * {
   box-sizing: border-box;
