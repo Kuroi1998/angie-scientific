@@ -4,6 +4,7 @@ import { predictReaction } from '../../engines/chemistryEngine';
 import type { ReactionResult } from '../../engines/chemistryEngine';
 import { Stoichiometry } from './Stoichiometry';
 import { EnergyDiagram } from './EnergyDiagram';
+import { ChemicalEquation } from './ChemicalEquation';
 import { Flame, ShieldAlert, Sparkles, RefreshCw } from 'lucide-react';
 
 interface FusionCoreProps {
@@ -97,8 +98,13 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
         }
       },
         // Slot 1
-        React.createElement('div', {
+        React.createElement('button', {
+          type: 'button',
+          disabled: !selectedReactant1,
           onClick: () => setSelectedReactant1(null),
+          'aria-label': selectedReactant1
+            ? `${language === 'fr' ? 'Retirer le réactif 1' : 'Quitar el reactivo 1'}: ${selectedReactant1}`
+            : (language === 'fr' ? 'Emplacement réactif 1 vide' : 'Ranura de reactivo 1 vacía'),
           style: {
             width: '80px',
             height: '80px',
@@ -111,7 +117,8 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
             background: 'rgba(0, 0, 0, 0.4)',
             cursor: selectedReactant1 ? 'pointer' : 'default',
             boxShadow: selectedReactant1 ? 'var(--glow-cyan)' : 'none',
-            transition: 'all 0.2s'
+            transition: 'all 0.2s',
+            font: 'inherit'
           }
         },
           selectedReactant1 ? [
@@ -124,8 +131,13 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
         React.createElement('span', { style: { fontSize: '24px', fontFamily: 'var(--font-title)', color: 'var(--neon-purple)' } }, "+"),
 
         // Slot 2
-        React.createElement('div', {
+        React.createElement('button', {
+          type: 'button',
+          disabled: !selectedReactant2,
           onClick: () => setSelectedReactant2(null),
+          'aria-label': selectedReactant2
+            ? `${language === 'fr' ? 'Retirer le réactif 2' : 'Quitar el reactivo 2'}: ${selectedReactant2}`
+            : (language === 'fr' ? 'Emplacement réactif 2 vide' : 'Ranura de reactivo 2 vacía'),
           style: {
             width: '80px',
             height: '80px',
@@ -138,7 +150,8 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
             background: 'rgba(0, 0, 0, 0.4)',
             cursor: selectedReactant2 ? 'pointer' : 'default',
             boxShadow: selectedReactant2 ? 'var(--glow-magenta)' : 'none',
-            transition: 'all 0.2s'
+            transition: 'all 0.2s',
+            font: 'inherit'
           }
         },
           selectedReactant2 ? [
@@ -173,6 +186,7 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
 
     // Grid Body: Quick Selector on left, reaction details on right
     React.createElement('div', {
+      className: 'responsive-card-grid',
       style: {
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
@@ -252,6 +266,7 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
             placeholder: language === 'fr' ? 'Ex: Fe, Au, Pb...' : 'Ej: Fe, Au, Pb...',
             style: {
               flex: 1,
+              minWidth: 0,
               padding: '8px 12px',
               background: 'rgba(5, 5, 10, 0.6)',
               border: '1px solid var(--glass-border)',
@@ -307,7 +322,6 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
             
             // Equation formula
             React.createElement('div', {
-              dangerouslySetInnerHTML: { __html: reactionResult.equationHTML },
               style: {
                 fontSize: '24px',
                 fontWeight: 'bold',
@@ -316,7 +330,12 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
                 margin: '12px 0',
                 textShadow: reactionResult.stable ? '0 0 8px rgba(57, 255, 20, 0.4)' : 'none'
               }
-            }),
+            },
+              React.createElement(ChemicalEquation, {
+                reactants: reactionResult.reactants.map(r => ({ coefficient: r.coef, formula: r.symbol })),
+                products: reactionResult.products.map(p => ({ coefficient: p.coef, formula: p.symbol }))
+              })
+            ),
 
             // Compound name
             React.createElement('p', {

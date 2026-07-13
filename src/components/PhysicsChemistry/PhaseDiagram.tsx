@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { resolveCssColor } from '../../utils/resolveCssColor';
+import { resolveCssFont } from '../../utils/resolveCssFont';
 
 interface SubstanceParams {
   name: string;
@@ -49,11 +51,14 @@ export const PhaseDiagram: React.FC = () => {
   const gridCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const molecCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Sync temp and pressure limits when substance changes
+  // Sync temp and pressure limits when substance changes.
+  // `sub` is a lookup into the static `substances` map, so its fields only
+  // ever change together with `subKey` — listing them is safe and removes
+  // the exhaustive-deps warning without altering when this effect fires.
   useEffect(() => {
     setTemp(Math.round((sub.minT + sub.maxT) / 2));
     setPressure(Math.round((sub.minP + sub.maxP) / 2));
-  }, [subKey]);
+  }, [subKey, sub.minT, sub.maxT, sub.minP, sub.maxP]);
 
   // Safe reference variable for evaluation
   const getPhaseSafe = (T: number, P: number): 'solid' | 'liquid' | 'gas' | 'supercritical' => {
@@ -90,6 +95,15 @@ export const PhaseDiagram: React.FC = () => {
 
     ctx.clearRect(0, 0, w, h);
 
+    const textSecondary = resolveCssColor('var(--text-secondary)', '#8f9bb3');
+    const neonMagenta = resolveCssColor('var(--neon-magenta)', '#ff007f');
+    const neonCyan = resolveCssColor('var(--neon-cyan)', '#00f3ff');
+    const neonYellow = resolveCssColor('var(--neon-yellow)', '#ffe600');
+    const neonGreen = resolveCssColor('var(--neon-green)', '#39ff14');
+    const monoFont = resolveCssFont('9px var(--font-mono)');
+    const smallMonoFont = resolveCssFont('8px var(--font-mono)');
+    const titleFont = resolveCssFont('bold 11px var(--font-title)');
+
     const padLeft = 45;
     const padBottom = 30;
 
@@ -106,8 +120,8 @@ export const PhaseDiagram: React.FC = () => {
     ctx.stroke();
 
     // Axes labels
-    ctx.fillStyle = 'var(--text-secondary)';
-    ctx.font = '9px var(--font-mono)';
+    ctx.fillStyle = textSecondary;
+    ctx.font = monoFont;
     ctx.fillText('P (bar)', 5, 15);
     ctx.fillText('T (K)', w - 30, h - 12);
 
@@ -136,39 +150,39 @@ export const PhaseDiagram: React.FC = () => {
     // Vaporization Curve
     const k_vap = subKey === 'co2' ? 8 : 13;
     const getP_vap = (t: number) => sub.tripleP * Math.exp(k_vap * (1 - sub.tripleT / t));
-    drawCurve(sub.tripleT, sub.criticalT, getP_vap, 'var(--neon-magenta)');
+    drawCurve(sub.tripleT, sub.criticalT, getP_vap, neonMagenta);
 
     // Sublimation Curve
     const k_sub = subKey === 'co2' ? 10 : 15;
     const getP_sub = (t: number) => sub.tripleP * Math.exp(k_sub * (1 - sub.tripleT / t));
-    drawCurve(sub.minT, sub.tripleT, getP_sub, 'var(--neon-cyan)');
+    drawCurve(sub.minT, sub.tripleT, getP_sub, neonCyan);
 
     // Melting Curve
     const getP_melt = (t: number) => {
       if (subKey === 'water') return sub.tripleP - 1500 * (t - sub.tripleT);
       return sub.tripleP + 12 * (t - sub.tripleT);
     };
-    drawCurve(sub.tripleT, sub.maxT, getP_melt, 'var(--neon-yellow)');
+    drawCurve(sub.tripleT, sub.maxT, getP_melt, neonYellow);
 
     // Highlight Triple Point
     const tx = getX(sub.tripleT);
     const ty = getY(sub.tripleP);
     ctx.fillStyle = '#fff';
     ctx.beginPath(); ctx.arc(tx, ty, 4, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = 'var(--text-secondary)';
-    ctx.font = '8px var(--font-mono)';
+    ctx.fillStyle = textSecondary;
+    ctx.font = smallMonoFont;
     ctx.fillText('TRIPLE', tx + 6, ty - 2);
 
     // Highlight Critical Point
     const cx = getX(sub.criticalT);
     const cy = getY(sub.criticalP);
-    ctx.fillStyle = 'var(--neon-cyan)';
+    ctx.fillStyle = neonCyan;
     ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
     ctx.fillText('CRITICAL', cx + 6, cy - 2);
 
     // Label Regions
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.font = 'bold 11px var(--font-title)';
+    ctx.font = titleFont;
     ctx.fillText('SOLID', getX(sub.minT + 20), getY(sub.maxP - 20));
     ctx.fillText('LIQUID', getX((sub.tripleT + sub.criticalT) / 2), getY(sub.criticalP + 10));
     ctx.fillText('GAS', getX(sub.criticalT - 30), getY(sub.tripleP - 3));
@@ -178,7 +192,7 @@ export const PhaseDiagram: React.FC = () => {
     const targetX = getX(temp);
     const targetY = getY(pressure);
 
-    ctx.strokeStyle = 'var(--neon-green)';
+    ctx.strokeStyle = neonGreen;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(targetX - 8, targetY); ctx.lineTo(targetX + 8, targetY);
@@ -202,6 +216,10 @@ export const PhaseDiagram: React.FC = () => {
     let animId: number;
     const w = canvas.width;
     const h = canvas.height;
+    const neonCyan = resolveCssColor('var(--neon-cyan)', '#00f3ff');
+    const neonMagenta = resolveCssColor('var(--neon-magenta)', '#ff007f');
+    const neonYellow = resolveCssColor('var(--neon-yellow)', '#ffe600');
+    const neonGreen = resolveCssColor('var(--neon-green)', '#39ff14');
 
     // Create particles
     const pCount = 50;
@@ -236,16 +254,16 @@ export const PhaseDiagram: React.FC = () => {
         if (currentPhase === 'solid') {
           p.x = p.originX + (Math.random() - 0.5) * 1.5;
           p.y = p.originY + (Math.random() - 0.5) * 1.5;
-          ctx.fillStyle = 'var(--neon-cyan)';
-        } 
+          ctx.fillStyle = neonCyan;
+        }
         else if (currentPhase === 'liquid') {
           p.x += p.vx * 0.4;
           p.y += p.vy * 0.4;
 
           if (p.x < 6 || p.x > w - 6) p.vx *= -1;
           if (p.y < 6 || p.y > h - 6) p.vy *= -1;
-          ctx.fillStyle = 'var(--neon-magenta)';
-        } 
+          ctx.fillStyle = neonMagenta;
+        }
         else if (currentPhase === 'gas') {
           p.x += p.vx * 2.0;
           p.y += p.vy * 2.0;
@@ -254,15 +272,15 @@ export const PhaseDiagram: React.FC = () => {
           if (p.x > w - 4) { p.x = w - 4; p.vx *= -1; }
           if (p.y < 4) { p.y = 4; p.vy *= -1; }
           if (p.y > h - 4) { p.y = h - 4; p.vy *= -1; }
-          ctx.fillStyle = 'var(--neon-yellow)';
-        } 
+          ctx.fillStyle = neonYellow;
+        }
         else {
           p.x += p.vx * 1.8;
           p.y += p.vy * 1.8;
 
           if (p.x < 5 || p.x > w - 5) p.vx *= -1;
           if (p.y < 5 || p.y > h - 5) p.vy *= -1;
-          ctx.fillStyle = 'var(--neon-green)';
+          ctx.fillStyle = neonGreen;
         }
 
         ctx.beginPath();
@@ -396,6 +414,7 @@ export const PhaseDiagram: React.FC = () => {
           width: 250,
           height: 180,
           onClick: handleGridClick,
+          'aria-label': `Diagramme de phase (P-T). Point actuel : ${temp} K, ${pressure} bar. Utilisez les curseurs Température et Pression ci-dessus pour ajuster au clavier.`,
           style: { background: '#000', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '4px', cursor: 'crosshair' }
         })
       ),
@@ -409,6 +428,8 @@ export const PhaseDiagram: React.FC = () => {
           ref: molecCanvasRef,
           width: 180,
           height: 180,
+          role: 'img',
+          'aria-label': `Structure moléculaire animée: état ${currentPhase}`,
           style: { border: '1px solid rgba(255,255,255,0.05)', borderRadius: '4px' }
         })
       )

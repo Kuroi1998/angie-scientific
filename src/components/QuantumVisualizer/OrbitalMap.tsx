@@ -142,6 +142,8 @@ export const OrbitalMap: React.FC = () => {
     React.createElement('div', { style: { position: 'relative' } },
       React.createElement('canvas', {
         ref: canvasRef,
+        role: 'img',
+        'aria-label': `Carte de densité de probabilité de l'orbitale ${selectedOrbital.label}: ${getFormula(selectedOrbital.label)}`,
         style: {
           display: 'block',
           borderRadius: '4px',

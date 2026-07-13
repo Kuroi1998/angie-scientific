@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 import fr from '../i18n/fr.json';
 import es from '../i18n/es.json';
+import { useLocalStorageState } from './useLocalStorageState';
 
 export type Language = 'fr' | 'es';
 type Translations = Record<string, string>;
@@ -16,18 +17,17 @@ const translations: Record<Language, Translations> = {
   es: es as Translations,
 };
 
+const isLanguageOrNull = (raw: unknown): raw is Language | null =>
+  raw === 'fr' || raw === 'es' || raw === null;
+
 export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language | null>(() => {
-    const saved = localStorage.getItem('angie_sci_lang');
-    return (saved === 'fr' || saved === 'es') ? (saved as Language) : null;
+  const [language, setLanguage] = useLocalStorageState<Language | null>('language', null, {
+    validate: isLanguageOrNull,
+    legacyKey: 'angie_sci_lang',
+    parseLegacy: (raw) => (raw === 'fr' || raw === 'es' ? raw : undefined),
   });
-
-  const setLanguage = (lang: Language) => {
-    localStorage.setItem('angie_sci_lang', lang);
-    setLanguageState(lang);
-  };
 
   const t = (key: string): string => {
     const currentLang = language || 'fr'; // fallback if null

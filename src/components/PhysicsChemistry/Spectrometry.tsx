@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { resolveCssColor } from '../../utils/resolveCssColor';
+import { resolveCssFont } from '../../utils/resolveCssFont';
 
 interface EmissionLine {
   wl: number; // wavelength in nm
@@ -92,6 +94,9 @@ export const Spectrometry: React.FC = () => {
 
     const w = canvas.width;
     const h = canvas.height;
+    const textSecondary = resolveCssColor('var(--text-secondary)', '#8f9bb3');
+    const smallMonoFont = resolveCssFont('8px var(--font-mono)');
+    const monoFont = resolveCssFont('9px var(--font-mono)');
 
     ctx.clearRect(0, 0, w, h);
 
@@ -130,14 +135,14 @@ export const Spectrometry: React.FC = () => {
       ctx.shadowBlur = 0;
 
       // Label wavelength
-      ctx.fillStyle = 'var(--text-secondary)';
-      ctx.font = '8px var(--font-mono)';
+      ctx.fillStyle = textSecondary;
+      ctx.font = smallMonoFont;
       ctx.fillText(`${line.wl.toFixed(1)}`, x - 10, 102);
     });
 
     // Draw scale ticks
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.font = '9px var(--font-mono)';
+    ctx.font = monoFont;
     for (let wl = 400; wl <= 700; wl += 50) {
       const x = padding + ((wl - minWl) / (maxWl - minWl)) * spectrumW;
       ctx.fillRect(x, 42, 1, 4);
@@ -155,6 +160,10 @@ export const Spectrometry: React.FC = () => {
 
     const w = canvas.width;
     const h = canvas.height;
+    const textSecondary = resolveCssColor('var(--text-secondary)', '#8f9bb3');
+    const neonMagenta = resolveCssColor('var(--neon-magenta)', '#ff007f');
+    const monoFont = resolveCssFont('9px var(--font-mono)');
+    const smallMonoFont = resolveCssFont('8px var(--font-mono)');
 
     ctx.clearRect(0, 0, w, h);
 
@@ -179,8 +188,8 @@ export const Spectrometry: React.FC = () => {
     ctx.lineTo(w - 10, h - padBottom);
     ctx.stroke();
 
-    ctx.fillStyle = 'var(--text-secondary)';
-    ctx.font = '9px var(--font-mono)';
+    ctx.fillStyle = textSecondary;
+    ctx.font = monoFont;
     ctx.fillText('TRANS %', 2, 15);
     ctx.fillText('WAVENUMBER (cm⁻¹)', w - 90, h - 8);
 
@@ -191,7 +200,7 @@ export const Spectrometry: React.FC = () => {
 
     // Compute curve path
     ctx.beginPath();
-    ctx.strokeStyle = 'var(--neon-magenta)';
+    ctx.strokeStyle = neonMagenta;
     ctx.lineWidth = 2;
 
     const getX = (wn: number) => padLeft + ((minWn - wn) / (minWn - maxWn)) * plotW;
@@ -221,8 +230,8 @@ export const Spectrometry: React.FC = () => {
     ctx.stroke();
 
     // Label peaks
-    ctx.fillStyle = 'var(--text-secondary)';
-    ctx.font = '8px var(--font-mono)';
+    ctx.fillStyle = textSecondary;
+    ctx.font = smallMonoFont;
     data.dips.forEach(dip => {
       const cx = getX(dip);
       ctx.fillText(`${dip} cm⁻¹`, cx - 20, h - padBottom - 10);
@@ -277,6 +286,8 @@ export const Spectrometry: React.FC = () => {
         ref: emissionCanvasRef,
         width: 450,
         height: 120,
+        role: 'img',
+        'aria-label': `Spectre d'émission: ${emissionDb[elemKey].name}, raies à ${emissionDb[elemKey].lines.map(l => l.wl.toFixed(1)).join(', ')} nm`,
         style: { width: '100%', maxWidth: '450px', background: '#000', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '4px' }
       })
     ),
@@ -312,6 +323,8 @@ export const Spectrometry: React.FC = () => {
         ref: absorptionCanvasRef,
         width: 450,
         height: 150,
+        role: 'img',
+        'aria-label': `Spectre d'absorption IR: ${absorptionDb[moleculeKey].name}, pics à ${absorptionDb[moleculeKey].dips.join(', ')} cm⁻¹`,
         style: { width: '100%', maxWidth: '450px', background: '#000', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '4px' }
       })
     )

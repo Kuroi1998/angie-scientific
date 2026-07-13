@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { resolveCssColor } from '../../utils/resolveCssColor';
+import { resolveCssFont } from '../../utils/resolveCssFont';
 
 interface EnergyDiagramProps {
   dH: number; // Enthalpy in kJ/mol
@@ -23,6 +25,12 @@ export const EnergyDiagram: React.FC<EnergyDiagramProps> = ({ dH }) => {
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    const textSecondary = resolveCssColor('var(--text-secondary)', '#8f9bb3');
+    const neonCyan = resolveCssColor('var(--neon-cyan)', '#00f3ff');
+    const neonMagenta = resolveCssColor('var(--neon-magenta)', '#ff007f');
+    const titleFont = resolveCssFont('10px var(--font-title)');
+    const monoFont = resolveCssFont('9px var(--font-mono)');
 
     let animationId: number;
 
@@ -54,8 +62,8 @@ export const EnergyDiagram: React.FC<EnergyDiagramProps> = ({ dH }) => {
       ctx.stroke();
 
       // Axis Labels
-      ctx.fillStyle = 'var(--text-secondary)';
-      ctx.font = '10px var(--font-title)';
+      ctx.fillStyle = textSecondary;
+      ctx.font = titleFont;
       ctx.fillText('ENERGY', 10, 15);
       ctx.fillText('COORDINATE', w - 90, h - 12);
 
@@ -71,7 +79,7 @@ export const EnergyDiagram: React.FC<EnergyDiagramProps> = ({ dH }) => {
       ctx.bezierCurveTo(w * 0.25, pR.y, w * 0.35, pTS.y, pTS.x, pTS.y);
       ctx.bezierCurveTo(w * 0.65, pTS.y, w * 0.75, pP.y, pP.x, pP.y);
       
-      ctx.strokeStyle = dH < 0 ? 'var(--neon-cyan)' : 'var(--neon-magenta)';
+      ctx.strokeStyle = dH < 0 ? neonCyan : neonMagenta;
       ctx.lineWidth = 3;
       ctx.stroke();
 
@@ -82,7 +90,7 @@ export const EnergyDiagram: React.FC<EnergyDiagramProps> = ({ dH }) => {
 
       // Label Points
       ctx.fillStyle = '#fff';
-      ctx.font = '9px var(--font-mono)';
+      ctx.font = monoFont;
       ctx.fillText('REACTANTS', pR.x - 20, pR.y - 12);
       ctx.fillText('PRODUCTS', pP.x - 20, pP.y - 12);
       ctx.fillText('T.S.', pTS.x - 8, pTS.y - 12);
@@ -100,8 +108,8 @@ export const EnergyDiagram: React.FC<EnergyDiagramProps> = ({ dH }) => {
       ctx.setLineDash([]); // Reset dash
 
       // Draw Enthalpy ΔH Arrow
-      ctx.strokeStyle = 'var(--neon-magenta)';
-      ctx.fillStyle = 'var(--neon-magenta)';
+      ctx.strokeStyle = neonMagenta;
+      ctx.fillStyle = neonMagenta;
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(pP.x + 20, pR.y);
@@ -117,7 +125,7 @@ export const EnergyDiagram: React.FC<EnergyDiagramProps> = ({ dH }) => {
       ctx.fill();
 
       // Label ΔH value next to arrow
-      ctx.fillStyle = 'var(--neon-magenta)';
+      ctx.fillStyle = neonMagenta;
       ctx.fillText(`ΔH = ${dH} kJ`, pP.x + 28, (pR.y + pP.y) / 2 + 3);
 
       // 4. Animation Ball along Bezier Curve
@@ -154,7 +162,7 @@ export const EnergyDiagram: React.FC<EnergyDiagramProps> = ({ dH }) => {
         // Draw rolling particle
         const grad = ctx.createRadialGradient(bx, by, 0, bx, by, 8);
         grad.addColorStop(0, '#fff');
-        grad.addColorStop(0.3, dH < 0 ? 'var(--neon-cyan)' : 'var(--neon-magenta)');
+        grad.addColorStop(0.3, dH < 0 ? neonCyan : neonMagenta);
         grad.addColorStop(1, 'rgba(0,0,0,0)');
 
         ctx.fillStyle = grad;
@@ -206,6 +214,8 @@ export const EnergyDiagram: React.FC<EnergyDiagramProps> = ({ dH }) => {
       ref: canvasRef,
       width: 450,
       height: 250,
+      role: 'img',
+      'aria-label': `${t('fusion.energyDiagram')}: ΔH = ${dH} kJ, réaction ${dH < 0 ? 'exothermique' : 'endothermique'}`,
       style: {
         width: '100%',
         maxWidth: '450px',

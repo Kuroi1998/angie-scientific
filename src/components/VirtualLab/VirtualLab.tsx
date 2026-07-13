@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLocalStorageState } from '../../hooks/useLocalStorageState';
 import { ShieldAlert, Play, Beaker, CheckCircle } from 'lucide-react';
+import { resolveCssColor } from '../../utils/resolveCssColor';
+
+const isStringArray = (raw: unknown): raw is string[] =>
+  Array.isArray(raw) && raw.every(item => typeof item === 'string');
 
 interface Experiment {
   id: string;
@@ -72,8 +77,21 @@ export const VirtualLab: React.FC = () => {
   const [progress, setProgress] = useState<number>(0); // 0 to 1
   const [completed, setCompleted] = useState<boolean>(false);
 
+  // Business progress: which experiments the user has successfully run at least once.
+  const [completedExperiments, setCompletedExperiments] = useLocalStorageState<string[]>(
+    'virtualLabCompletedExperiments',
+    [],
+    { validate: isStringArray }
+  );
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const exp = EXPERIMENTS.find(e => e.id === selectedExpId) || EXPERIMENTS[0];
+
+  // Record completed experiments for persistence across reloads.
+  useEffect(() => {
+    if (!completed) return;
+    setCompletedExperiments(prev => prev.includes(selectedExpId) ? prev : [...prev, selectedExpId]);
+  }, [completed, selectedExpId, setCompletedExperiments]);
 
   // Reset progress when switching experiments
   useEffect(() => {
@@ -119,6 +137,7 @@ export const VirtualLab: React.FC = () => {
 
     const w = canvas.width;
     const h = canvas.height;
+    const neonOrange = resolveCssColor('var(--neon-orange)', '#ff6c00');
     ctx.clearRect(0, 0, w, h);
 
     const bx = w / 2;
@@ -246,7 +265,7 @@ export const VirtualLab: React.FC = () => {
 
       // Draw Sodium chunk at bottom
       ctx.fillStyle = isRunning ? `rgb(255, 230, ${Math.round(200 * (1-progress))})` : 'rgba(160, 170, 180, 1)';
-      ctx.strokeStyle = isRunning ? 'var(--neon-orange)' : 'rgba(100, 110, 120, 1)';
+      ctx.strokeStyle = isRunning ? neonOrange : 'rgba(100, 110, 120, 1)';
       ctx.lineWidth = 1.5;
 
       if (isLiquid) {
@@ -341,8 +360,15 @@ export const VirtualLab: React.FC = () => {
   const showCorrosiveRisk = selectedExpId === 'neutralization' && (m1 >= 15 || m2 >= 15);
   const showToxicityRisk = selectedExpId === 'nacl' && !completed;
 
+  const expName = language === 'fr' ? exp.nameFR : exp.nameES;
+  const liveStatusMessage = isRunning
+    ? (language === 'fr' ? `Réaction en cours : ${expName}.` : `Reacción en curso: ${expName}.`)
+    : completed
+      ? (language === 'fr' ? `Expérience terminée : ${expName} complétée avec succès.` : `Experimento completado: ${expName} completado con éxito.`)
+      : '';
+
   return React.createElement('div', {
-    className: 'virtual-lab-container animate-fade-in',
+    className: 'virtual-lab-container responsive-card-grid animate-fade-in',
     style: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
@@ -350,6 +376,23 @@ export const VirtualLab: React.FC = () => {
       width: '100%'
     }
   },
+    // Screen-reader announcement of experiment progress/outcome
+    React.createElement('div', {
+      role: 'status',
+      'aria-live': 'polite',
+      style: {
+        position: 'absolute',
+        width: '1px',
+        height: '1px',
+        padding: 0,
+        margin: '-1px',
+        overflow: 'hidden',
+        clip: 'rect(0, 0, 0, 0)',
+        whiteSpace: 'nowrap',
+        border: 0
+      }
+    }, liveStatusMessage),
+
     // Left controls column
     React.createElement('div', {
       style: {
@@ -393,7 +436,12 @@ export const VirtualLab: React.FC = () => {
               }
             },
               React.createElement(Beaker, { size: 13, style: { color: active ? 'var(--neon-cyan)' : 'inherit' } }),
-              language === 'fr' ? e.nameFR : e.nameES
+              React.createElement('span', { style: { flex: 1 } }, language === 'fr' ? e.nameFR : e.nameES),
+              completedExperiments.includes(e.id) && React.createElement(CheckCircle, {
+                size: 13,
+                'aria-label': language === 'fr' ? 'Expérience déjà réalisée' : 'Experimento ya realizado',
+                style: { color: 'var(--neon-green)', flexShrink: 0 }
+              })
             );
           })
         )
@@ -533,6 +581,8 @@ export const VirtualLab: React.FC = () => {
           ref: canvasRef,
           width: 250,
           height: 230,
+          role: 'img',
+          'aria-label': `${expName}: ${isRunning ? (language === 'fr' ? 'réaction en cours' : 'reacción en curso') : completed ? (language === 'fr' ? 'terminée' : 'completado') : (language === 'fr' ? 'en attente' : 'en espera')}`,
           style: { background: 'transparent' }
         }),
 

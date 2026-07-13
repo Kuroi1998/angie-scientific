@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { resolveCssColor } from '../../utils/resolveCssColor';
+import { resolveCssFont } from '../../utils/resolveCssFont';
 
 export const Heisenberg: React.FC = () => {
   const { t } = useLanguage();
@@ -22,9 +24,11 @@ export const Heisenberg: React.FC = () => {
     const h = sCanvas.height;
     const midX = w / 2;
     const midY = h / 2;
+    const neonCyan = resolveCssColor('var(--neon-cyan)', '#00f3ff');
+    const monoFont = resolveCssFont('9px var(--font-mono)');
 
     sCtx.clearRect(0, 0, w, h);
-    
+
     // Draw grid
     sCtx.strokeStyle = 'rgba(0, 243, 255, 0.02)';
     sCtx.lineWidth = 1;
@@ -57,7 +61,7 @@ export const Heisenberg: React.FC = () => {
 
     // Draw wave oscillation inside envelope: psi(x) = envelope * cos(k * x)
     sCtx.beginPath();
-    sCtx.strokeStyle = 'var(--neon-cyan)';
+    sCtx.strokeStyle = neonCyan;
     sCtx.lineWidth = 2;
     const kSpace = 0.25; // wave number (frequency of oscillation)
     for (let x = 0; x < w; x++) {
@@ -70,7 +74,7 @@ export const Heisenberg: React.FC = () => {
     sCtx.stroke();
 
     // Label uncertainty bounds
-    sCtx.strokeStyle = 'var(--neon-cyan)';
+    sCtx.strokeStyle = neonCyan;
     sCtx.lineWidth = 1.5;
     sCtx.beginPath();
     sCtx.moveTo(midX - dx, midY + 45);
@@ -81,8 +85,8 @@ export const Heisenberg: React.FC = () => {
     sCtx.moveTo(midX - dx, midY + 40); sCtx.lineTo(midX - dx, midY + 50);
     sCtx.moveTo(midX + dx, midY + 40); sCtx.lineTo(midX + dx, midY + 50);
     sCtx.stroke();
-    sCtx.fillStyle = 'var(--neon-cyan)';
-    sCtx.font = '9px var(--font-mono)';
+    sCtx.fillStyle = neonCyan;
+    sCtx.font = monoFont;
     sCtx.fillText('Δx', midX - 5, midY + 38);
 
   }, [dx]);
@@ -98,6 +102,8 @@ export const Heisenberg: React.FC = () => {
     const h = mCanvas.height;
     const midX = w / 2;
     const midY = h / 2;
+    const neonMagenta = resolveCssColor('var(--neon-magenta)', '#ff007f');
+    const monoFont = resolveCssFont('9px var(--font-mono)');
 
     mCtx.clearRect(0, 0, w, h);
 
@@ -133,7 +139,7 @@ export const Heisenberg: React.FC = () => {
 
     // Draw momentum wave packet (high-frequency wave representing complex momentum phase)
     mCtx.beginPath();
-    mCtx.strokeStyle = 'var(--neon-magenta)';
+    mCtx.strokeStyle = neonMagenta;
     mCtx.lineWidth = 2;
     // Frequency increases when momentum packet is wider
     const kMom = 0.03 * dp;
@@ -147,7 +153,7 @@ export const Heisenberg: React.FC = () => {
     mCtx.stroke();
 
     // Label dp bounds
-    mCtx.strokeStyle = 'var(--neon-magenta)';
+    mCtx.strokeStyle = neonMagenta;
     mCtx.lineWidth = 1.5;
     mCtx.beginPath();
     mCtx.moveTo(midX - dp, midY + 45);
@@ -157,8 +163,8 @@ export const Heisenberg: React.FC = () => {
     mCtx.moveTo(midX - dp, midY + 40); mCtx.lineTo(midX - dp, midY + 50);
     mCtx.moveTo(midX + dp, midY + 40); mCtx.lineTo(midX + dp, midY + 50);
     mCtx.stroke();
-    mCtx.fillStyle = 'var(--neon-magenta)';
-    mCtx.font = '9px var(--font-mono)';
+    mCtx.fillStyle = neonMagenta;
+    mCtx.font = monoFont;
     mCtx.fillText('Δp', midX - 5, midY + 38);
 
   }, [dp]);
@@ -222,6 +228,8 @@ export const Heisenberg: React.FC = () => {
           ref: spaceCanvasRef,
           width: 250,
           height: 150,
+          role: 'img',
+          'aria-label': `${t('quantum.wavePacket')}: Δx = ${dx} pm`,
           style: { background: 'rgba(0,0,0,0.3)', border: '1px solid var(--glass-border)', borderRadius: '4px' }
         })
       ),
@@ -235,6 +243,8 @@ export const Heisenberg: React.FC = () => {
           ref: momentumCanvasRef,
           width: 250,
           height: 150,
+          role: 'img',
+          'aria-label': `${t('quantum.fourier')}: Δp = ${dp.toFixed(1)} N·s × 10⁻²⁴`,
           style: { background: 'rgba(0,0,0,0.3)', border: '1px solid var(--glass-border)', borderRadius: '4px' }
         })
       )

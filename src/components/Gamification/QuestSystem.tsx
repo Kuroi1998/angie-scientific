@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLocalStorageState } from '../../hooks/useLocalStorageState';
 import { Trophy, Award, Target, Sparkles, CheckSquare } from 'lucide-react';
 
 interface Quest {
@@ -60,49 +61,37 @@ const QUESTS: Quest[] = [
   }
 ];
 
+const isStringArray = (raw: unknown): raw is string[] =>
+  Array.isArray(raw) && raw.every(item => typeof item === 'string');
+
 export const QuestSystem: React.FC = () => {
   const { language } = useLanguage();
-  const [completedQuests, setCompletedQuests] = useState<string[]>([]);
-  const [totalPoints, setTotalPoints] = useState<number>(0);
-
-  // Load state from localStorage on init
-  useEffect(() => {
-    const saved = localStorage.getItem('angie_scientific_quests_completed');
-    if (saved) {
-      try {
-        const ids = JSON.parse(saved) as string[];
-        setCompletedQuests(ids);
-        
-        // Sum points
-        let sum = 0;
-        ids.forEach(id => {
-          const q = QUESTS.find(item => item.id === id);
-          if (q) sum += q.points;
-        });
-        setTotalPoints(sum);
-      } catch (err) {
-        console.error(err);
-      }
+  const [completedQuests, setCompletedQuests] = useLocalStorageState<string[]>(
+    'questProgress',
+    [],
+    {
+      validate: isStringArray,
+      legacyKey: 'angie_scientific_quests_completed',
+      parseLegacy: (raw) => {
+        try {
+          const parsed: unknown = JSON.parse(raw);
+          return isStringArray(parsed) ? parsed : undefined;
+        } catch {
+          return undefined;
+        }
+      },
     }
-  }, []);
+  );
+
+  const totalPoints = completedQuests.reduce((sum, id) => {
+    const q = QUESTS.find(item => item.id === id);
+    return q ? sum + q.points : sum;
+  }, 0);
 
   const toggleQuest = (id: string) => {
-    let next: string[];
-    if (completedQuests.includes(id)) {
-      next = completedQuests.filter(item => item !== id);
-    } else {
-      next = [...completedQuests, id];
-    }
-    setCompletedQuests(next);
-    localStorage.setItem('angie_scientific_quests_completed', JSON.stringify(next));
-
-    // Recalculate points
-    let sum = 0;
-    next.forEach(nid => {
-      const q = QUESTS.find(item => item.id === nid);
-      if (q) sum += q.points;
-    });
-    setTotalPoints(sum);
+    setCompletedQuests(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
   };
 
   const getLevelColor = (level: string) => {
@@ -123,7 +112,7 @@ export const QuestSystem: React.FC = () => {
   ];
 
   return React.createElement('div', {
-    className: 'quest-system-container animate-fade-in',
+    className: 'quest-system-container responsive-card-grid animate-fade-in',
     style: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -159,10 +148,14 @@ export const QuestSystem: React.FC = () => {
         React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
           QUESTS.map(q => {
             const isCompleted = completedQuests.includes(q.id);
-            return React.createElement('div', {
+            return React.createElement('button', {
               key: q.id,
+              type: 'button',
+              role: 'checkbox',
+              'aria-checked': isCompleted,
               onClick: () => toggleQuest(q.id),
               style: {
+                width: '100%',
                 padding: '12px',
                 background: isCompleted ? 'rgba(0, 243, 255, 0.03)' : 'rgba(255,255,255,0.01)',
                 border: `1px solid ${isCompleted ? 'var(--neon-cyan)' : 'var(--glass-border)'}`,
@@ -171,11 +164,15 @@ export const QuestSystem: React.FC = () => {
                 transition: 'all 0.2s',
                 display: 'flex',
                 gap: '12px',
-                alignItems: 'flex-start'
+                alignItems: 'flex-start',
+                textAlign: 'left',
+                font: 'inherit',
+                color: 'inherit'
               }
             },
               // Glowing checkmark checkbox
               React.createElement('div', {
+                'aria-hidden': true,
                 style: {
                   width: '18px',
                   height: '18px',
@@ -186,7 +183,8 @@ export const QuestSystem: React.FC = () => {
                   justifyContent: 'center',
                   background: isCompleted ? 'rgba(0, 243, 255, 0.1)' : 'transparent',
                   color: 'var(--neon-cyan)',
-                  marginTop: '2px'
+                  marginTop: '2px',
+                  flexShrink: 0
                 }
               },
                 isCompleted && React.createElement(CheckSquare, { size: 12 })

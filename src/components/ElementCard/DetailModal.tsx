@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 import type { ElementType } from '../PeriodicTable/TableGrid';
 import { AtomModelCanvas } from './AtomModelCanvas';
@@ -15,11 +15,35 @@ interface DetailModalProps {
 const NOBLE_GASES = ['He', 'Ne', 'Ar', 'Kr', 'Xe', 'Rn', 'Og'];
 
 type TabType = 'general' | 'atomic' | 'quantum' | 'history' | 'bonds';
+const TITLE_ID = 'element-detail-modal-title';
 
 export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAddToFusion }) => {
   const { language, t } = useLanguage();
   const isNobleGas = NOBLE_GASES.includes(element.s);
   const [activeTab, setActiveTab] = useState<TabType>('general');
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  // Keeps the effect below mount/unmount-only (no re-subscribing on every parent
+  // render, since onClose is a fresh closure each time) while still always
+  // calling the latest onClose.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  // Keyboard: close on Escape; focus management: focus the close button on open,
+  // restore focus to whatever triggered the modal when it unmounts.
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCloseRef.current();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, []);
 
   // Map category to color
   const getCategoryColor = (cat: string) => {
@@ -71,6 +95,9 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAd
   },
     React.createElement('div', {
       className: 'glass-panel modal-anim scanline-container',
+      role: 'dialog',
+      'aria-modal': true,
+      'aria-labelledby': TITLE_ID,
       style: {
         width: '100%',
         maxWidth: '850px',
@@ -114,7 +141,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAd
             React.createElement('span', { style: { fontSize: '24px', fontWeight: '900', fontFamily: 'var(--font-title)', color: '#fff', lineHeight: '1', textShadow: `0 0 8px ${catColor}` } }, element.s)
           ),
           React.createElement('div', null,
-            React.createElement('h2', { style: { fontFamily: 'var(--font-title)', fontSize: '24px', fontWeight: '700', textTransform: 'uppercase', color: '#fff', letterSpacing: '1px' } }, name),
+            React.createElement('h2', { id: TITLE_ID, style: { fontFamily: 'var(--font-title)', fontSize: '24px', fontWeight: '700', textTransform: 'uppercase', color: '#fff', letterSpacing: '1px' } }, name),
             React.createElement('p', { style: { fontSize: '11px', fontFamily: 'var(--font-mono)', color: catColor, textTransform: 'uppercase', letterSpacing: '2px' } }, element.cat.replace('-', ' '))
           )
         ),
@@ -142,7 +169,10 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAd
             }
           }, '⚡ FUSION'),
           React.createElement('button', {
+            ref: closeButtonRef,
+            type: 'button',
             onClick: onClose,
+            'aria-label': language === 'fr' ? 'Fermer la fiche élément' : 'Cerrar la ficha del elemento',
             style: {
               background: 'rgba(255,255,255,0.02)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -165,6 +195,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAd
 
       // Modal Grid Body
       React.createElement('div', {
+        className: 'element-modal-grid',
         style: {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
@@ -179,49 +210,79 @@ export const DetailModal: React.FC<DetailModalProps> = ({ element, onClose, onAd
         React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '16px' } },
           // Tab Buttons
           React.createElement('div', {
+            role: 'tablist',
+            'aria-label': language === 'fr' ? 'Sections de la fiche élément' : 'Secciones de la ficha del elemento',
             style: {
               display: 'flex',
               borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
               gap: '8px'
             }
           },
-            ([
-              { id: 'general', label: t('element.general'), icon: Info },
-              { id: 'atomic', label: t('element.atomic'), icon: Layers },
-              { id: 'quantum', label: t('element.quantum'), icon: Shield },
-              // Hide Bonds tab for noble gases — they don't form covalent bonds
-              ...(isNobleGas ? [] : [{ id: 'bonds', label: language === 'fr' ? 'Liaisons' : 'Enlaces', icon: GitCommit }]),
-              { id: 'history', label: t('element.history'), icon: HelpCircle }
-            ] as { id: TabType; label: string; icon: React.ElementType }[]).map(tab => {
-              const active = activeTab === tab.id;
-              const Icon = tab.icon;
-              return React.createElement('button', {
-                key: tab.id,
-                onClick: () => setActiveTab(tab.id),
-                style: {
-                  padding: '8px 12px',
-                  background: 'transparent',
-                  border: 'none',
-                  borderBottom: active ? `2px solid ${catColor}` : '2px solid transparent',
-                  color: active ? '#fff' : 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontFamily: 'var(--font-title)',
-                  fontSize: '11px',
-                  fontWeight: active ? 'bold' : 'normal',
-                  transition: 'all 0.2s'
-                }
-              },
-                React.createElement(Icon, { size: 12, style: { color: active ? catColor : 'inherit' } }),
-                tab.label
-              );
-            })
+            (() => {
+              const tabs = ([
+                { id: 'general', label: t('element.general'), icon: Info },
+                { id: 'atomic', label: t('element.atomic'), icon: Layers },
+                { id: 'quantum', label: t('element.quantum'), icon: Shield },
+                // Hide Bonds tab for noble gases — they don't form covalent bonds
+                ...(isNobleGas ? [] : [{ id: 'bonds', label: language === 'fr' ? 'Liaisons' : 'Enlaces', icon: GitCommit }]),
+                { id: 'history', label: t('element.history'), icon: HelpCircle }
+              ] as { id: TabType; label: string; icon: React.ElementType }[]);
+
+              const focusTabAt = (index: number) => {
+                const wrapped = (index + tabs.length) % tabs.length;
+                const nextTab = tabs[wrapped];
+                setActiveTab(nextTab.id);
+                requestAnimationFrame(() => {
+                  document.getElementById(`element-tab-${nextTab.id}`)?.focus();
+                });
+              };
+
+              return tabs.map((tab, i) => {
+                const active = activeTab === tab.id;
+                const Icon = tab.icon;
+                return React.createElement('button', {
+                  key: tab.id,
+                  id: `element-tab-${tab.id}`,
+                  role: 'tab',
+                  type: 'button',
+                  'aria-selected': active,
+                  'aria-controls': `element-tabpanel-${tab.id}`,
+                  tabIndex: active ? 0 : -1,
+                  onClick: () => setActiveTab(tab.id),
+                  onKeyDown: (e: React.KeyboardEvent) => {
+                    if (e.key === 'ArrowRight') { e.preventDefault(); focusTabAt(i + 1); }
+                    else if (e.key === 'ArrowLeft') { e.preventDefault(); focusTabAt(i - 1); }
+                  },
+                  style: {
+                    padding: '8px 12px',
+                    background: 'transparent',
+                    border: 'none',
+                    borderBottom: active ? `2px solid ${catColor}` : '2px solid transparent',
+                    color: active ? '#fff' : 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontFamily: 'var(--font-title)',
+                    fontSize: '11px',
+                    fontWeight: active ? 'bold' : 'normal',
+                    transition: 'all 0.2s'
+                  }
+                },
+                  React.createElement(Icon, { size: 12, style: { color: active ? catColor : 'inherit' } }),
+                  tab.label
+                );
+              });
+            })()
           ),
 
           // Tab Content
-          React.createElement('div', { style: { flex: '1', minHeight: '220px' } },
+          React.createElement('div', {
+            role: 'tabpanel',
+            id: `element-tabpanel-${activeTab}`,
+            'aria-labelledby': `element-tab-${activeTab}`,
+            style: { flex: '1', minHeight: '220px' }
+          },
             activeTab === 'general' && React.createElement('div', { className: 'tab-content', style: { display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px', fontFamily: 'var(--font-mono)' } },
               React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed rgba(255,255,255,0.05)', paddingBottom: '6px' } },
                 React.createElement('span', { style: { color: 'var(--text-secondary)' } }, t('element.state')),
