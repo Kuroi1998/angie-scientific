@@ -70,14 +70,12 @@ export const VirtualLab: React.FC = () => {
   const [press, setPress] = useState<number>(1);   // atm
   const [m1, setM1] = useState<number>(5);       // mass reactant 1 (g)
   const [m2, setM2] = useState<number>(5);       // mass reactant 2 (g)
-  const [hasIndicator, setHasIndicator] = useState<boolean>(false); // only for neutralization
+  const [hasIndicator, setHasIndicator] = useState<boolean>(false);
 
-  // Simulation play state
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number>(0); // 0 to 1
+  const [progress, setProgress] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
 
-  // Business progress: which experiments the user has successfully run at least once.
   const [completedExperiments, setCompletedExperiments] = useLocalStorageState<string[]>(
     'virtualLabCompletedExperiments',
     [],
@@ -87,13 +85,11 @@ export const VirtualLab: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const exp = EXPERIMENTS.find(e => e.id === selectedExpId) || EXPERIMENTS[0];
 
-  // Record completed experiments for persistence across reloads.
   useEffect(() => {
     if (!completed) return;
     setCompletedExperiments(prev => prev.includes(selectedExpId) ? prev : [...prev, selectedExpId]);
   }, [completed, selectedExpId, setCompletedExperiments]);
 
-  // Reset progress when switching experiments
   useEffect(() => {
     setIsRunning(false);
     setProgress(0);
@@ -105,12 +101,11 @@ export const VirtualLab: React.FC = () => {
     setHasIndicator(false);
   }, [selectedExpId, exp]);
 
-  // Animation Loop
   useEffect(() => {
     if (!isRunning) return;
     let animId = 0;
     const start = Date.now();
-    const duration = selectedExpId === 'h2o' ? 1000 : 3000; // Water synthesis is fast/explosive!
+    const duration = selectedExpId === 'h2o' ? 1000 : 3000;
 
     const tick = () => {
       const elapsed = Date.now() - start;
@@ -128,7 +123,6 @@ export const VirtualLab: React.FC = () => {
     return () => cancelAnimationFrame(animId);
   }, [isRunning, selectedExpId]);
 
-  // Canvas drawing effect
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -142,10 +136,9 @@ export const VirtualLab: React.FC = () => {
 
     const bx = w / 2;
     const by = h / 2 + 30;
-    const bw = 100; // beaker width
-    const bh = 140; // beaker height
+    const bw = 100;
+    const bh = 140;
 
-    // Draw Beaker Glass Frame
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
     ctx.lineWidth = 4;
     ctx.beginPath();
@@ -156,7 +149,6 @@ export const VirtualLab: React.FC = () => {
     ctx.lineTo(bx + bw / 2, by - bh);
     ctx.stroke();
 
-    // Draw graduation lines on beaker
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
     ctx.lineWidth = 1.5;
     for (let i = 1; i <= 4; i++) {
@@ -167,12 +159,9 @@ export const VirtualLab: React.FC = () => {
       ctx.stroke();
     }
 
-    // Render contents based on selected experiment and progress
     if (selectedExpId === 'h2o') {
-      // GAS PHASE (H2 & O2)
-      // Draw unreacted floating particles (moving randomly)
       if (!completed) {
-        ctx.fillStyle = 'rgba(0, 243, 255, 0.6)'; // H2
+        ctx.fillStyle = 'rgba(0, 243, 255, 0.6)';
         const pCount = Math.round(m1 * 3);
         for (let i = 0; i < pCount; i++) {
           const px = bx - bw / 2 + 10 + (Math.sin(Date.now() * 0.005 + i) * 0.5 + 0.5) * (bw - 20);
@@ -182,7 +171,7 @@ export const VirtualLab: React.FC = () => {
           ctx.fill();
         }
 
-        ctx.fillStyle = 'rgba(255, 0, 127, 0.6)'; // O2
+        ctx.fillStyle = 'rgba(255, 0, 127, 0.6)';
         const oCount = Math.round(m2 * 2);
         for (let i = 0; i < oCount; i++) {
           const px = bx - bw / 2 + 10 + (Math.cos(Date.now() * 0.004 + i * 2) * 0.5 + 0.5) * (bw - 20);
@@ -193,7 +182,6 @@ export const VirtualLab: React.FC = () => {
         }
       }
 
-      // EXPLOSION FLASH
       if (isRunning && progress < 0.4) {
         ctx.fillStyle = `rgba(255, 120, 0, ${1 - progress * 2.5})`;
         ctx.beginPath();
@@ -201,10 +189,8 @@ export const VirtualLab: React.FC = () => {
         ctx.fill();
       }
 
-      // PRODUCT WATER LAYER
       if (completed || (isRunning && progress >= 0.2)) {
         const opacity = isRunning ? (progress - 0.2) / 0.8 : 1;
-        // Draw liquid layer at the bottom
         ctx.fillStyle = `rgba(0, 160, 255, ${opacity * 0.25})`;
         ctx.beginPath();
         ctx.moveTo(bx - bw / 2 + 2, by - 20);
@@ -215,13 +201,11 @@ export const VirtualLab: React.FC = () => {
         ctx.closePath();
         ctx.fill();
 
-        // Wave top
         ctx.fillStyle = `rgba(0, 160, 255, ${opacity * 0.4})`;
         ctx.beginPath();
         ctx.ellipse(bx, by - 20, bw / 2 - 2, 4, 0, 0, 2 * Math.PI);
         ctx.fill();
 
-        // Droplets on walls
         ctx.fillStyle = `rgba(0, 243, 255, ${opacity * 0.5})`;
         const dropY = [by - bh + 30, by - bh + 60, by - bh + 80, by - bh + 45];
         const dropX = [bx - bw / 2 + 8, bx + bw / 2 - 12, bx - bw / 2 + 15, bx + bw / 2 - 8];
@@ -233,11 +217,9 @@ export const VirtualLab: React.FC = () => {
       }
 
     } else if (selectedExpId === 'nacl') {
-      // SODIUM METALLIC SOLID
       const sodSize = Math.max(8, m1 * 1.5);
       const isLiquid = temp >= 370;
 
-      // Chlorine Gas Background color (yellow green)
       if (!completed) {
         const gasOpacity = Math.max(0.05, 0.4 * (1 - progress));
         ctx.fillStyle = `rgba(180, 255, 0, ${gasOpacity})`;
@@ -251,7 +233,6 @@ export const VirtualLab: React.FC = () => {
         ctx.fill();
       }
 
-      // Draw reaction glow & smoke
       if (isRunning) {
         ctx.fillStyle = `rgba(255, 255, 255, ${progress * 0.3})`;
         for (let i = 0; i < 8; i++) {
@@ -263,26 +244,22 @@ export const VirtualLab: React.FC = () => {
         }
       }
 
-      // Draw Sodium chunk at bottom
       ctx.fillStyle = isRunning ? `rgb(255, 230, ${Math.round(200 * (1-progress))})` : 'rgba(160, 170, 180, 1)';
       ctx.strokeStyle = isRunning ? neonOrange : 'rgba(100, 110, 120, 1)';
       ctx.lineWidth = 1.5;
 
       if (isLiquid) {
-        // Flat liquid pool of melted sodium
         ctx.beginPath();
         ctx.ellipse(bx, by + 5, sodSize * 1.5, 4, 0, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
       } else {
-        // Solid grey cube lump
         ctx.beginPath();
         ctx.rect(bx - sodSize / 2, by + 5 - sodSize, sodSize, sodSize);
         ctx.fill();
         ctx.stroke();
       }
 
-      // Draw white NaCl salt precipitate at the bottom
       if (completed) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         for (let i = 0; i < 15; i++) {
@@ -293,27 +270,18 @@ export const VirtualLab: React.FC = () => {
       }
 
     } else if (selectedExpId === 'neutralization') {
-      // Neutralization Liquid
-      // If indicator is present:
-      // - Acidic (default): clear/transparent
-      // - Basic (added NaOH makes moles NaOH > moles HCl): pink!
-      // HCl moles estimated from m1 (Molar mass ~ 36.46)
-      // NaOH moles estimated from m2 (Molar mass ~ 40)
       const molesAcid = m1 / 36.46;
       const molesBase = m2 / 40;
       const isBasic = molesBase > molesAcid;
 
-      let liquidColor = 'rgba(255,255,255,0.04)'; // transparent water
+      let liquidColor = 'rgba(255,255,255,0.04)';
       let waveColor = 'rgba(255,255,255,0.08)';
 
-      if (hasIndicator) {
-        if (isBasic) {
-          liquidColor = 'rgba(255, 0, 127, 0.35)'; // hot pink basic phénolphtaléine
-          waveColor = 'rgba(255, 0, 127, 0.5)';
-        }
+      if (hasIndicator && isBasic) {
+        liquidColor = 'rgba(255, 0, 127, 0.35)';
+        waveColor = 'rgba(255, 0, 127, 0.5)';
       }
 
-      // Draw liquid fill
       ctx.fillStyle = liquidColor;
       ctx.beginPath();
       ctx.moveTo(bx - bw / 2 + 2, by - 60);
@@ -324,13 +292,11 @@ export const VirtualLab: React.FC = () => {
       ctx.closePath();
       ctx.fill();
 
-      // Top wave surface
       ctx.fillStyle = waveColor;
       ctx.beginPath();
       ctx.ellipse(bx, by - 60, bw / 2 - 2, 5, 0, 0, 2 * Math.PI);
       ctx.fill();
 
-      // Draw pouring drops if isRunning
       if (isRunning) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         const dropY = by - bh + progress * bh * 0.6;
@@ -350,11 +316,6 @@ export const VirtualLab: React.FC = () => {
     setIsRunning(true);
   };
 
-  const selectExperiment = (id: string) => {
-    setSelectedExpId(id);
-  };
-
-  // Safe checks for warning triggers
   const showHighPressureRisk = press >= 3;
   const showExplosionRisk = selectedExpId === 'h2o' && temp >= 450;
   const showCorrosiveRisk = selectedExpId === 'neutralization' && (m1 >= 15 || m2 >= 15);
@@ -367,318 +328,221 @@ export const VirtualLab: React.FC = () => {
       ? (language === 'fr' ? `Expérience terminée : ${expName} complétée avec succès.` : `Experimento completado: ${expName} completado con éxito.`)
       : '';
 
-  return React.createElement('div', {
-    className: 'virtual-lab-container responsive-card-grid animate-fade-in',
-    style: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-      gap: '20px',
-      width: '100%'
-    }
-  },
-    // Screen-reader announcement of experiment progress/outcome
-    React.createElement('div', {
-      role: 'status',
-      'aria-live': 'polite',
-      style: {
-        position: 'absolute',
-        width: '1px',
-        height: '1px',
-        padding: 0,
-        margin: '-1px',
-        overflow: 'hidden',
-        clip: 'rect(0, 0, 0, 0)',
-        whiteSpace: 'nowrap',
-        border: 0
-      }
-    }, liveStatusMessage),
+  return (
+    <div className="virtual-lab-container responsive-card-grid animate-fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', width: '100%' }}>
+      
+      {/* Screen-reader announcement of experiment progress/outcome */}
+      <div role="status" aria-live="polite" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>
+        {liveStatusMessage}
+      </div>
 
-    // Left controls column
-    React.createElement('div', {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px'
-      }
-    },
-      // Experiment selector panel
-      React.createElement('div', {
-        className: 'glass-panel',
-        style: {
-          padding: '16px',
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--glass-border)'
-        }
-      },
-        React.createElement('h3', { style: { fontFamily: 'var(--font-title)', fontSize: '13px', color: '#fff', marginBottom: '12px', letterSpacing: '1px' } },
-          (language === 'fr' ? "EXPÉRIENCE DE LABORATOIRE" : "EXPERIMENTO DE LABORATORIO").toUpperCase()
-        ),
-        React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
-          EXPERIMENTS.map(e => {
-            const active = selectedExpId === e.id;
-            return React.createElement('button', {
-              key: e.id,
-              onClick: () => selectExperiment(e.id),
-              style: {
-                padding: '10px 14px',
-                background: active ? 'rgba(0, 243, 255, 0.05)' : 'rgba(255,255,255,0.01)',
-                border: `1px solid ${active ? 'var(--neon-cyan)' : 'var(--glass-border)'}`,
-                borderRadius: '6px',
-                color: active ? '#fff' : 'var(--text-secondary)',
-                fontFamily: 'var(--font-title)',
-                fontSize: '11px',
-                textAlign: 'left',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }
-            },
-              React.createElement(Beaker, { size: 13, style: { color: active ? 'var(--neon-cyan)' : 'inherit' } }),
-              React.createElement('span', { style: { flex: 1 } }, language === 'fr' ? e.nameFR : e.nameES),
-              completedExperiments.includes(e.id) && React.createElement(CheckCircle, {
-                size: 13,
-                'aria-label': language === 'fr' ? 'Expérience déjà réalisée' : 'Experimento ya realizado',
-                style: { color: 'var(--neon-green)', flexShrink: 0 }
-              })
-            );
-          })
-        )
-      ),
+      {/* Left controls column */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        
+        {/* Experiment selector panel */}
+        <div className="glass-panel" style={{ padding: '16px', background: 'var(--bg-secondary)', border: '1px solid var(--glass-border)' }}>
+          <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '13px', color: '#fff', marginBottom: '12px', letterSpacing: '1px' }}>
+            {(language === 'fr' ? "EXPÉRIENCE DE LABORATOIRE" : "EXPERIMENTO DE LABORATORIO").toUpperCase()}
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {EXPERIMENTS.map(e => {
+              const active = selectedExpId === e.id;
+              return (
+                <button
+                  key={e.id}
+                  onClick={() => setSelectedExpId(e.id)}
+                  className={`btn hover-lift ${active ? '' : 'btn-outline'}`}
+                  aria-pressed={active}
+                  style={{
+                    padding: '10px 14px',
+                    background: active ? 'rgba(0, 243, 255, 0.05)' : 'rgba(255,255,255,0.01)',
+                    border: `1px solid ${active ? 'var(--neon-cyan)' : 'var(--glass-border)'}`,
+                    borderRadius: '6px',
+                    color: active ? '#fff' : 'var(--text-secondary)',
+                    fontFamily: 'var(--font-title)',
+                    fontSize: '11px',
+                    textAlign: 'left',
+                    justifyContent: 'flex-start',
+                    width: '100%'
+                  }}
+                >
+                  <Beaker size={13} style={{ color: active ? 'var(--neon-cyan)' : 'inherit', flexShrink: 0 }} aria-hidden="true" />
+                  <span style={{ flex: 1 }}>{language === 'fr' ? e.nameFR : e.nameES}</span>
+                  {completedExperiments.includes(e.id) && (
+                    <CheckCircle
+                      size={13}
+                      aria-label={language === 'fr' ? 'Expérience déjà réalisée' : 'Experimento ya realizado'}
+                      style={{ color: 'var(--neon-green)', flexShrink: 0 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-      // Dials and parameters panel
-      React.createElement('div', {
-        className: 'glass-panel',
-        style: {
-          padding: '16px',
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--glass-border)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px'
-        }
-      },
-        React.createElement('h3', { style: { fontFamily: 'var(--font-title)', fontSize: '13px', color: '#fff', marginBottom: '4px', letterSpacing: '1px' } },
-          (language === 'fr' ? "PARAMÈTRES THERMODYNAMIQUES" : "PARÁMETROS TERMODINÁMICOS").toUpperCase()
-        ),
+        {/* Dials and parameters panel */}
+        <div className="glass-panel" style={{ padding: '16px', background: 'var(--bg-secondary)', border: '1px solid var(--glass-border)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '13px', color: '#fff', marginBottom: '4px', letterSpacing: '1px' }}>
+            {(language === 'fr' ? "PARAMÈTRES THERMODYNAMIQUES" : "PARÁMETROS TERMODINÁMICOS").toUpperCase()}
+          </h3>
 
-        // Temperature Slider
-        React.createElement('div', null,
-          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '4px' } },
-            React.createElement('span', null, language === 'fr' ? "TEMPÉRATURE" : "TEMPERATURA"),
-            React.createElement('span', { style: { color: 'var(--neon-orange)' } }, `${temp} K`)
-          ),
-          React.createElement('input', {
-            type: 'range',
-            min: 100,
-            max: 800,
-            value: temp,
-            onChange: (e) => setTemp(parseInt(e.target.value)),
-            style: { width: '100%', accentColor: 'var(--neon-orange)' }
-          })
-        ),
+          {/* Temperature Slider */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '4px' }}>
+              <label htmlFor="temp-slider">{language === 'fr' ? "TEMPÉRATURE" : "TEMPERATURA"}</label>
+              <span style={{ color: 'var(--neon-orange)' }} aria-hidden="true">{temp} K</span>
+            </div>
+            <input
+              id="temp-slider"
+              type="range"
+              min={100}
+              max={800}
+              value={temp}
+              onChange={(e) => setTemp(parseInt(e.target.value))}
+              aria-valuetext={`${temp} Kelvin`}
+              style={{ width: '100%', accentColor: 'var(--neon-orange)' }}
+            />
+          </div>
 
-        // Pressure Slider
-        React.createElement('div', null,
-          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '4px' } },
-            React.createElement('span', null, language === 'fr' ? "PRESSION" : "PRESIÓN"),
-            React.createElement('span', { style: { color: 'var(--neon-yellow)' } }, `${press.toFixed(1)} atm`)
-          ),
-          React.createElement('input', {
-            type: 'range',
-            min: 0.1,
-            max: 5.0,
-            step: 0.1,
-            value: press,
-            onChange: (e) => setPress(parseFloat(e.target.value)),
-            style: { width: '100%', accentColor: 'var(--neon-yellow)' }
-          })
-        ),
+          {/* Pressure Slider */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '4px' }}>
+              <label htmlFor="press-slider">{language === 'fr' ? "PRESSION" : "PRESIÓN"}</label>
+              <span style={{ color: 'var(--neon-yellow)' }} aria-hidden="true">{press.toFixed(1)} atm</span>
+            </div>
+            <input
+              id="press-slider"
+              type="range"
+              min={0.1}
+              max={5.0}
+              step={0.1}
+              value={press}
+              onChange={(e) => setPress(parseFloat(e.target.value))}
+              aria-valuetext={`${press.toFixed(1)} atmosphères`}
+              style={{ width: '100%', accentColor: 'var(--neon-yellow)' }}
+            />
+          </div>
 
-        // Mass Reactant 1
-        React.createElement('div', null,
-          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '4px' } },
-            React.createElement('span', null, language === 'fr' ? "RÉACTIF A (g)" : "REACTIVO A (g)"),
-            React.createElement('span', { style: { color: 'var(--neon-cyan)' } }, `${m1} g`)
-          ),
-          React.createElement('input', {
-            type: 'range',
-            min: 1,
-            max: 20,
-            value: m1,
-            onChange: (e) => setM1(parseInt(e.target.value)),
-            style: { width: '100%', accentColor: 'var(--neon-cyan)' }
-          })
-        ),
+          {/* Mass Reactant 1 */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '4px' }}>
+              <label htmlFor="m1-slider">{language === 'fr' ? "RÉACTIF A (g)" : "REACTIVO A (g)"}</label>
+              <span style={{ color: 'var(--neon-cyan)' }} aria-hidden="true">{m1} g</span>
+            </div>
+            <input
+              id="m1-slider"
+              type="range"
+              min={1}
+              max={20}
+              value={m1}
+              onChange={(e) => setM1(parseInt(e.target.value))}
+              aria-valuetext={`${m1} grammes`}
+              style={{ width: '100%', accentColor: 'var(--neon-cyan)' }}
+            />
+          </div>
 
-        // Mass Reactant 2
-        React.createElement('div', null,
-          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '4px' } },
-            React.createElement('span', null, language === 'fr' ? "RÉACTIF B (g)" : "REACTIVO B (g)"),
-            React.createElement('span', { style: { color: 'var(--neon-cyan)' } }, `${m2} g`)
-          ),
-          React.createElement('input', {
-            type: 'range',
-            min: 1,
-            max: 20,
-            value: m2,
-            onChange: (e) => setM2(parseInt(e.target.value)),
-            style: { width: '100%', accentColor: 'var(--neon-cyan)' }
-          })
-        ),
+          {/* Mass Reactant 2 */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '4px' }}>
+              <label htmlFor="m2-slider">{language === 'fr' ? "RÉACTIF B (g)" : "REACTIVO B (g)"}</label>
+              <span style={{ color: 'var(--neon-cyan)' }} aria-hidden="true">{m2} g</span>
+            </div>
+            <input
+              id="m2-slider"
+              type="range"
+              min={1}
+              max={20}
+              value={m2}
+              onChange={(e) => setM2(parseInt(e.target.value))}
+              aria-valuetext={`${m2} grammes`}
+              style={{ width: '100%', accentColor: 'var(--neon-cyan)' }}
+            />
+          </div>
 
-        // Indicator Toggle (only for titration)
-        selectedExpId === 'neutralization' && React.createElement('div', {
-          style: {
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            color: '#fff',
-            borderTop: '1px solid rgba(255,255,255,0.05)',
-            paddingTop: '10px'
-          }
-        },
-          React.createElement('input', {
-            type: 'checkbox',
-            id: 'indicator',
-            checked: hasIndicator,
-            onChange: (e) => setHasIndicator(e.target.checked),
-            style: { accentColor: 'var(--neon-magenta)', cursor: 'pointer' }
-          }),
-          React.createElement('label', { htmlFor: 'indicator', style: { cursor: 'pointer' } },
-            language === 'fr' ? "AJOUTER PHÉNOLPHTALÉINE (INDICATEUR)" : "AÑADIR FENOLFTALEÍNA (INDICADOR)"
-          )
-        )
-      )
-    ),
+          {/* Indicator Toggle (only for titration) */}
+          {selectedExpId === 'neutralization' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#fff', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px' }}>
+              <input
+                type="checkbox"
+                id="indicator"
+                checked={hasIndicator}
+                onChange={(e) => setHasIndicator(e.target.checked)}
+                style={{ accentColor: 'var(--neon-magenta)', cursor: 'pointer' }}
+              />
+              <label htmlFor="indicator" style={{ cursor: 'pointer' }}>
+                {language === 'fr' ? "AJOUTER PHÉNOLPHTALÉINE (INDICATEUR)" : "AÑADIR FENOLFTALEÍNA (INDICADOR)"}
+              </label>
+            </div>
+          )}
+        </div>
+      </div>
 
-    // Right visualization & results column
-    React.createElement('div', {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px'
-      }
-    },
-      // Beaker Canvas container
-      React.createElement('div', {
-        className: 'glass-panel',
-        style: {
-          padding: '20px',
-          background: '#07080f',
-          border: '1px solid var(--glass-border)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '250px'
-        }
-      },
-        React.createElement('canvas', {
-          ref: canvasRef,
-          width: 250,
-          height: 230,
-          role: 'img',
-          'aria-label': `${expName}: ${isRunning ? (language === 'fr' ? 'réaction en cours' : 'reacción en curso') : completed ? (language === 'fr' ? 'terminée' : 'completado') : (language === 'fr' ? 'en attente' : 'en espera')}`,
-          style: { background: 'transparent' }
-        }),
+      {/* Right visualization & results column */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        
+        {/* Beaker Canvas container */}
+        <div className="glass-panel" style={{ padding: '20px', background: '#07080f', border: '1px solid var(--glass-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '250px' }}>
+          <canvas
+            ref={canvasRef}
+            width={250}
+            height={230}
+            role="img"
+            aria-label={`${expName}: ${isRunning ? (language === 'fr' ? 'réaction en cours' : 'reacción en curso') : completed ? (language === 'fr' ? 'terminée' : 'completado') : (language === 'fr' ? 'en attente' : 'en espera')}`}
+            style={{ background: 'transparent' }}
+          />
 
-        // Action Trigger Button
-        React.createElement('button', {
-          onClick: handleStartExperiment,
-          disabled: isRunning,
-          style: {
-            marginTop: '16px',
-            width: '100%',
-            maxWidth: '220px',
-            padding: '10px 20px',
-            background: isRunning ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 243, 255, 0.1)',
-            border: `1px solid ${isRunning ? 'rgba(255,255,255,0.1)' : 'var(--neon-cyan)'}`,
-            borderRadius: '6px',
-            color: isRunning ? 'var(--text-muted)' : '#fff',
-            fontFamily: 'var(--font-title)',
-            fontSize: '11px',
-            fontWeight: 'bold',
-            letterSpacing: '1px',
-            cursor: isRunning ? 'not-allowed' : 'pointer',
-            boxShadow: isRunning ? 'none' : 'var(--glow-cyan)',
-            transition: 'all 0.2s',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px'
-          }
-        },
-          completed 
-            ? React.createElement(CheckCircle, { size: 14, style: { color: 'var(--neon-green)' } })
-            : React.createElement(Play, { size: 14 }),
-          completed
-            ? (language === 'fr' ? "EXPÉRIENCE COMPLÉTÉE" : "EXPERIMENTO COMPLETADO")
-            : (isRunning ? (language === 'fr' ? "REACTION EN COURS..." : "REACCION EN CURSO...") : (language === 'fr' ? "LANCER L'EXPÉRIENCE" : "INICIAR EXPERIMENTO"))
-        )
-      ),
+          {/* Action Trigger Button */}
+          <button
+            onClick={handleStartExperiment}
+            disabled={isRunning}
+            className={`btn ${isRunning ? '' : 'btn-primary'} hover-lift`}
+            style={{
+              marginTop: '16px',
+              width: '100%',
+              maxWidth: '220px',
+              padding: '10px 20px',
+              background: isRunning ? 'rgba(255, 255, 255, 0.05)' : undefined,
+              border: `1px solid ${isRunning ? 'rgba(255,255,255,0.1)' : 'transparent'}`,
+              color: isRunning ? 'var(--text-muted)' : undefined,
+              fontSize: '11px',
+              letterSpacing: '1px'
+            }}
+          >
+            {completed ? <CheckCircle size={14} style={{ color: 'var(--neon-green)' }} aria-hidden="true" /> : <Play size={14} aria-hidden="true" />}
+            {completed
+              ? (language === 'fr' ? "EXPÉRIENCE COMPLÉTÉE" : "EXPERIMENTO COMPLETADO")
+              : (isRunning ? (language === 'fr' ? "REACTION EN COURS..." : "REACCION EN CURSO...") : (language === 'fr' ? "LANCER L'EXPÉRIENCE" : "INICIAR EXPERIMENTO"))}
+          </button>
+        </div>
 
-      // Risk/Hazards Banner Panel
-      React.createElement('div', {
-        className: 'glass-panel',
-        style: {
-          padding: '14px',
-          background: 'rgba(255, 0, 127, 0.02)',
-          border: '1px solid rgba(255, 0, 127, 0.15)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px'
-        }
-      },
-        React.createElement('h4', {
-          style: {
-            margin: 0,
-            fontFamily: 'var(--font-title)',
-            fontSize: '11px',
-            color: 'var(--neon-magenta)',
-            letterSpacing: '1px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }
-        },
-          React.createElement(ShieldAlert, { size: 14 }),
-          (language === 'fr' ? "ALERTES DE SÉCURITÉ CHIMIQUE" : "ALERTAS DE SEGURIDAD QUÍMICA").toUpperCase()
-        ),
+        {/* Risk/Hazards Banner Panel */}
+        <div className="glass-panel" style={{ padding: '14px', background: 'rgba(255, 0, 127, 0.02)', border: '1px solid rgba(255, 0, 127, 0.15)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <h4 style={{ margin: 0, fontFamily: 'var(--font-title)', fontSize: '11px', color: 'var(--neon-magenta)', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ShieldAlert size={14} aria-hidden="true" />
+            {(language === 'fr' ? "ALERTES DE SÉCURITÉ CHIMIQUE" : "ALERTAS DE SEGURIDAD QUÍMICA").toUpperCase()}
+          </h4>
 
-        // Hazard Lists
-        React.createElement('ul', {
-          style: {
-            margin: 0,
-            paddingLeft: '16px',
-            fontSize: '10.5px',
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--text-secondary)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px'
-          }
-        },
-          (language === 'fr' ? exp.hazardsFR : exp.hazardsES).map((h, i) => React.createElement('li', { key: i }, h)),
-          
-          // Dynamic warnings
-          showHighPressureRisk && React.createElement('li', { style: { color: 'var(--neon-magenta)', fontWeight: 'bold' } },
-            language === 'fr' ? "ATTENTION : SURPRESSION DE CUVETTE (> 3.0 atm) !" : "CUIDADO: ¡SOBREPRESIÓN EN RECIPIENTE (> 3.0 atm)!"
-          ),
-          showExplosionRisk && React.createElement('li', { style: { color: 'var(--neon-magenta)', fontWeight: 'bold' } },
-            language === 'fr' ? "ATTENTION : DANGER D'AUTO-ALLUMAGE THERMIQUE EXPLOSIF !" : "CUIDADO: ¡PELIGRO DE AUTOENCENDIDO TÉRMICO EXPLOSIVO!"
-          ),
-          showCorrosiveRisk && React.createElement('li', { style: { color: 'var(--neon-yellow)', fontWeight: 'bold' } },
-            language === 'fr' ? "AVERTISSEMENT : HAUTE CONCENTRATION CORROSIVE EN SOLUTION !" : "ADVERTENCIA: ¡ALTA CONCENTRACIÓN CORROSIVA EN SOLUCIÓN!"
-          ),
-          showToxicityRisk && React.createElement('li', { style: { color: 'var(--neon-magenta)' } },
-            language === 'fr' ? "DANGER : RUPTURE DU DICHLARE GAZEUX TOXIQUE EN AIR LIBRE !" : "PELIGRO: ¡ESCAPE DE DICLORO GASEOSO TÓXICO EN EL AIRE!"
-          )
-        )
-      )
-    )
+          {/* Hazard Lists */}
+          <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '10.5px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {(language === 'fr' ? exp.hazardsFR : exp.hazardsES).map((h, i) => <li key={i}>{h}</li>)}
+            
+            {/* Dynamic warnings */}
+            {showHighPressureRisk && <li style={{ color: 'var(--neon-magenta)', fontWeight: 'bold' }}>
+              {language === 'fr' ? "ATTENTION : SURPRESSION DE CUVETTE (> 3.0 atm) !" : "CUIDADO: ¡SOBREPRESIÓN EN RECIPIENTE (> 3.0 atm)!"}
+            </li>}
+            {showExplosionRisk && <li style={{ color: 'var(--neon-magenta)', fontWeight: 'bold' }}>
+              {language === 'fr' ? "ATTENTION : DANGER D'AUTO-ALLUMAGE THERMIQUE EXPLOSIF !" : "CUIDADO: ¡PELIGRO DE AUTOENCENDIDO TÉRMICO EXPLOSIVO!"}
+            </li>}
+            {showCorrosiveRisk && <li style={{ color: 'var(--neon-yellow)', fontWeight: 'bold' }}>
+              {language === 'fr' ? "AVERTISSEMENT : HAUTE CONCENTRATION CORROSIVE EN SOLUTION !" : "ADVERTENCIA: ¡ALTA CONCENTRACIÓN CORROSIVA EN SOLUCIÓN!"}
+            </li>}
+            {showToxicityRisk && <li style={{ color: 'var(--neon-magenta)' }}>
+              {language === 'fr' ? "DANGER : RUPTURE DU DICHLARE GAZEUX TOXIQUE EN AIR LIBRE !" : "PELIGRO: ¡ESCAPE DE DICLORO GASEOSO TÓXICO EN EL AIRE!"}
+            </li>}
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 };

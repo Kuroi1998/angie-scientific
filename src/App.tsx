@@ -1,18 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { LanguageProvider, useLanguage } from './hooks/useLanguage';
 import { WelcomeModal } from './components/WelcomeModal';
-import { TableGrid } from './components/PeriodicTable/TableGrid';
 import type { ElementType } from './components/PeriodicTable/TableGrid';
 import { DetailModal } from './components/ElementCard/DetailModal';
-import { FusionCore } from './components/ReactionSimulator/FusionCore';
-import { QuantumVisualizer } from './components/QuantumVisualizer/QuantumVisualizer';
-import { PhysChemLab } from './components/PhysicsChemistry/PhysChemLab';
-import { VirtualLab } from './components/VirtualLab/VirtualLab';
-import { DiscoveryAlbum } from './components/Gamification/DiscoveryAlbum';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import { useLocalStorageState } from './hooks/useLocalStorageState';
 import { clearAllStoredValues } from './utils/localStorage';
-import { Grid, Flame, Zap, Beaker, Globe, Trophy, FlaskConical, RotateCcw } from 'lucide-react';
+import { Grid, Flame, Zap, Beaker, Globe, Trophy, FlaskConical, RotateCcw, Loader2 } from 'lucide-react';
 import { UserProgressProvider } from './components/UserProgressProvider';
 import { MascotProvider } from './components/Mascot/MascotContext';
 import { AngieMascot } from './components/Mascot/AngieMascot';
@@ -22,18 +16,33 @@ import './styles/theme.css';
 import './styles/animations.css';
 import './styles/responsive.css';
 
+// Lazy load heavy modules
+const TableGrid = React.lazy(() => import('./components/PeriodicTable/TableGrid').then(m => ({ default: m.TableGrid })));
+const FusionCore = React.lazy(() => import('./components/ReactionSimulator/FusionCore').then(m => ({ default: m.FusionCore })));
+const QuantumVisualizer = React.lazy(() => import('./components/QuantumVisualizer/QuantumVisualizer').then(m => ({ default: m.QuantumVisualizer })));
+const PhysChemLab = React.lazy(() => import('./components/PhysicsChemistry/PhysChemLab').then(m => ({ default: m.PhysChemLab })));
+const VirtualLab = React.lazy(() => import('./components/VirtualLab/VirtualLab').then(m => ({ default: m.VirtualLab })));
+const DiscoveryAlbum = React.lazy(() => import('./components/Gamification/DiscoveryAlbum').then(m => ({ default: m.DiscoveryAlbum })));
+
 type TabType = 'table' | 'fusion' | 'quantum' | 'physchem' | 'virtuallab' | 'quests';
 
 const TAB_IDS: TabType[] = ['table', 'fusion', 'quantum', 'physchem', 'virtuallab', 'quests'];
 const isTabType = (raw: unknown): raw is TabType =>
   typeof raw === 'string' && (TAB_IDS as string[]).includes(raw);
 
+const LoadingFallback = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '300px', color: 'var(--neon-cyan)' }}>
+    <Loader2 className="animate-spin" size={32} style={{ marginBottom: '16px' }} />
+    <span style={{ fontFamily: 'var(--font-mono)' }}>CHARGEMENT...</span>
+  </div>
+);
+
 const AppContent: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
   const [activeTab, setActiveTab] = useLocalStorageState<TabType>('activeTab', 'table', { validate: isTabType });
   const [selectedElement, setSelectedElement] = useState<ElementType | null>(null);
 
-  // Fusion Reactant slots managed at App level so elements can be added from the grid!
+  // Fusion Reactant slots managed at App level so elements can be added from the grid
   const [reactant1, setReactant1] = useState<string | null>(null);
   const [reactant2, setReactant2] = useState<string | null>(null);
 
@@ -73,264 +82,138 @@ const AppContent: React.FC = () => {
     }
   };
 
-  return React.createElement('div', {
-    className: 'app-root',
-    style: {
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      minWidth: 0,
-      maxWidth: '100vw'
-    }
-  },
-    // Welcome Screen locks UI until language is chosen
-    React.createElement(WelcomeModal, null),
+  const navTabs = [
+    { id: 'table', label: t('nav.table'), icon: Grid, color: 'var(--neon-cyan)', glow: 'var(--glow-cyan)' },
+    { id: 'fusion', label: t('nav.fusion'), icon: Flame, color: 'var(--neon-purple)', glow: 'var(--glow-purple)' },
+    { id: 'quantum', label: t('nav.quantum'), icon: Zap, color: 'var(--neon-magenta)', glow: 'var(--glow-magenta)' },
+    { id: 'physchem', label: t('nav.physchem'), icon: Beaker, color: 'var(--neon-yellow)', glow: 'var(--glow-yellow)' },
+    { id: 'virtuallab', label: language === 'fr' ? 'Labo Virtuel' : 'Lab Virtual', icon: FlaskConical, color: 'var(--neon-orange)', glow: 'var(--glow-orange)' },
+    { id: 'quests', label: language === 'fr' ? 'Quêtes' : 'Misiones', icon: Trophy, color: 'var(--neon-green)', glow: 'var(--glow-green)' }
+  ] as const;
 
-    // Dashboard Header
-    React.createElement('header', {
-      style: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: '12px',
-        borderBottom: '1px solid var(--glass-border)',
-        paddingBottom: '20px',
-        marginBottom: '24px'
-      }
-    },
-      React.createElement('div', null,
-        React.createElement('h1', {
-          style: {
-            fontFamily: 'var(--font-title)',
-            fontSize: '22px',
-            fontWeight: '900',
-            letterSpacing: '2px',
-            color: '#fff',
-            textShadow: '0 0 10px rgba(0, 243, 255, 0.4)'
-          }
-        }, "ANGIE SCIENTIFIC"),
-        React.createElement('p', {
-          style: {
-            fontSize: '10px',
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--text-neon)',
-            letterSpacing: '1px',
-            textTransform: 'uppercase'
-          }
-        }, t('welcome.subtitle'))
-      ),
+  const focusNavTabAt = (index: number) => {
+    const wrapped = (index + navTabs.length) % navTabs.length;
+    const nextTab = navTabs[wrapped];
+    setActiveTab(nextTab.id as TabType);
+    requestAnimationFrame(() => {
+      document.getElementById(`main-tab-${nextTab.id}`)?.focus();
+    });
+  };
 
-      React.createElement('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' } },
-        // Language Switcher
-        React.createElement('button', {
-          onClick: toggleLanguage,
-          style: {
-            padding: '8px 16px',
-            background: 'var(--bg-secondary)',
-            border: '1px solid var(--neon-cyan)',
-            borderRadius: '4px',
-            color: '#fff',
-            fontFamily: 'var(--font-title)',
-            fontSize: '11px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: 'var(--glow-cyan)',
-            transition: 'all 0.2s'
-          }
-        },
-          React.createElement(Globe, { size: 14 }),
-          language === 'fr' ? "FRANÇAIS" : "ESPAÑOL"
-        ),
+  return (
+    <div className="app-root" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', minWidth: 0, maxWidth: '100vw' }}>
+      <WelcomeModal />
 
-        // Logout
-        React.createElement('button', {
-          onClick: handleLogout,
-          title: language === 'fr' ? 'Se déconnecter' : 'Cerrar sesión',
-          style: {
-            padding: '8px 16px',
-            background: 'rgba(255, 0, 127, 0.1)',
-            border: '1px solid var(--neon-magenta)',
-            borderRadius: '4px',
-            color: 'var(--neon-magenta)',
-            fontFamily: 'var(--font-title)',
-            fontSize: '11px',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }
-        },
-          language === 'fr' ? "DÉCONNEXION" : "SALIR"
-        ),
+      {/* Dashboard Header */}
+      <header className="app-header">
+        <div>
+          <h1 className="app-title">ANGIE SCIENTIFIC</h1>
+          <p className="app-subtitle">{t('welcome.subtitle')}</p>
+        </div>
 
-        // Reset local data
-        React.createElement('button', {
-          onClick: handleResetAllData,
-          title: language === 'fr'
-            ? 'Réinitialiser la langue, la progression des quêtes et l\'historique de recherche enregistrés localement'
-            : 'Restablecer el idioma, el progreso de misiones y el historial de búsqueda guardados localmente',
-          style: {
-            padding: '8px 12px',
-            background: 'transparent',
-            border: '1px solid rgba(255, 0, 127, 0.4)',
-            borderRadius: '4px',
-            color: 'var(--neon-magenta)',
-            fontFamily: 'var(--font-title)',
-            fontSize: '10px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            transition: 'all 0.2s'
-          }
-        },
-          React.createElement(RotateCcw, { size: 12 }),
-          language === 'fr' ? 'RÉINITIALISER' : 'RESTABLECER'
-        )
-      )
-    ),
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
+          <button className="btn btn-outline hover-lift" onClick={toggleLanguage}>
+            <Globe size={14} />
+            {language === 'fr' ? "FRANÇAIS" : "ESPAÑOL"}
+          </button>
 
-    // Tab Navigation Bar
-    React.createElement('div', {
-      role: 'tablist',
-      'aria-label': language === 'fr' ? 'Sections principales' : 'Secciones principales',
-      style: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '10px',
-        marginBottom: '24px'
-      }
-    },
-      (() => {
-        const navTabs = [
-          { id: 'table', label: t('nav.table'), icon: Grid, color: 'var(--neon-cyan)', glow: 'var(--glow-cyan)' },
-          { id: 'fusion', label: t('nav.fusion'), icon: Flame, color: 'var(--neon-purple)', glow: 'var(--glow-purple)' },
-          { id: 'quantum', label: t('nav.quantum'), icon: Zap, color: 'var(--neon-magenta)', glow: 'var(--glow-magenta)' },
-          { id: 'physchem', label: t('nav.physchem'), icon: Beaker, color: 'var(--neon-yellow)', glow: 'var(--glow-yellow)' },
-          { id: 'virtuallab', label: language === 'fr' ? 'Labo Virtuel' : 'Lab Virtual', icon: FlaskConical, color: 'var(--neon-orange)', glow: 'var(--glow-orange)' },
-          { id: 'quests', label: language === 'fr' ? 'Quêtes' : 'Misiones', icon: Trophy, color: 'var(--neon-green)', glow: 'var(--glow-green)' }
-        ] as const;
+          <button className="btn btn-danger-outline hover-lift" onClick={handleLogout} title={language === 'fr' ? 'Se déconnecter' : 'Cerrar sesión'}>
+            {language === 'fr' ? "DÉCONNEXION" : "SALIR"}
+          </button>
 
-        const focusNavTabAt = (index: number) => {
-          const wrapped = (index + navTabs.length) % navTabs.length;
-          const nextTab = navTabs[wrapped];
-          setActiveTab(nextTab.id);
-          requestAnimationFrame(() => {
-            document.getElementById(`main-tab-${nextTab.id}`)?.focus();
-          });
-        };
+          <button className="btn btn-danger-ghost hover-lift" onClick={handleResetAllData} title={language === 'fr' ? 'Réinitialiser la langue, la progression des quêtes et l\'historique de recherche enregistrés localement' : 'Restablecer el idioma, el progreso de misiones y el historial de búsqueda guardados localmente'}>
+            <RotateCcw size={12} />
+            {language === 'fr' ? 'RÉINITIALISER' : 'RESTABLECER'}
+          </button>
+        </div>
+      </header>
 
-        return navTabs.map((tab, i) => {
+      {/* Tab Navigation Bar */}
+      <div className="main-tab-nav" role="tablist" aria-label={language === 'fr' ? 'Sections principales' : 'Secciones principales'}>
+        {navTabs.map((tab, i) => {
           const active = activeTab === tab.id;
           const Icon = tab.icon;
-          return React.createElement('button', {
-            key: tab.id,
-            id: `main-tab-${tab.id}`,
-            role: 'tab',
-            type: 'button',
-            'aria-selected': active,
-            'aria-controls': 'main-tabpanel',
-            tabIndex: active ? 0 : -1,
-            onClick: () => setActiveTab(tab.id),
-            onKeyDown: (e: React.KeyboardEvent) => {
-              if (e.key === 'ArrowRight') { e.preventDefault(); focusNavTabAt(i + 1); }
-              else if (e.key === 'ArrowLeft') { e.preventDefault(); focusNavTabAt(i - 1); }
-            },
-            style: {
-              padding: '12px 24px',
-              background: active ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
-              border: `1px solid ${active ? tab.color : 'var(--glass-border)'}`,
-              borderRadius: '6px',
-              color: active ? '#fff' : 'var(--text-secondary)',
-              fontFamily: 'var(--font-title)',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              letterSpacing: '1px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              boxShadow: active ? tab.glow : 'none',
-              transition: 'all 0.2s'
-            }
-          },
-            React.createElement(Icon, { size: 15, style: { color: active ? tab.color : 'inherit' } }),
-            tab.label.toUpperCase()
+          return (
+            <button
+              key={tab.id}
+              id={`main-tab-${tab.id}`}
+              role="tab"
+              aria-selected={active}
+              aria-controls="main-tabpanel"
+              tabIndex={active ? 0 : -1}
+              onClick={() => setActiveTab(tab.id as TabType)}
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowRight') { e.preventDefault(); focusNavTabAt(i + 1); }
+                else if (e.key === 'ArrowLeft') { e.preventDefault(); focusNavTabAt(i - 1); }
+              }}
+              className="main-tab-btn hover-lift"
+              style={{
+                background: active ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
+                borderColor: active ? tab.color : 'var(--glass-border)',
+                color: active ? '#fff' : 'var(--text-secondary)',
+                boxShadow: active ? tab.glow : 'none'
+              }}
+            >
+              <Icon size={15} style={{ color: active ? tab.color : 'inherit' }} />
+              {tab.label.toUpperCase()}
+            </button>
           );
-        });
-      })()
-    ),
+        })}
+      </div>
 
-    // Active Viewport Tab Content
-    React.createElement('main', {
-      id: 'main-tabpanel',
-      role: 'tabpanel',
-      'aria-labelledby': `main-tab-${activeTab}`,
-      style: { flex: '1', minWidth: 0 }
-    },
-      activeTab === 'table' && React.createElement(TableGrid, {
-        onSelectElement: (el) => setSelectedElement(el),
-        onAddToFusion: handleAddToFusion
-      }),
-      activeTab === 'fusion' && React.createElement(ErrorBoundary, {
-        label: 'Simulateur de Fusion',
-        resetKey: 'fusion',
-        onNavigateHome: () => setActiveTab('table')
-      },
-        React.createElement(FusionCore, {
-          selectedReactant1: reactant1,
-          selectedReactant2: reactant2,
-          setSelectedReactant1: setReactant1,
-          setSelectedReactant2: setReactant2
-        })
-      ),
-      activeTab === 'quantum' && React.createElement(ErrorBoundary, {
-        label: 'Visualiseur Quantique',
-        resetKey: 'quantum',
-        onNavigateHome: () => setActiveTab('table')
-      }, React.createElement(QuantumVisualizer, null)),
-      activeTab === 'physchem' && React.createElement(ErrorBoundary, {
-        label: 'Laboratoire Physique-Chimie',
-        resetKey: 'physchem',
-        onNavigateHome: () => setActiveTab('table')
-      }, React.createElement(PhysChemLab, null)),
-      activeTab === 'virtuallab' && React.createElement(ErrorBoundary, {
-        label: 'Laboratoire Virtuel',
-        resetKey: 'virtuallab',
-        onNavigateHome: () => setActiveTab('table')
-      }, React.createElement(VirtualLab, null)),
-      activeTab === 'quests' && React.createElement(DiscoveryAlbum, null)
-    ),
+      {/* Active Viewport Tab Content */}
+      <main id="main-tabpanel" role="tabpanel" aria-labelledby={`main-tab-${activeTab}`} style={{ flex: '1', minWidth: 0 }}>
+        <Suspense fallback={<LoadingFallback />}>
+          {activeTab === 'table' && (
+            <TableGrid onSelectElement={(el) => setSelectedElement(el)} onAddToFusion={handleAddToFusion} />
+          )}
+          {activeTab === 'fusion' && (
+            <ErrorBoundary label="Simulateur de Fusion" resetKey="fusion" onNavigateHome={() => setActiveTab('table')}>
+              <FusionCore
+                selectedReactant1={reactant1}
+                selectedReactant2={reactant2}
+                setSelectedReactant1={setReactant1}
+                setSelectedReactant2={setReactant2}
+              />
+            </ErrorBoundary>
+          )}
+          {activeTab === 'quantum' && (
+            <ErrorBoundary label="Visualiseur Quantique" resetKey="quantum" onNavigateHome={() => setActiveTab('table')}>
+              <QuantumVisualizer />
+            </ErrorBoundary>
+          )}
+          {activeTab === 'physchem' && (
+            <ErrorBoundary label="Laboratoire Physique-Chimie" resetKey="physchem" onNavigateHome={() => setActiveTab('table')}>
+              <PhysChemLab />
+            </ErrorBoundary>
+          )}
+          {activeTab === 'virtuallab' && (
+            <ErrorBoundary label="Laboratoire Virtuel" resetKey="virtuallab" onNavigateHome={() => setActiveTab('table')}>
+              <VirtualLab />
+            </ErrorBoundary>
+          )}
+          {activeTab === 'quests' && (
+            <DiscoveryAlbum />
+          )}
+        </Suspense>
+      </main>
 
-    // Details Modal popup for single element properties
-    selectedElement && React.createElement(ErrorBoundary, {
-      label: `Fiche Élément (${selectedElement.s})`,
-      resetKey: selectedElement.s,
-      onNavigateHome: () => setSelectedElement(null),
-      homeLabel: 'Fermer la fiche'
-    },
-      React.createElement(DetailModal, {
-        element: selectedElement,
-        onClose: () => setSelectedElement(null),
-        onAddToFusion: handleAddToFusion
-      })
-    ),
+      {/* Details Modal popup */}
+      {selectedElement && (
+        <ErrorBoundary label={`Fiche Élément (${selectedElement.s})`} resetKey={selectedElement.s} onNavigateHome={() => setSelectedElement(null)} homeLabel="Fermer la fiche">
+          <DetailModal
+            element={selectedElement}
+            onClose={() => setSelectedElement(null)}
+            onAddToFusion={handleAddToFusion}
+          />
+        </ErrorBoundary>
+      )}
 
-    // Telemetry Footer
-    React.createElement('footer', {
-      style: {
-        marginTop: '40px',
-        borderTop: '1px solid rgba(255,255,255,0.05)',
-        paddingTop: '16px',
-        textAlign: 'center',
-        fontFamily: 'var(--font-mono)',
-        fontSize: '10px',
-        color: 'var(--text-muted)'
-      }
-    },
-      "// ANGIE QUANTUM LABS // ALL SIMULATIONS CALIBRATED FOR STP // ENERGETIC INTEGRITY SECURED"
-    )
+      {/* Telemetry Footer */}
+      <footer style={{ marginTop: '40px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px', textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--text-muted)' }}>
+        // ANGIE QUANTUM LABS // ALL SIMULATIONS CALIBRATED FOR STP // ENERGETIC INTEGRITY SECURED
+      </footer>
+    </div>
   );
 };
 
@@ -338,24 +221,23 @@ export default function App() {
   const userId = getUserId();
 
   if (!userId) {
-    return React.createElement(LanguageProvider, null, 
-      React.createElement(LoginScreen, null)
+    return (
+      <LanguageProvider>
+        <LoginScreen />
+      </LanguageProvider>
     );
   }
 
-  return React.createElement(ErrorBoundary, {
-    label: 'Angie Scientific',
-    description: 'L\'application a rencontré une erreur inattendue. Vos données enregistrées (langue, progression) sont conservées. Rechargez pour repartir sur une base saine.',
-    onNavigateHome: () => window.location.reload(),
-    homeLabel: 'Recharger l\'application'
-  },
-    React.createElement(UserProgressProvider, null,
-      React.createElement(MascotProvider, null,
-        React.createElement(LanguageProvider, null,
-          React.createElement(AppContent, null),
-          React.createElement(AngieMascot, null)
-        )
-      )
-    )
+  return (
+    <ErrorBoundary label="Angie Scientific" description="L'application a rencontré une erreur inattendue. Vos données enregistrées (langue, progression) sont conservées. Rechargez pour repartir sur une base saine." onNavigateHome={() => window.location.reload()} homeLabel="Recharger l'application">
+      <UserProgressProvider>
+        <MascotProvider>
+          <LanguageProvider>
+            <AppContent />
+            <AngieMascot />
+          </LanguageProvider>
+        </MascotProvider>
+      </UserProgressProvider>
+    </ErrorBoundary>
   );
 }

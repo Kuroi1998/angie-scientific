@@ -245,21 +245,8 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
           ),
           React.createElement('button', {
             onClick: () => setShowFilters(!showFilters),
-            className: 'action-btn',
-            style: {
-              padding: '10px 16px',
-              background: showFilters ? 'rgba(0, 243, 255, 0.15)' : 'var(--bg-tertiary)',
-              border: '1px solid var(--neon-cyan)',
-              borderRadius: '4px',
-              color: 'var(--neon-cyan)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontFamily: 'var(--font-title)',
-              fontSize: '12px',
-              boxShadow: showFilters ? 'var(--glow-cyan)' : 'none'
-            }
+            className: 'btn btn-outline hover-lift',
+            style: { background: showFilters ? 'rgba(0, 243, 255, 0.15)' : undefined }
           },
             React.createElement(Filter, { size: 14 }),
             "FILTERS"
@@ -435,19 +422,7 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
       React.createElement('div', { style: { marginTop: '16px', display: 'flex', justifyContent: 'flex-end' } },
         React.createElement('button', {
           onClick: handleResetFilters,
-          style: {
-            padding: '8px 16px',
-            background: 'transparent',
-            border: '1px solid rgba(255,0,127,0.5)',
-            borderRadius: '4px',
-            color: 'var(--neon-magenta)',
-            cursor: 'pointer',
-            fontFamily: 'var(--font-title)',
-            fontSize: '11px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }
+          className: 'btn btn-danger-ghost hover-lift'
         },
           React.createElement(RotateCcw, { size: 12 }),
           t('filter.reset').toUpperCase()
@@ -496,29 +471,12 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
             type: 'button',
             disabled: !active,
             'aria-label': `${el.n} — ${language === 'es' ? el.nameES : el.nameFR} (${el.s})`,
+            className: `element-cell ${active ? 'active' : ''}`,
             style: {
-              width: '100%',
-              height: '100%',
-              border: `1px solid ${active ? catColor : 'rgba(255, 255, 255, 0.05)'}`,
-              borderRadius: '4px',
-              background: active
-                ? `linear-gradient(135deg, rgba(20,20,30,0.8), rgba(${catColor === 'var(--cat-alkali)' ? '255,65,54' : '0,243,255'},0.04))`
-                : 'rgba(255, 255, 255, 0.01)',
-              opacity: active ? 1 : 0.2,
-              aspectRatio: '1',
-              padding: '4px',
-              cursor: active ? 'pointer' : 'default',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              boxShadow: active && hoveredElement?.n === el.n ? `0 0 12px ${catColor}` : 'none',
-              transform: active && hoveredElement?.n === el.n ? 'scale(1.05)' : 'scale(1)',
-              transition: 'all 0.15s ease-in-out',
-              position: 'relative',
-              zIndex: hoveredElement?.n === el.n ? '10' : '1',
-              font: 'inherit',
-              textAlign: 'left'
-            },
+              '--cell-color': catColor,
+              '--cell-opacity': active ? 1 : 0.2,
+              '--cell-zindex': hoveredElement?.n === el.n ? 10 : 1
+            } as React.CSSProperties,
             onMouseEnter: () => active && setHoveredElement(el),
             onMouseLeave: () => active && setHoveredElement(null),
             onFocus: () => active && setHoveredElement(el),
@@ -526,36 +484,11 @@ export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFu
             onClick: () => active && onSelectElement(el)
           },
             // Atomic Number
-            React.createElement('span', {
-              style: {
-                fontSize: '9px',
-                fontFamily: 'var(--font-mono)',
-                color: active ? 'var(--text-secondary)' : 'var(--text-muted)',
-                alignSelf: 'flex-start'
-              }
-            }, el.n),
+            React.createElement('span', { className: 'element-cell-num' }, el.n),
             // Symbol
-            React.createElement('span', {
-              style: {
-                fontSize: '16px',
-                fontWeight: '900',
-                fontFamily: 'var(--font-title)',
-                color: active ? '#fff' : 'var(--text-muted)',
-                textAlign: 'center',
-                textShadow: active ? `0 0 8px ${catColor}` : 'none'
-              }
-            }, el.s),
+            React.createElement('span', { className: 'element-cell-sym' }, el.s),
             // Atomic Mass or Name abbreviated
-            React.createElement('span', {
-              style: {
-                fontSize: '7px',
-                fontFamily: 'var(--font-mono)',
-                color: active ? 'var(--text-secondary)' : 'var(--text-muted)',
-                textAlign: 'center',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden'
-              }
-            }, el.mass.toFixed(2))
+            React.createElement('span', { className: 'element-cell-mass' }, el.mass.toFixed(2))
           ),
 
           // Action button overlay on hover/focus

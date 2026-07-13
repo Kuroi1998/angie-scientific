@@ -17,7 +17,7 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div style={{
+    <main style={{
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
@@ -36,7 +36,7 @@ export const LoginScreen: React.FC = () => {
         borderRadius: '12px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-          <UserCircle size={64} style={{ color: 'var(--neon-cyan)' }} />
+          <UserCircle size={64} style={{ color: 'var(--neon-cyan)' }} aria-hidden="true" />
         </div>
         <h1 style={{
           fontFamily: 'var(--font-title)',
@@ -59,6 +59,7 @@ export const LoginScreen: React.FC = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder={language === 'fr' ? "Ton pseudo (3 lettres min)" : "Tu apodo (mínimo 3 letras)"}
+            aria-label={language === 'fr' ? "Ton pseudo" : "Tu apodo"}
             style={{
               padding: '12px 16px',
               background: 'rgba(0, 0, 0, 0.4)',
@@ -73,23 +74,13 @@ export const LoginScreen: React.FC = () => {
           <button
             type="submit"
             disabled={username.trim().length < 3}
-            style={{
-              padding: '12px',
-              background: username.trim().length >= 3 ? 'var(--neon-cyan)' : 'var(--bg-tertiary)',
-              color: username.trim().length >= 3 ? '#000' : 'var(--text-muted)',
-              border: 'none',
-              borderRadius: '6px',
-              fontFamily: 'var(--font-title)',
-              fontWeight: 'bold',
-              cursor: username.trim().length >= 3 ? 'pointer' : 'not-allowed',
-              transition: 'all 0.2s',
-              boxShadow: username.trim().length >= 3 ? 'var(--glow-cyan)' : 'none'
-            }}
+            className="btn btn-primary hover-lift"
+            style={{ width: '100%', marginTop: '8px' }}
           >
             {language === 'fr' ? "COMMENCER L'EXPÉRIENCE" : "COMENZAR LA EXPERIENCIA"}
           </button>
         </form>
       </div>
-    </div>
+    </main>
   );
 };

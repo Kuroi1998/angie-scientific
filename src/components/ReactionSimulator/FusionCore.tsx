@@ -29,7 +29,6 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
   const [reactionResult, setReactionResult] = useState<ReactionResult | null>(null);
   const [customInput, setCustomInput] = useState<string>('');
 
-  // List of common reactive elements for quick selector
   const quickElements = [
     { s: 'H', name: 'Hydrogen' }, { s: 'Li', name: 'Lithium' },
     { s: 'C', name: 'Carbon' }, { s: 'N', name: 'Nitrogen' },
@@ -60,7 +59,6 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
             confetti({ particleCount: 50, spread: 45, origin: { y: 0.4 } });
           }
 
-          // Cuisine Moléculaire
           if (prod === 'H2O') {
             showMessage(language === 'fr' ? "Bravo ! Tu as créé de l'Eau. C'est ce qu'il y a dans ta gourde !" : "¡Bravo! Has creado Agua.");
             setEmotion('happy');
@@ -74,11 +72,9 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
             showMessage(language === 'fr' ? "Réaction réussie !" : "¡Reacción exitosa!", 3000, 'happy');
           }
         } else {
-          // Coin spectaculaire (instable)
           showMessage(language === 'fr' ? "Oups ! Cette réaction est instable et a fait BOUM ! Attention dans un vrai labo !" : "¡Oops! Reacción inestable.");
           setEmotion('surprised');
           
-          // Trigger shake animation via DOM class
           const chamber = document.getElementById('reactor-chamber');
           if (chamber) {
             chamber.classList.add('animate-shake');
@@ -89,6 +85,7 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
     } else {
       setReactionResult(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedReactant1, selectedReactant2]);
 
   const selectQuickElement = (symbol: string) => {
@@ -97,7 +94,6 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
     } else if (!selectedReactant2 && selectedReactant1 !== symbol) {
       setSelectedReactant2(symbol);
     } else {
-      // Replace slot 2 or reset
       setSelectedReactant2(symbol);
     }
   };
@@ -108,401 +104,256 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
     setReactionResult(null);
   };
 
-  return React.createElement('div', { className: 'fusion-container animate-fade-in', style: { display: 'flex', flexDirection: 'column', gap: '24px' } },
-    
-    // Reactor chamber display
-    React.createElement('div', {
-      id: 'reactor-chamber',
-      className: 'glass-panel scanline-container',
-      style: {
-        padding: '24px',
-        background: 'var(--bg-secondary)',
-        border: '1px solid var(--neon-purple)',
-        boxShadow: '0 0 25px rgba(157, 0, 255, 0.12)',
-        borderRadius: '8px',
-        textAlign: 'center'
-      }
-    },
-      React.createElement('h2', { style: { fontFamily: 'var(--font-title)', fontSize: '18px', color: 'var(--neon-purple)', marginBottom: '16px', letterSpacing: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' } },
-        React.createElement(Sparkles, { className: 'animate-flicker', size: 18 }),
-        "REACTOR CHAMBER / CAMARA DE FUSION"
-      ),
+  return (
+    <div className="fusion-container animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      
+      {/* Reactor chamber display */}
+      <div
+        id="reactor-chamber"
+        className="glass-panel scanline-container"
+        style={{ padding: '24px', textAlign: 'center', borderColor: 'var(--neon-purple)', boxShadow: '0 0 25px rgba(157, 0, 255, 0.12)' }}
+        role="region"
+        aria-label="Chambre de réaction"
+      >
+        <h2 style={{ fontFamily: 'var(--font-title)', fontSize: '18px', color: 'var(--neon-purple)', marginBottom: '16px', letterSpacing: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <Sparkles className="animate-flicker" size={18} aria-hidden="true" />
+          REACTOR CHAMBER / CÁMARA DE FUSIÓN
+        </h2>
 
-      // Slots
-      React.createElement('div', {
-        style: {
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '30px',
-          margin: '20px 0'
-        }
-      },
-        // Slot 1
-        React.createElement('button', {
-          type: 'button',
-          disabled: !selectedReactant1,
-          onClick: () => setSelectedReactant1(null),
-          'aria-label': selectedReactant1
-            ? `${language === 'fr' ? 'Retirer le réactif 1' : 'Quitar el reactivo 1'}: ${selectedReactant1}`
-            : (language === 'fr' ? 'Emplacement réactif 1 vide' : 'Ranura de reactivo 1 vacía'),
-          style: {
-            width: '80px',
-            height: '80px',
-            border: `2px dashed ${selectedReactant1 ? 'var(--neon-cyan)' : 'var(--text-muted)'}`,
-            borderRadius: '8px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            background: 'rgba(0, 0, 0, 0.4)',
-            cursor: selectedReactant1 ? 'pointer' : 'default',
-            boxShadow: selectedReactant1 ? 'var(--glow-cyan)' : 'none',
-            transition: 'all 0.2s',
-            font: 'inherit'
-          }
-        },
-          selectedReactant1 ? [
-            React.createElement('span', { key: 'sym', style: { fontSize: '28px', fontWeight: 'bold', fontFamily: 'var(--font-title)', color: '#fff' } }, selectedReactant1),
-            React.createElement('span', { key: 'lbl', style: { fontSize: '9px', color: 'var(--neon-cyan)', fontFamily: 'var(--font-mono)' } }, "REACTANT 1")
-          ] : React.createElement('span', { style: { fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' } }, "EMPTY SLOT")
-        ),
+        {/* Slots */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', flexWrap: 'wrap', margin: '20px 0' }}>
+          
+          {/* Slot 1 */}
+          <button
+            type="button"
+            className={`hover-lift ${selectedReactant1 ? '' : 'empty-slot'}`}
+            disabled={!selectedReactant1}
+            onClick={() => setSelectedReactant1(null)}
+            aria-label={selectedReactant1 ? `${language === 'fr' ? 'Retirer le réactif 1' : 'Quitar el reactivo 1'}: ${selectedReactant1}` : (language === 'fr' ? 'Emplacement réactif 1 vide' : 'Ranura de reactivo 1 vacía')}
+            style={{
+              width: '80px', height: '80px',
+              border: `2px dashed ${selectedReactant1 ? 'var(--neon-cyan)' : 'var(--text-muted)'}`,
+              borderRadius: '8px',
+              display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+              background: 'rgba(0, 0, 0, 0.4)',
+              cursor: selectedReactant1 ? 'pointer' : 'default',
+              boxShadow: selectedReactant1 ? 'var(--glow-cyan)' : 'none',
+              transition: 'all 0.2s', font: 'inherit'
+            }}
+          >
+            {selectedReactant1 ? (
+              <>
+                <span style={{ fontSize: '28px', fontWeight: 'bold', fontFamily: 'var(--font-title)', color: '#fff' }}>{selectedReactant1}</span>
+                <span style={{ fontSize: '9px', color: 'var(--neon-cyan)', fontFamily: 'var(--font-mono)' }}>REACTANT 1</span>
+              </>
+            ) : (
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>EMPTY SLOT</span>
+            )}
+          </button>
 
-        // Plus sign
-        React.createElement('span', { style: { fontSize: '24px', fontFamily: 'var(--font-title)', color: 'var(--neon-purple)' } }, "+"),
+          {/* Plus sign */}
+          <span aria-hidden="true" style={{ fontSize: '24px', fontFamily: 'var(--font-title)', color: 'var(--neon-purple)' }}>+</span>
 
-        // Slot 2
-        React.createElement('button', {
-          type: 'button',
-          disabled: !selectedReactant2,
-          onClick: () => setSelectedReactant2(null),
-          'aria-label': selectedReactant2
-            ? `${language === 'fr' ? 'Retirer le réactif 2' : 'Quitar el reactivo 2'}: ${selectedReactant2}`
-            : (language === 'fr' ? 'Emplacement réactif 2 vide' : 'Ranura de reactivo 2 vacía'),
-          style: {
-            width: '80px',
-            height: '80px',
-            border: `2px dashed ${selectedReactant2 ? 'var(--neon-magenta)' : 'var(--text-muted)'}`,
-            borderRadius: '8px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            background: 'rgba(0, 0, 0, 0.4)',
-            cursor: selectedReactant2 ? 'pointer' : 'default',
-            boxShadow: selectedReactant2 ? 'var(--glow-magenta)' : 'none',
-            transition: 'all 0.2s',
-            font: 'inherit'
-          }
-        },
-          selectedReactant2 ? [
-            React.createElement('span', { key: 'sym', style: { fontSize: '28px', fontWeight: 'bold', fontFamily: 'var(--font-title)', color: '#fff' } }, selectedReactant2),
-            React.createElement('span', { key: 'lbl', style: { fontSize: '9px', color: 'var(--neon-magenta)', fontFamily: 'var(--font-mono)' } }, "REACTANT 2")
-          ] : React.createElement('span', { style: { fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' } }, "EMPTY SLOT")
-        )
-      ),
+          {/* Slot 2 */}
+          <button
+            type="button"
+            className={`hover-lift ${selectedReactant2 ? '' : 'empty-slot'}`}
+            disabled={!selectedReactant2}
+            onClick={() => setSelectedReactant2(null)}
+            aria-label={selectedReactant2 ? `${language === 'fr' ? 'Retirer le réactif 2' : 'Quitar el reactivo 2'}: ${selectedReactant2}` : (language === 'fr' ? 'Emplacement réactif 2 vide' : 'Ranura de reactivo 2 vacía')}
+            style={{
+              width: '80px', height: '80px',
+              border: `2px dashed ${selectedReactant2 ? 'var(--neon-magenta)' : 'var(--text-muted)'}`,
+              borderRadius: '8px',
+              display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+              background: 'rgba(0, 0, 0, 0.4)',
+              cursor: selectedReactant2 ? 'pointer' : 'default',
+              boxShadow: selectedReactant2 ? 'var(--glow-magenta)' : 'none',
+              transition: 'all 0.2s', font: 'inherit'
+            }}
+          >
+            {selectedReactant2 ? (
+              <>
+                <span style={{ fontSize: '28px', fontWeight: 'bold', fontFamily: 'var(--font-title)', color: '#fff' }}>{selectedReactant2}</span>
+                <span style={{ fontSize: '9px', color: 'var(--neon-magenta)', fontFamily: 'var(--font-mono)' }}>REACTANT 2</span>
+              </>
+            ) : (
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>EMPTY SLOT</span>
+            )}
+          </button>
+        </div>
 
-      // Reset Button
-      (selectedReactant1 || selectedReactant2) && React.createElement('button', {
-        onClick: clearReactants,
-        style: {
-          padding: '6px 16px',
-          background: 'transparent',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: '4px',
-          color: 'var(--text-secondary)',
-          fontFamily: 'var(--font-title)',
-          fontSize: '10px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          margin: '0 auto'
-        }
-      },
-        React.createElement(RefreshCw, { size: 10 }),
-        "RESET CHAMBER"
-      )
-    ),
+        {/* Reset Button */}
+        {(selectedReactant1 || selectedReactant2) && (
+          <button onClick={clearReactants} className="btn btn-outline hover-lift" style={{ margin: '0 auto' }}>
+            <RefreshCw size={12} aria-hidden="true" />
+            RESET CHAMBER
+          </button>
+        )}
+      </div>
 
-    // Grid Body: Quick Selector on left, reaction details on right
-    React.createElement('div', {
-      className: 'responsive-card-grid',
-      style: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: '24px'
-      }
-    },
-      // Left: Quick Element Selection Panel
-      React.createElement('div', {
-        className: 'glass-panel',
-        style: {
-          padding: '20px',
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--glass-border)',
-          borderRadius: '8px'
-        }
-      },
-        React.createElement('h3', { style: { fontFamily: 'var(--font-title)', fontSize: '14px', color: 'var(--text-primary)', marginBottom: '16px', letterSpacing: '1px' } },
-          "QUICK SELECTOR / SELECCION QUICK"
-        ),
-        React.createElement('div', {
-          style: {
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '10px'
-          }
-        },
-          quickElements.map(el => {
-            const isSelected = selectedReactant1 === el.s || selectedReactant2 === el.s;
-            return React.createElement('button', {
-              key: el.s,
-              onClick: () => selectQuickElement(el.s),
-              disabled: isSelected,
-              style: {
-                padding: '12px 6px',
-                background: isSelected ? 'var(--bg-tertiary)' : 'rgba(0, 243, 255, 0.02)',
-                border: `1px solid ${isSelected ? 'var(--text-muted)' : 'var(--glass-border)'}`,
-                borderRadius: '4px',
-                color: isSelected ? 'var(--text-muted)' : '#fff',
-                fontFamily: 'var(--font-title)',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                cursor: isSelected ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s',
-                boxShadow: !isSelected ? 'inset 0 0 5px rgba(0, 243, 255, 0.02)' : 'none'
-              },
-              className: !isSelected ? 'quick-element-btn' : ''
-            }, el.s);
-          })
-        )
-      ),
+      <div className="responsive-card-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+        
+        {/* Left: Quick Element Selection Panel */}
+        <div className="glass-panel" style={{ padding: '20px' }}>
+          <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '14px', color: 'var(--text-primary)', marginBottom: '16px', letterSpacing: '1px' }}>
+            QUICK SELECTOR / SELECCIÓN RÁPIDA
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(50px, 1fr))', gap: '10px' }} aria-label="Liste des éléments rapides">
+            {quickElements.map(el => {
+              const isSelected = selectedReactant1 === el.s || selectedReactant2 === el.s;
+              return (
+                <button
+                  key={el.s}
+                  onClick={() => selectQuickElement(el.s)}
+                  disabled={isSelected}
+                  className={!isSelected ? 'hover-lift' : ''}
+                  aria-pressed={isSelected}
+                  style={{
+                    padding: '12px 6px',
+                    background: isSelected ? 'var(--bg-tertiary)' : 'rgba(0, 243, 255, 0.02)',
+                    border: `1px solid ${isSelected ? 'var(--text-muted)' : 'var(--glass-border)'}`,
+                    borderRadius: '4px',
+                    color: isSelected ? 'var(--text-muted)' : '#fff',
+                    fontFamily: 'var(--font-title)',
+                    fontSize: '14px', fontWeight: 'bold',
+                    cursor: isSelected ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: !isSelected ? 'inset 0 0 5px rgba(0, 243, 255, 0.02)' : 'none'
+                  }}
+                >
+                  {el.s}
+                </button>
+              );
+            })}
+          </div>
 
-      // Custom symbol input
-      React.createElement('div', {
-        className: 'glass-panel',
-        style: {
-          padding: '16px',
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--glass-border)',
-          borderRadius: '8px',
-          marginTop: '0'
-        }
-      },
-        React.createElement('h3', { style: { fontFamily: 'var(--font-title)', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px', letterSpacing: '1px' } },
-          (language === 'fr' ? 'SAISIE MANUELLE D\'ÉLÉMENT' : 'ENTRADA MANUAL DE ELEMENTO').toUpperCase()
-        ),
-        React.createElement('div', { style: { display: 'flex', gap: '8px' } },
-          React.createElement('input', {
-            type: 'text',
-            value: customInput,
-            onChange: (e) => setCustomInput((e.target as HTMLInputElement).value.slice(0, 3)),
-            onKeyDown: (e: React.KeyboardEvent) => {
-              if (e.key === 'Enter' && customInput.trim()) {
-                selectQuickElement(customInput.trim());
-                setCustomInput('');
-              }
-            },
-            placeholder: language === 'fr' ? 'Ex: Fe, Au, Pb...' : 'Ej: Fe, Au, Pb...',
-            style: {
-              flex: 1,
-              minWidth: 0,
-              padding: '8px 12px',
-              background: 'rgba(5, 5, 10, 0.6)',
-              border: '1px solid var(--glass-border)',
-              borderRadius: '4px',
-              color: '#fff',
-              fontFamily: 'var(--font-title)',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              outline: 'none',
-              letterSpacing: '1px'
-            }
-          }),
-          React.createElement('button', {
-            onClick: () => { if (customInput.trim()) { selectQuickElement(customInput.trim()); setCustomInput(''); } },
-            style: {
-              padding: '8px 14px',
-              background: 'rgba(0, 243, 255, 0.08)',
-              border: '1px solid var(--neon-cyan)',
-              borderRadius: '4px',
-              color: 'var(--neon-cyan)',
-              fontFamily: 'var(--font-title)',
-              fontSize: '11px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              letterSpacing: '1px'
-            }
-          }, language === 'fr' ? 'AJOUTER' : 'AÑADIR')
-        )
-      ),
+          <div style={{ marginTop: '20px' }}>
+            <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px', letterSpacing: '1px' }}>
+              {(language === 'fr' ? "SAISIE MANUELLE D'ÉLÉMENT" : 'ENTRADA MANUAL DE ELEMENTO').toUpperCase()}
+            </h3>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input
+                type="text"
+                value={customInput}
+                onChange={(e) => setCustomInput((e.target as HTMLInputElement).value.slice(0, 3))}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && customInput.trim()) {
+                    selectQuickElement(customInput.trim());
+                    setCustomInput('');
+                  }
+                }}
+                placeholder={language === 'fr' ? 'Ex: Fe, Au, Pb...' : 'Ej: Fe, Au, Pb...'}
+                aria-label={language === 'fr' ? 'Saisir un symbole chimique manuellement' : 'Ingresar un símbolo químico manualmente'}
+                style={{
+                  flex: 1, minWidth: 0, padding: '8px 12px',
+                  background: 'rgba(5, 5, 10, 0.6)', border: '1px solid var(--glass-border)',
+                  borderRadius: '4px', color: '#fff', fontFamily: 'var(--font-title)',
+                  fontSize: '14px', fontWeight: 'bold', outline: 'none', letterSpacing: '1px'
+                }}
+              />
+              <button
+                className="btn btn-primary hover-lift"
+                style={{ padding: '8px 14px', fontSize: '11px' }}
+                onClick={() => { if (customInput.trim()) { selectQuickElement(customInput.trim()); setCustomInput(''); } }}
+              >
+                {language === 'fr' ? 'AJOUTER' : 'AÑADIR'}
+              </button>
+            </div>
+          </div>
+        </div>
 
-      // Right: Reaction Telemetry & calculations
-      React.createElement('div', {
-        style: {
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px'
-        }
-      },
-        reactionResult ? [
-          // Equation & Telemetry
-          React.createElement('div', {
-            key: 'equation',
-            className: 'glass-panel',
-            style: {
-              padding: '20px',
-              border: `1px solid ${reactionResult.stable ? 'var(--neon-green)' : 'var(--neon-yellow)'}`,
-              boxShadow: reactionResult.stable ? '0 0 10px rgba(57, 255, 20, 0.05)' : '0 0 10px rgba(255, 230, 0, 0.05)'
-            }
-          },
-            React.createElement('h3', { style: { fontFamily: 'var(--font-title)', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', letterSpacing: '1px' } },
-              t('fusion.equation').toUpperCase()
-            ),
-            
-            // Equation formula
-            React.createElement('div', {
-              style: {
-                fontSize: '24px',
-                fontWeight: 'bold',
-                fontFamily: 'var(--font-title)',
-                color: '#fff',
-                margin: '12px 0',
-                textShadow: reactionResult.stable ? '0 0 8px rgba(57, 255, 20, 0.4)' : 'none'
-              }
-            },
-              React.createElement(ChemicalEquation, {
-                reactants: reactionResult.reactants.map(r => ({ coefficient: r.coef, formula: r.symbol })),
-                products: reactionResult.products.map(p => ({ coefficient: p.coef, formula: p.symbol }))
-              })
-            ),
+        {/* Right: Reaction Telemetry & calculations */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {reactionResult ? (
+            <>
+              {/* Equation & Telemetry */}
+              <div
+                className="glass-panel"
+                role="status"
+                aria-live="polite"
+                style={{
+                  padding: '20px',
+                  borderColor: reactionResult.stable ? 'var(--neon-green)' : 'var(--neon-yellow)',
+                  boxShadow: reactionResult.stable ? '0 0 10px rgba(57, 255, 20, 0.05)' : '0 0 10px rgba(255, 230, 0, 0.05)'
+                }}
+              >
+                <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', letterSpacing: '1px' }}>
+                  {t('fusion.equation').toUpperCase()}
+                </h3>
+                
+                <div style={{ fontSize: '24px', fontWeight: 'bold', fontFamily: 'var(--font-title)', color: '#fff', margin: '12px 0', textShadow: reactionResult.stable ? '0 0 8px rgba(57, 255, 20, 0.4)' : 'none' }}>
+                  <ChemicalEquation
+                    reactants={reactionResult.reactants.map(r => ({ coefficient: r.coef, formula: r.symbol }))}
+                    products={reactionResult.products.map(p => ({ coefficient: p.coef, formula: p.symbol }))}
+                  />
+                </div>
 
-            // Compound name
-            React.createElement('p', {
-              style: {
-                fontSize: '12px',
-                fontFamily: 'var(--font-mono)',
-                color: 'var(--text-secondary)',
-                marginBottom: '16px',
-                fontStyle: 'italic'
-              }
-            }, reactionResult.products[0].name),
+                <p style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', marginBottom: '16px', fontStyle: 'italic' }}>
+                  {reactionResult.products[0].name}
+                </p>
 
-            // Thermodynamics readout
-            React.createElement('div', {
-              style: {
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: '12px',
-                borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                paddingTop: '16px'
-              }
-            },
-              React.createElement('div', null,
-                React.createElement('span', { style: { display: 'block', fontSize: '9px', color: 'var(--text-secondary)' } }, "ENTHALPY (ΔH)"),
-                React.createElement('span', { style: { fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 'bold', color: reactionResult.dH < 0 ? 'var(--neon-cyan)' : 'var(--neon-magenta)' } }, `${reactionResult.dH} kJ`)
-              ),
-              React.createElement('div', null,
-                React.createElement('span', { style: { display: 'block', fontSize: '9px', color: 'var(--text-secondary)' } }, "ENTROPY (ΔS)"),
-                React.createElement('span', { style: { fontFamily: 'var(--font-mono)', fontSize: '14px', color: '#fff' } }, `${reactionResult.dS} J/K`)
-              ),
-              React.createElement('div', null,
-                React.createElement('span', { style: { display: 'block', fontSize: '9px', color: 'var(--text-secondary)' } }, "GIBBS FREE (ΔG)"),
-                React.createElement('span', { style: { fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 'bold', color: reactionResult.stable ? 'var(--neon-green)' : 'var(--neon-magenta)' } }, `${reactionResult.dG} kJ`)
-              )
-            ),
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '16px' }}>
+                  <div>
+                    <span style={{ display: 'block', fontSize: '9px', color: 'var(--text-secondary)' }}>ENTHALPY (ΔH)</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 'bold', color: reactionResult.dH < 0 ? 'var(--neon-cyan)' : 'var(--neon-magenta)' }}>{reactionResult.dH} kJ</span>
+                  </div>
+                  <div>
+                    <span style={{ display: 'block', fontSize: '9px', color: 'var(--text-secondary)' }}>ENTROPY (ΔS)</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', color: '#fff' }}>{reactionResult.dS} J/K</span>
+                  </div>
+                  <div>
+                    <span style={{ display: 'block', fontSize: '9px', color: 'var(--text-secondary)' }}>GIBBS FREE (ΔG)</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 'bold', color: reactionResult.stable ? 'var(--neon-green)' : 'var(--neon-magenta)' }}>{reactionResult.dG} kJ</span>
+                  </div>
+                </div>
 
-            // Simplified info for kids
-            profile?.learningLevel === 'discovery' && React.createElement('div', {
-              style: {
-                marginTop: '16px', padding: '12px',
-                background: 'rgba(0, 243, 255, 0.05)',
-                border: '1px solid var(--neon-cyan)',
-                borderRadius: '8px', color: '#fff',
-                fontSize: '13px', textAlign: 'left',
-                display: 'flex', gap: '8px', alignItems: 'flex-start'
-              }
-            },
-              React.createElement(Info, { size: 16, style: { color: 'var(--neon-cyan)', flexShrink: 0 } }),
-              React.createElement('p', { style: { margin: 0, lineHeight: 1.4 } },
-                reactionResult.products[0]?.symbol === 'H2O' ? "L'eau est indispensable à la vie !" :
-                reactionResult.products[0]?.symbol === 'NaCl' ? "Le sel de table !" :
-                "Tu as fait une belle découverte scientifique."
-              )
-            ),
+                {profile?.learningLevel === 'discovery' && (
+                  <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(0, 243, 255, 0.05)', border: '1px solid var(--neon-cyan)', borderRadius: '8px', color: '#fff', fontSize: '13px', textAlign: 'left', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                    <Info size={16} style={{ color: 'var(--neon-cyan)', flexShrink: 0 }} aria-hidden="true" />
+                    <p style={{ margin: 0, lineHeight: 1.4 }}>
+                      {reactionResult.products[0]?.symbol === 'H2O' ? "L'eau est indispensable à la vie !" :
+                       reactionResult.products[0]?.symbol === 'NaCl' ? "Le sel de table !" :
+                       "Tu as fait une belle découverte scientifique."}
+                    </p>
+                  </div>
+                )}
 
-            // Spontaneity Indicator
-            React.createElement('div', {
-              style: {
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                marginTop: '16px',
-                padding: '10px',
-                background: reactionResult.stable ? 'rgba(57, 255, 20, 0.05)' : 'rgba(255, 0, 127, 0.05)',
-                border: `1px solid ${reactionResult.stable ? 'rgba(57, 255, 20, 0.2)' : 'rgba(255, 0, 127, 0.2)'}`,
-                borderRadius: '4px',
-                fontSize: '12px',
-                fontFamily: 'var(--font-mono)',
-                color: reactionResult.stable ? 'var(--neon-green)' : 'var(--neon-magenta)'
-              }
-            },
-              React.createElement(Flame, { size: 14 }),
-              React.createElement('span', null,
-                reactionResult.stable 
-                  ? (language === 'es' ? "REACCIÓN ESPONTÁNEA & COMPUESTO ESTABLE" : "RÉACTION SPONTANÉE & PRODUIT STABLE")
-                  : (language === 'es' ? "NO ESPONTÁNEA / INESTABLE EN STP" : "NON SPONTANÉE / INSTABLE EN STP")
-              )
-            )
-          ),
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '16px', padding: '10px', background: reactionResult.stable ? 'rgba(57, 255, 20, 0.05)' : 'rgba(255, 0, 127, 0.05)', border: `1px solid ${reactionResult.stable ? 'rgba(57, 255, 20, 0.2)' : 'rgba(255, 0, 127, 0.2)'}`, borderRadius: '4px', fontSize: '12px', fontFamily: 'var(--font-mono)', color: reactionResult.stable ? 'var(--neon-green)' : 'var(--neon-magenta)' }}>
+                  <Flame size={14} aria-hidden="true" />
+                  <span>
+                    {reactionResult.stable 
+                      ? (language === 'es' ? "REACCIÓN ESPONTÁNEA & COMPUESTO ESTABLE" : "RÉACTION SPONTANÉE & PRODUIT STABLE")
+                      : (language === 'es' ? "NO ESPONTÁNEA / INESTABLE EN STP" : "NON SPONTANÉE / INSTABLE EN STP")}
+                  </span>
+                </div>
+              </div>
 
-          // Stoichiometry Calculator
-          React.createElement(Stoichiometry, {
-            key: 'stoich',
-            reaction: reactionResult,
-            onSelectCascadeReaction: (sym1, sym2) => {
-              setSelectedReactant1(sym1);
-              setSelectedReactant2(sym2);
-            }
-          })
-        ] : React.createElement('div', {
-          className: 'glass-panel',
-          style: {
-            padding: '24px',
-            color: 'var(--text-secondary)',
-            fontSize: '13px',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px',
-            minHeight: '200px',
-            border: '1px dashed var(--glass-border)'
-          }
-        },
-          React.createElement(ShieldAlert, { size: 28, style: { color: 'var(--neon-magenta)' } }),
-          React.createElement('p', null, t('fusion.noReaction'))
-        )
-      )
-    ),
+              <Stoichiometry
+                reaction={reactionResult}
+                onSelectCascadeReaction={(sym1, sym2) => {
+                  setSelectedReactant1(sym1);
+                  setSelectedReactant2(sym2);
+                }}
+              />
+            </>
+          ) : (
+            <div className="glass-panel" style={{ padding: '24px', color: 'var(--text-secondary)', fontSize: '13px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', minHeight: '200px', border: '1px dashed var(--glass-border)' }}>
+              <ShieldAlert size={28} style={{ color: 'var(--neon-magenta)' }} aria-hidden="true" />
+              <p>{t('fusion.noReaction')}</p>
+            </div>
+          )}
+        </div>
+      </div>
 
-    // Render Reaction Coordinate Energy Diagram underneath (if reaction is valid)
-    reactionResult && React.createElement('div', {
-      className: 'glass-panel',
-      style: {
-        padding: '20px',
-        background: 'var(--bg-secondary)',
-        border: '1px solid var(--glass-border)'
-      }
-    },
-      React.createElement('h3', { style: { fontFamily: 'var(--font-title)', fontSize: '14px', color: 'var(--text-primary)', marginBottom: '16px', letterSpacing: '1px', textAlign: 'center' } },
-        t('fusion.energyDiagram').toUpperCase()
-      ),
-      React.createElement(EnergyDiagram, {
-        dH: reactionResult.dH
-      })
-    )
+      {reactionResult && (
+        <div className="glass-panel" style={{ padding: '20px', borderColor: 'var(--glass-border)' }}>
+          <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '14px', color: 'var(--text-primary)', marginBottom: '16px', letterSpacing: '1px', textAlign: 'center' }}>
+            {t('fusion.energyDiagram').toUpperCase()}
+          </h3>
+          <EnergyDiagram dH={reactionResult.dH} />
+        </div>
+      )}
+    </div>
   );
 };
