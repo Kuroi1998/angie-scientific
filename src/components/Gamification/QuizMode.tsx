@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Badge, Button } from '../../design-system';
+import { useAngieFireDialogue } from '../../features/angie/triggers/useAngieFireDialogue';
 import { useLocalStorageState } from '../../hooks/useLocalStorageState';
 import { writeStoredValue } from '../../utils/localStorage';
-import { useMascot } from '../Mascot/useMascot';
 import { RiddleMinigame } from './RiddleMinigame';
 import { QuizQuestionPanel } from './QuizQuestionPanel';
 import { QuizResults } from './QuizResults';
@@ -16,13 +16,15 @@ import type {
 } from './learningTypes';
 import { isQuizSessionHistory } from './learningTypes';
 import { examDuration, generateQuizQuestions } from './quizQuestionFactory';
+import { useLanguage } from '../../hooks/useLanguage';
 import '../LabStation/lab-station.css';
 import './quiz-mode.css';
 
 type QuizView = 'setup' | 'questionnaire' | 'results' | 'riddles';
 
 export const QuizMode: React.FC = () => {
-  const { showMessage } = useMascot();
+  const { t, currentLanguage } = useLanguage('gamification');
+  const fireDialogue = useAngieFireDialogue();
   const [history, setHistory] = useLocalStorageState<QuizSessionResult[]>(
     'quizHistory',
     [],
@@ -66,9 +68,9 @@ export const QuizMode: React.FC = () => {
     setHistory(nextHistory);
     setSaveStatus(persisted ? 'saved' : 'error');
     if (!interrupted && nextResult.score >= Math.ceil(nextResult.total * 0.8)) {
-      showMessage('Excellent resultat, session maitrisee.', 4000, 'happy');
+      fireDialogue('quiz.sessionExcellent');
     }
-  }, [answers, difficulty, history, mode, offline, questions.length, setHistory, showMessage, startTime]);
+  }, [answers, difficulty, fireDialogue, history, mode, offline, questions.length, setHistory, startTime]);
 
   useEffect(() => {
     if (view !== 'questionnaire' || mode !== 'exam' || validated) return undefined;
@@ -81,7 +83,7 @@ export const QuizMode: React.FC = () => {
   }, [finishSession, mode, timeLeft, validated, view]);
 
   const startSession = () => {
-    const nextQuestions = generateQuizQuestions(difficulty);
+    const nextQuestions = generateQuizQuestions(difficulty, t, currentLanguage);
     setQuestions(nextQuestions);
     setCurrentIndex(0);
     setSelectedAnswer(null);
@@ -92,13 +94,7 @@ export const QuizMode: React.FC = () => {
     setStartTime(Date.now());
     setTimeLeft(examDuration(difficulty));
     setView('questionnaire');
-    showMessage(
-      mode === 'exam'
-        ? 'Examen lance : surveille le chronometre.'
-        : 'Entrainement lance : prends le temps de lire les corrections.',
-      3500,
-      mode === 'exam' ? 'impressed' : 'happy',
-    );
+    fireDialogue(mode === 'exam' ? 'quiz.sessionStartExam' : 'quiz.sessionStartTraining');
   };
 
   const validateAnswer = () => {
@@ -134,12 +130,12 @@ export const QuizMode: React.FC = () => {
     <div className="quiz-station">
       <header className="lab-station-header">
         <div>
-          <p className="as-eyebrow">Academie scientifique</p>
-          <h1>Quiz, devinettes et examens</h1>
-          <p>Choisir un mode, valider les reponses, lire les corrections et suivre l'historique.</p>
+          <p className="as-eyebrow">{t('quiz.academyEyebrow')}</p>
+          <h1>{t('quiz.academyTitle')}</h1>
+          <p>{t('quiz.academyDesc')}</p>
         </div>
         <Badge tone={offline ? 'warning' : 'success'}>
-          {offline ? 'Hors ligne' : 'Connecte'}
+          {offline ? t('quiz.offline') : t('quiz.online')}
         </Badge>
       </header>
 
@@ -159,11 +155,11 @@ export const QuizMode: React.FC = () => {
         <section className="lab-panel">
           <div className="lab-panel-header">
             <div>
-              <p className="as-eyebrow">Devinettes</p>
-              <h2>Enigme elementaire</h2>
+              <p className="as-eyebrow">{t('quiz.riddlesEyebrow')}</p>
+              <h2>{t('quiz.riddlesTitle')}</h2>
             </div>
             <Button onClick={() => setView('setup')} size="sm" variant="outline">
-              Retour
+              {t('quiz.return')}
             </Button>
           </div>
           <div className="lab-panel-body">

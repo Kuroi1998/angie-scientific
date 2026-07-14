@@ -1,0 +1,31 @@
+{
+  "title": "Inicio científico",
+  "welcome": "Bienvenido/a, {{username}}",
+  "subtitle": "Pilota tus descubrimientos, elige tu próximo módulo y deja que Angie mantenga el rumbo pedagógico.",
+  "explore": "Explorar los elementos",
+  "quiz": "Iniciar un quiz",
+  "stats": {
+    "level": "Nivel",
+    "xp": "Experiencia",
+    "elements": "Elementos",
+    "badges": "Insignias"
+  },
+  "progress": "Progreso general",
+  "badgesTitle": "Últimas insignias obtenidas",
+  "badgesEmpty": "Completa misiones para obtener tus primeras insignias.",
+  "discoveriesTitle": "Descubrimientos recientes",
+  "discoveriesEmpty": "Explora la tabla para descubrir nuevos elementos.",
+  "nextTitle": "Próximos objetivos recomendados",
+  "objectiveTypes": {
+    "module": "Módulo",
+    "quiz": "Quiz",
+    "theory": "Teoría"
+  },
+  "objectiveLevels": {
+    "beginner": "Principiante",
+    "intermediate": "Intermedio",
+    "advanced": "Avanzado",
+    "expert": "Experto"
+  },
+  "go": "Ir"
+}

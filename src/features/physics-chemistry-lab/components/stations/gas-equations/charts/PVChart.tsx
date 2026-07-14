@@ -3,9 +3,11 @@ import type { GasState, GasModelsComparison } from '../types/gas.types';
 import { gasDatabase } from '../data/gasDatabase';
 import { ScientificPanel } from '../../../../../../components/shared/ScientificPanel';
 import { resolveCssColor } from '../../../../../../utils/resolveCssColor';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 export const PVChart: React.FC<{ state: GasState, comparison: GasModelsComparison }> = ({ state, comparison }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { t } = useLanguage('common');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -78,13 +80,13 @@ export const PVChart: React.FC<{ state: GasState, comparison: GasModelsCompariso
   }, [state, comparison]);
 
   return (
-    <ScientificPanel title="Isotherme Pression-Volume" variant="glass">
+    <ScientificPanel title={t('pvChart.title')} variant="glass">
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <canvas ref={canvasRef} width={300} height={200} style={{ background: 'var(--as-surface-inverse)', borderRadius: '4px' }} />
       </div>
       <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '12px', fontSize: '10px', fontFamily: 'var(--as-font-mono)' }}>
-        <span style={{ color: 'var(--as-accent-cyan)' }}>■ Gaz Parfait</span>
-        <span style={{ color: 'color-mix(in srgb, var(--as-accent-violet) 85%, white 15%)' }}>■ Van der Waals</span>
+        <span style={{ color: 'var(--as-accent-cyan)' }}>■ {t('pvChart.idealGas')}</span>
+        <span style={{ color: 'color-mix(in srgb, var(--as-accent-violet) 85%, white 15%)' }}>■ {t('pvChart.vdwGas')}</span>
       </div>
     </ScientificPanel>
   );

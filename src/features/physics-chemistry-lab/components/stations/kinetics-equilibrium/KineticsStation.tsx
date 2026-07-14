@@ -8,9 +8,11 @@ import { KineticsResults } from './components/KineticsResults';
 import { EquilibriumIndicator } from './components/EquilibriumIndicator';
 import { ConcentrationChart } from './charts/ConcentrationChart';
 import { EnergyProfileChart } from './charts/EnergyProfileChart';
+import { useLanguage } from '../../../../../hooks/useLanguage';
 
 export const KineticsStation: React.FC = () => {
   const { state, setVariable, reaction, result, history, resetSimulation, injectReactants } = useKineticsState();
+  const { t } = useLanguage('lab');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '24px', overflowY: 'auto', paddingRight: '8px' }}>
@@ -31,10 +33,10 @@ export const KineticsStation: React.FC = () => {
           </div>
 
           <div style={{ background: 'var(--as-surface-secondary)', padding: '16px', borderRadius: '8px', border: '1px solid var(--as-border-inverse)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <h3 style={{ margin: 0, fontSize: '14px', fontFamily: 'var(--as-font-title)', color: 'var(--text-primary)' }}>Paramètres Thermodynamiques</h3>
+            <h3 style={{ margin: 0, fontSize: '14px', fontFamily: 'var(--as-font-title)', color: 'var(--text-primary)' }}>{t('kinetics.params.title')}</h3>
             
             <KineticsSlider
-              label="Température" symbol="T"
+              label={t('kinetics.params.temperature')} symbol="T"
               value={state.temperature} min={200} max={1000} step={10} unit="K"
               onChange={v => setVariable('temperature', v)}
               accentColor="var(--as-accent-amber)"

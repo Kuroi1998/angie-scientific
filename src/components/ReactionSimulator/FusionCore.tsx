@@ -4,9 +4,10 @@ import { Alert, Badge, Button } from '../../design-system';
 import { useLanguage } from '../../hooks/useLanguage';
 import { predictReaction } from '../../engines/chemistryEngine';
 import type { ReactionResult } from '../../engines/chemistryEngine';
+import { publishFusionContext } from '../../features/angie/intents/scientificContext';
+import { useAngieFireDialogue } from '../../features/angie/triggers/useAngieFireDialogue';
 import { AudioManager } from '../../services/Audio/AudioManager';
 import { ParticleEngine } from '../../services/Visuals/ParticleEngine';
-import { useMascot } from '../Mascot/useMascot';
 import { useUserProgress } from '../useUserProgress';
 import { LabStation, SafetyList, StationPanel } from '../LabStation';
 import { EnergyDiagram } from './EnergyDiagram';
@@ -32,24 +33,22 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
 }) => {
   const { language, t } = useLanguage();
   const { profile, addSuccessfulReaction } = useUserProgress();
-  const { showMessage, setEmotion } = useMascot();
+  const fireDialogue = useAngieFireDialogue();
   const [customInput, setCustomInput] = useState('');
   const [reactionResult, setReactionResult] = useState<ReactionResult | null>(null);
   const reactionEffectsRef = useRef({
     addSuccessfulReaction,
+    fireDialogue,
     language,
     reducedMotion: profile?.reducedMotion,
-    setEmotion,
-    showMessage,
   });
 
   useEffect(() => {
     reactionEffectsRef.current = {
       addSuccessfulReaction,
+      fireDialogue,
       language,
       reducedMotion: profile?.reducedMotion,
-      setEmotion,
-      showMessage,
     };
   });
 
@@ -65,18 +64,26 @@ export const FusionCore: React.FC<FusionCoreProps> = ({
 
     const product = result.products[0]?.symbol;
     const effects = reactionEffectsRef.current;
+    publishFusionContext({
+      dH: result.dH,
+      productSymbol: product ?? null,
+      reactant1: selectedReactant1,
+      reactant2: selectedReactant2,
+      reactionType: result.type,
+      stable: result.stable,
+      updatedAt: Date.now(),
+    });
+
     if (result.stable) {
       AudioManager.getInstance().playSuccess();
       void effects.addSuccessfulReaction(product);
-      effects.showMessage(getProductMessage(product, effects.language), 3000, 'happy');
-      effects.setEmotion('happy');
+      effects.fireDialogue('fusion.success', 'balanced', getProductMessage(product, effects.language));
       if (effects.reducedMotion !== true) ParticleEngine.getInstance().fireFusionSuccess();
       return;
     }
 
     AudioManager.getInstance().playError();
-    effects.showMessage(t('core.unstableError', { ns: 'fusion' }));
-    effects.setEmotion('surprised');
+    effects.fireDialogue('fusion.unstable', 'balanced', t('core.unstableError', { ns: 'fusion' }));
     if (effects.reducedMotion !== true) ParticleEngine.getInstance().fireReactionExplosion();
   }, [selectedReactant1, selectedReactant2, t]);
 

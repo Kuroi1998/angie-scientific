@@ -3,6 +3,7 @@ import { Bot, Orbit } from 'lucide-react';
 import { Alert } from '../../design-system';
 import { AtomModelCanvas } from './AtomModelCanvas';
 import type { ElementType } from '../PeriodicTable/periodicTableTypes';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface ElementDetailVisualPanelProps {
   categoryColor: string;
@@ -17,6 +18,7 @@ export function ElementDetailVisualPanel({
   fact,
   mascotEnabled,
 }: ElementDetailVisualPanelProps) {
+  const { t } = useLanguage('periodicTable');
   return (
     <section
       className="element-detail-visual"
@@ -25,7 +27,7 @@ export function ElementDetailVisualPanel({
     >
       <div className="element-detail-visual-label">
         <Orbit size={16} aria-hidden="true" />
-        <span>Bohr simulation</span>
+        <span>{t('element.bohrSimulation')}</span>
       </div>
       <div className="element-detail-canvas">
         <AtomModelCanvas
@@ -35,7 +37,7 @@ export function ElementDetailVisualPanel({
         />
       </div>
       {mascotEnabled && (
-        <Alert className="element-detail-angie" tone="info" title="Analyse Angie">
+        <Alert className="element-detail-angie" tone="info" title={t('element.angieAnalysis')}>
           <span aria-hidden="true"><Bot size={16} /></span>
           {fact}
         </Alert>

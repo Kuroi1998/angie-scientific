@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Check, HelpCircle, Trophy, X } from 'lucide-react';
 import { Alert, Button, Input } from '../../design-system';
-import { useMascot } from '../Mascot/useMascot';
+import { useAngieFireDialogue } from '../../features/angie/triggers/useAngieFireDialogue';
+import { useLanguage } from '../../hooks/useLanguage';
 import { useUserProgress } from '../useUserProgress';
 import type { Riddle } from '../../data/educational/models';
 import { ParticleEngine } from '../../services/Visuals/ParticleEngine';
@@ -31,7 +32,8 @@ const riddles: Riddle[] = [
 
 export const RiddleMinigame: React.FC = () => {
   const { profile, progress, solveRiddle } = useUserProgress();
-  const { showMessage } = useMascot();
+  const { t, language } = useLanguage('gamification');
+  const fireDialogue = useAngieFireDialogue();
   const [currentRiddle, setCurrentRiddle] = useState<Riddle | null>(null);
   const [userAnswer, setUserAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
@@ -44,8 +46,8 @@ export const RiddleMinigame: React.FC = () => {
   if (!progress) return null;
   if (!currentRiddle && progress.solvedRiddles.length >= riddles.length) {
     return (
-      <Alert title="Champion des devinettes" tone="success">
-        <Trophy size={18} aria-hidden="true" /> Toutes les enigmes actuelles sont resolues.
+      <Alert title={t('riddlesGame.champion')} tone="success">
+        <Trophy size={18} aria-hidden="true" /> {t('riddlesGame.allSolved')}
       </Alert>
     );
   }
@@ -56,13 +58,13 @@ export const RiddleMinigame: React.FC = () => {
     const correct = userAnswer.trim().toLowerCase() === currentRiddle.answerElementSymbol.toLowerCase();
     if (!correct) {
       setStatus('wrong');
-      showMessage('Cherche encore dans le tableau periodique.', 3000, 'thinking');
+      fireDialogue('quiz.wrongAnswer');
       window.setTimeout(() => setStatus('idle'), 1800);
       return;
     }
     setStatus('correct');
     if (profile?.reducedMotion !== true) ParticleEngine.getInstance().fireFusionSuccess();
-    showMessage(currentRiddle.explanationFr, 5000, 'impressed');
+    fireDialogue('quiz.correctAnswer', 'balanced', language === 'es' ? currentRiddle.explanationEs : currentRiddle.explanationFr);
     await solveRiddle(currentRiddle.id);
     window.setTimeout(() => {
       setStatus('idle');
@@ -72,17 +74,17 @@ export const RiddleMinigame: React.FC = () => {
 
   return (
     <form className="quiz-feedback" onSubmit={submit}>
-      <strong><HelpCircle size={18} aria-hidden="true" /> Devinette active</strong>
-      <span>{currentRiddle.questionFr}</span>
+      <strong><HelpCircle size={18} aria-hidden="true" /> {t('riddlesGame.active')}</strong>
+      <span>{language === 'es' ? currentRiddle.questionEs : currentRiddle.questionFr}</span>
       <Input
-        label="Reponse"
+        label={t('riddlesGame.answer')}
         onChange={(event) => setUserAnswer(event.target.value)}
-        placeholder="Symbole, ex: O ou Fe"
+        placeholder={t('riddlesGame.placeholder')}
         value={userAnswer}
       />
-      <Button type="submit">Valider</Button>
-      {status === 'correct' && <Alert title="Correct" tone="success"><Check size={16} /> {currentRiddle.explanationFr}</Alert>}
-      {status === 'wrong' && <Alert title="Faux" tone="error"><X size={16} /> Essaie encore.</Alert>}
+      <Button type="submit">{t('riddlesGame.validate')}</Button>
+      {status === 'correct' && <Alert title={t('riddlesGame.correct')} tone="success"><Check size={16} /> {language === 'es' ? currentRiddle.explanationEs : currentRiddle.explanationFr}</Alert>}
+      {status === 'wrong' && <Alert title={t('riddlesGame.wrong')} tone="error"><X size={16} /> {t('riddlesGame.tryAgain')}</Alert>}
     </form>
   );
 };

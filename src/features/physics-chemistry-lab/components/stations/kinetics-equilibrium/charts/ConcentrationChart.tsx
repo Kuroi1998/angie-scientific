@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import type { ConcentrationPoint, ReactionDefinition } from '../types/kinetics.types';
 import { ScientificPanel } from '../../../../../../components/shared/ScientificPanel';
 import { resolveCssColor } from '../../../../../../utils/resolveCssColor';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 interface ConcentrationChartProps {
   history: ConcentrationPoint[];
@@ -10,6 +11,7 @@ interface ConcentrationChartProps {
 
 export const ConcentrationChart: React.FC<ConcentrationChartProps> = ({ history, reaction }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { t } = useLanguage('lab');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -69,7 +71,7 @@ export const ConcentrationChart: React.FC<ConcentrationChartProps> = ({ history,
   }, [history, reaction]);
 
   return (
-    <ScientificPanel title="Évolution Temporelle des Concentrations" variant="glass">
+    <ScientificPanel title={t('kinetics.charts.concentrationTitle')} variant="glass">
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <canvas ref={canvasRef} width={400} height={200} style={{ background: 'var(--as-surface-inverse)', borderRadius: '4px', maxWidth: '100%' }} />
       </div>

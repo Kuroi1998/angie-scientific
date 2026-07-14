@@ -1,5 +1,6 @@
 import React from 'react';
 import type { GasVariable } from '../types/gas.types';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 interface VariableSelectorProps {
   value: GasVariable;
@@ -7,16 +8,18 @@ interface VariableSelectorProps {
 }
 
 export const VariableSelector: React.FC<VariableSelectorProps> = ({ value, onChange }) => {
+  const { t } = useLanguage('lab');
+
   const options: { id: GasVariable; label: string; symbol: string }[] = [
-    { id: 'pressure', label: 'Pression', symbol: 'P' },
-    { id: 'volume', label: 'Volume', symbol: 'V' },
-    { id: 'temperature', label: 'Température', symbol: 'T' },
-    { id: 'moles', label: 'Quantité', symbol: 'n' }
+    { id: 'pressure', label: t('gas.params.pressure'), symbol: 'P' },
+    { id: 'volume', label: t('gas.params.volume'), symbol: 'V' },
+    { id: 'temperature', label: t('gas.params.temperature'), symbol: 'T' },
+    { id: 'moles', label: t('gas.params.moles'), symbol: 'n' }
   ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-      <span style={{ fontSize: '11px', color: 'var(--as-text-muted)', fontFamily: 'var(--as-font-title)' }}>VARIABLE À CALCULER</span>
+      <span style={{ fontSize: '11px', color: 'var(--as-text-muted)', fontFamily: 'var(--as-font-title)' }}>{t('gas.variableSelector.title')}</span>
       <div style={{ display: 'flex', gap: '4px', background: 'var(--surface-card)', padding: '4px', borderRadius: '6px' }}>
         {options.map(opt => {
           const active = value === opt.id;
@@ -37,7 +40,7 @@ export const VariableSelector: React.FC<VariableSelectorProps> = ({ value, onCha
                 boxShadow: active ? '0 2px 4px rgba(0,0,0,0.2)' : 'none',
                 transition: 'all 0.2s'
               }}
-              title={`Calculer le ${opt.label} en fonction des autres variables`}
+              title={t('gas.variableSelector.calcHint', { label: opt.label.toLowerCase() })}
             >
               {opt.symbol}
             </button>

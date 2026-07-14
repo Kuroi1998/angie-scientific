@@ -13,9 +13,6 @@ import {
 import { AppNotifications } from './components/AppNotifications';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import { LoginScreen } from './components/LoginScreen';
-import { AngieMascot } from './components/Mascot/AngieMascot';
-import { MascotProvider } from './components/Mascot/MascotContext';
-import { useMascot } from './components/Mascot/useMascot';
 import type { ElementType } from './components/PeriodicTable/TableGrid';
 import { ReloadPrompt } from './components/ReloadPrompt';
 import { SettingsModal } from './components/SettingsModal';
@@ -26,9 +23,11 @@ import {
 } from './components/UserProgressProvider';
 import { useUserProgress } from './components/useUserProgress';
 import { WelcomeModal } from './components/WelcomeModal';
+import { AngieMascot } from './features/angie/components/AngieMascot';
+import { AngieProvider } from './features/angie/state/AngieProvider';
+import { useAngie } from './features/angie/state/useAngie';
 import { LanguageProvider, useLanguage } from './hooks/useLanguage';
 import { useLocalStorageState } from './hooks/useLocalStorageState';
-import { useTutorial } from './hooks/useTutorial';
 import { AppShell } from './layout/AppShell';
 import { AudioManager } from './services/Audio/AudioManager';
 import { MusicManager } from './services/Audio/MusicManager';
@@ -58,13 +57,12 @@ const AppContent: React.FC = () => {
   const [isThemeStoreOpen, setIsThemeStoreOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { profile } = useUserProgress();
-  const { showMessage } = useMascot();
+  const { openPanel } = useAngie();
   const shellLanguage = language ?? 'fr';
   const navTabs = useShellRoutes(shellLanguage, t);
   const shellLabels = useShellLabels(shellLanguage, t);
   const shellStats = useShellStats();
 
-  useTutorial(activeTab);
   React.useEffect(() => {
     const isEnabled = profile?.globalSoundEnabled ?? true;
     AudioManager.getInstance().setEnabled(isEnabled);
@@ -89,11 +87,7 @@ const AppContent: React.FC = () => {
   };
 
   const handleAngieOpen = () => {
-    showMessage(
-      t('angie.ready'),
-      5000,
-      'encouraging',
-    );
+    openPanel();
   };
 
   return (
@@ -131,6 +125,7 @@ const AppContent: React.FC = () => {
       {isSettingsOpen && (
         <SettingsModal onClose={() => setIsSettingsOpen(false)} />
       )}
+      <AngieMascot activeTab={activeTab} />
     </div>
   );
 };
@@ -161,15 +156,16 @@ export default function App() {
       description={t('errorBoundary.description')}
       homeLabel={t('errorBoundary.reload')}
       label={t('errorBoundary.title')}
+      titlePrefix={t('errorBoundary.titlePrefix')}
+      retryLabel={t('errorBoundary.retryLabel')}
       onNavigateHome={() => window.location.reload()}
     >
       <UserProgressProvider>
-        <MascotProvider>
+        <AngieProvider>
           <LanguageProvider>
             <AppContent />
-            <AngieMascot />
           </LanguageProvider>
-        </MascotProvider>
+        </AngieProvider>
       </UserProgressProvider>
     </ErrorBoundary>
   );

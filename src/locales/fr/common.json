@@ -13,9 +13,36 @@
   "errorBoundary": {
     "description": "L'application a rencontré une erreur inattendue. Vos données locales sont conservées.",
     "reload": "Recharger l'application",
-    "title": "Angie Scientific"
+    "title": "Angie Scientific",
+    "titlePrefix": "UNE ERREUR EST SURVENUE",
+    "retryLabel": "Réessayer"
   },
   "angie": {
     "ready": "Je suis prête. Choisis une station et je garde le fil scientifique avec toi."
+  },
+  "pwa": {
+    "reload": "Recharger",
+    "close": "Fermer la notification",
+    "updateAvailable": "Mise à jour disponible",
+    "offlineReady": "Prêt hors ligne",
+    "reloadDesc": "Une nouvelle version de l'application est disponible.",
+    "reloadAction": "Recharger la page"
+  },
+  "labMetrics": "Indicateurs de laboratoire",
+  "closeNotification": "Fermer la notification",
+  "zoomControl": "Contrôle du zoom",
+  "zoomIn": "Zoomer",
+  "zoomOut": "Dézoomer",
+  "resetZoom": "Réinitialiser le zoom",
+  "dataTable": {
+    "empty": "Aucune donnée disponible."
+  },
+  "feedback": {
+    "loading": "Chargement des données scientifiques..."
+  },
+  "pvChart": {
+    "title": "Isotherme Pression-Volume",
+    "idealGas": "Gaz Parfait",
+    "vdwGas": "Van der Waals"
   }
 }

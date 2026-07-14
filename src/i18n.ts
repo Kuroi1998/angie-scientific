@@ -9,6 +9,11 @@ import frSettings from './locales/fr/settings.json';
 import frPeriodicTable from './locales/fr/periodicTable.json';
 import frQuantum from './locales/fr/quantum.json';
 import frFusion from './locales/fr/fusion.json';
+import frAngie from './locales/fr/angie.json';
+import frLab from './locales/fr/lab.json';
+import frDashboard from './locales/fr/dashboard.json';
+import frGamification from './locales/fr/gamification.json';
+import frUser from './locales/fr/user.json';
 import esCommon from './locales/es/common.json';
 import esNavigation from './locales/es/navigation.json';
 import esAuth from './locales/es/auth.json';
@@ -16,6 +21,11 @@ import esSettings from './locales/es/settings.json';
 import esPeriodicTable from './locales/es/periodicTable.json';
 import esQuantum from './locales/es/quantum.json';
 import esFusion from './locales/es/fusion.json';
+import esAngie from './locales/es/angie.json';
+import esLab from './locales/es/lab.json';
+import esDashboard from './locales/es/dashboard.json';
+import esGamification from './locales/es/gamification.json';
+import esUser from './locales/es/user.json';
 
 const resources = {
   fr: {
@@ -26,6 +36,11 @@ const resources = {
     periodicTable: frPeriodicTable,
     quantum: frQuantum,
     fusion: frFusion,
+    angie: frAngie,
+    lab: frLab,
+    dashboard: frDashboard,
+    gamification: frGamification,
+    user: frUser,
   },
   es: {
     common: esCommon,
@@ -35,6 +50,11 @@ const resources = {
     periodicTable: esPeriodicTable,
     quantum: esQuantum,
     fusion: esFusion,
+    angie: esAngie,
+    lab: esLab,
+    dashboard: esDashboard,
+    gamification: esGamification,
+    user: esUser,
   },
 };
 
@@ -45,7 +65,7 @@ i18n
     resources,
     fallbackLng: 'fr',
     supportedLngs: ['fr', 'es'],
-    ns: ['common', 'navigation', 'auth', 'settings', 'periodicTable', 'quantum', 'fusion'],
+    ns: ['common', 'navigation', 'auth', 'settings', 'periodicTable', 'quantum', 'fusion', 'angie', 'lab', 'dashboard', 'gamification', 'user'],
     defaultNS: 'common',
     detection: {
       order: ['localStorage', 'navigator'],

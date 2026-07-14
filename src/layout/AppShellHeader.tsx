@@ -91,7 +91,7 @@ function ShellActions<TId extends string>({
         variant="ghost"
         size="sm"
       >
-        {stats.isLoading ? 'Sync' : 'OK'}
+        {stats.isLoading ? labels.sync : labels.ok}
       </Button>
       <ThemeToggle onOpenThemeStore={onOpenThemeStore} />
       <IconButton

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { SpectroscopyMode } from '../types/spectroscopy.types';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 interface ModeSelectorProps {
   mode: SpectroscopyMode;
@@ -7,6 +8,8 @@ interface ModeSelectorProps {
 }
 
 export const ModeSelector: React.FC<ModeSelectorProps> = ({ mode, onModeChange }) => {
+  const { t } = useLanguage('lab');
+
   return (
     <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
       <button
@@ -23,7 +26,7 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({ mode, onModeChange }
           transition: 'all 0.2s'
         }}
       >
-        ÉMISSION (VISIBLE)
+        {t('spectroscopy.mode.emission')}
       </button>
 
       <button
@@ -40,7 +43,7 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({ mode, onModeChange }
           transition: 'all 0.2s'
         }}
       >
-        ABSORPTION (INFRAROUGE)
+        {t('spectroscopy.mode.absorption')}
       </button>
     </div>
   );

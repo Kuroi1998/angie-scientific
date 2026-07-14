@@ -31,18 +31,32 @@
 .user-theme-card,
 .user-badge-card,
 .user-activity-card {
-  background: var(--as-surface-2);
-  border: 1px solid var(--as-border-soft);
-  border-radius: var(--as-radius-2);
+  background: var(--as-surface-glass-dark);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(24, 184, 200, 0.2);
+  border-radius: var(--as-radius-3);
   display: grid;
   gap: var(--as-space-3);
   padding: var(--as-space-4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.user-id-card:hover,
+.user-theme-card:hover,
+.user-badge-card:hover,
+.user-activity-card:hover {
+  border-color: var(--as-accent-cyan);
+  box-shadow: 0 0 15px rgba(24, 184, 200, 0.2), inset 0 0 10px rgba(24, 184, 200, 0.1);
+  transform: translateY(-2px);
 }
 
 .user-id-card strong,
 .user-stat-card strong {
-  color: var(--as-text-strong);
-  font: 700 var(--as-font-size-xl) / var(--as-line-tight) var(--as-font-display);
+  color: var(--as-accent-cyan);
+  font: 700 var(--as-font-size-lg) / var(--as-line-tight) var(--as-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .user-action-row,

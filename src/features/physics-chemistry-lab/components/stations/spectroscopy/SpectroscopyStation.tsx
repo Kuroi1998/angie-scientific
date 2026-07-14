@@ -7,6 +7,7 @@ import { ElementSelector } from './components/ElementSelector';
 import { PhotonInfoPanel } from './components/PhotonInfoPanel';
 import { EmissionSpectrumChart } from './charts/EmissionSpectrumChart';
 import { AbsorptionSpectrumChart } from './charts/AbsorptionSpectrumChart';
+import { useLanguage } from '../../../../../hooks/useLanguage';
 
 export const SpectroscopyStation: React.FC = () => {
   const {
@@ -16,6 +17,7 @@ export const SpectroscopyStation: React.FC = () => {
     hoveredX, setHoveredX,
     photonInfo
   } = useSpectroscopyState();
+  const { t } = useLanguage('lab');
 
   const isEmission = mode === 'EMISSION';
 
@@ -39,7 +41,7 @@ export const SpectroscopyStation: React.FC = () => {
 
           <div style={{ background: 'var(--as-surface-secondary)', padding: '16px', borderRadius: '8px', border: '1px solid var(--as-border-inverse)' }}>
             <h3 style={{ margin: '0 0 16px 0', fontSize: '14px', fontFamily: 'var(--as-font-title)', color: 'var(--text-primary)' }}>
-              Analyseur de Photon en Direct
+              {t('spectroscopy.analyzerTitle')}
             </h3>
             <PhotonInfoPanel mode={mode} photonInfo={photonInfo} />
           </div>

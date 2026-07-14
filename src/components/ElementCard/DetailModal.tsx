@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { Atom } from 'lucide-react';
 import { Button, Modal } from '../../design-system';
+import { useAngie } from '../../features/angie/state/useAngie';
 import { useLanguage } from '../../hooks/useLanguage';
 import { ElementFactRepository } from '../../services/Educational/ElementFactRepository';
-import { useMascot } from '../Mascot/useMascot';
 import type { ElementType } from '../PeriodicTable/periodicTableTypes';
 import { getCategoryColor } from '../PeriodicTable/periodicTableModel';
 import { useUserProgress } from '../useUserProgress';
@@ -27,7 +27,7 @@ interface DetailModalProps {
 export function DetailModal({ element, onAddToFusion, onClose }: DetailModalProps) {
   const { language, t } = useLanguage();
   const { profile } = useUserProgress();
-  const { showMessage } = useMascot();
+  const { showMessage } = useAngie();
   const [activeTab, setActiveTab] = useState<ElementDetailTab>('general');
   const categoryColor = getCategoryColor(element.cat);
   const texts = getElementDetailTexts(element, language);
@@ -36,7 +36,7 @@ export function DetailModal({ element, onAddToFusion, onClose }: DetailModalProp
   useEffect(() => {
     if (profile?.mascotEnabled === false) return undefined;
     const timeout = window.setTimeout(() => {
-      showMessage(fact.childFriendlyText, 6000, getFactEmotion(fact.category));
+      showMessage(fact.childFriendlyText, 6000, getFactEmotion(fact.category), 'contextualHelp');
     }, 400);
     return () => window.clearTimeout(timeout);
   }, [element.n, fact.category, fact.childFriendlyText, profile?.mascotEnabled, showMessage]);

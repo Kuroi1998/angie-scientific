@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { cx } from './types';
+import { useLanguage } from '../hooks/useLanguage';
 
 export interface DataColumn<T> {
   align?: 'left' | 'center' | 'right';
@@ -19,10 +20,13 @@ export interface DataTableProps<T> {
 export function DataTable<T,>({
   caption,
   columns,
-  emptyMessage = 'No records available.',
+  emptyMessage,
   getRowKey,
   rows,
 }: DataTableProps<T>) {
+  const { t } = useLanguage('common');
+  const finalEmptyMessage = emptyMessage ?? t('dataTable.empty');
+
   return (
     <div className="as-table-wrap">
       <table className="as-table">
@@ -43,7 +47,7 @@ export function DataTable<T,>({
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length}>{emptyMessage}</td>
+              <td colSpan={columns.length}>{finalEmptyMessage}</td>
             </tr>
           ) : (
             rows.map((row, rowIndex) => (

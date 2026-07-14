@@ -59,5 +59,11 @@
   "mobileNavigation": "Navegación móvil",
   "profile": "Perfil",
   "skipToContent": "Ir al contenido",
-  "userMenu": "Menú de usuario"
+  "userMenu": "Menú de usuario",
+  "angieDesc": "Asistente científico listo para guiar la sesión.",
+  "statsElements": "elementos",
+  "statsBadges": "insignias",
+  "audioActive": "Audio activo",
+  "audioMuted": "Audio silenciado",
+  "motionReduced": "Movimiento reducido"
 }

@@ -10,8 +10,10 @@ import {
 } from './questData';
 import '../LabStation/lab-station.css';
 import './quiz-mode.css';
+import { useLanguage } from '../../hooks/useLanguage';
 
 export const QuestSystem: React.FC = () => {
+  const { t } = useLanguage('gamification');
   const [completedQuests, setCompletedQuests] = useLocalStorageState<string[]>(
     'questProgress',
     [],
@@ -46,8 +48,8 @@ export const QuestSystem: React.FC = () => {
       <section className="lab-panel">
         <div className="lab-panel-header">
           <div>
-            <p className="as-eyebrow">Defis actifs</p>
-            <h2>Quetes scientifiques</h2>
+            <p className="as-eyebrow">{t('quests.active')}</p>
+            <h2>{t('quests.title')}</h2>
           </div>
           <Target size={20} aria-hidden="true" />
         </div>
@@ -82,28 +84,27 @@ export const QuestSystem: React.FC = () => {
       <section className="lab-panel">
         <div className="lab-panel-header">
           <div>
-            <p className="as-eyebrow">Classement</p>
-            <h2>Progression locale</h2>
+            <p className="as-eyebrow">{t('quests.leaderboard')}</p>
+            <h2>{t('quests.progress')}</h2>
           </div>
           <Badge tone="success">{totalPoints}</Badge>
         </div>
         <div className="lab-panel-body">
           <div className="lab-readout-grid">
-            <div className="lab-readout"><span>Points</span><Badge tone="success">{totalPoints}</Badge></div>
-            <div className="lab-readout"><span>Defis</span><Badge>{completedQuests.length}/{quests.length}</Badge></div>
+            <div className="lab-readout"><span>{t('quests.points')}</span><Badge tone="success">{totalPoints}</Badge></div>
+            <div className="lab-readout"><span>{t('quests.challenges')}</span><Badge>{completedQuests.length}/{quests.length}</Badge></div>
           </div>
-          <ProgressBar label="Accreditation" value={progressPercent} />
+          <ProgressBar label={t('quests.accreditation')} value={progressPercent} />
           <div className="quiz-history-table">
             {achievementBadges.map((badge) => {
               const Icon = badge.icon;
               const unlocked = totalPoints >= badge.min;
               return (
-                <div className="quiz-history-row" key={badge.name}>
-                  <span><Icon size={16} aria-hidden="true" /> {badge.name}</span>
-                  <Badge tone={unlocked ? 'success' : 'neutral'}>
-                    {unlocked ? 'Debloque' : `${badge.min} pts`}
-                  </Badge>
-                </div>
+                  <div className="quiz-history-row" data-success={unlocked} key={badge.id}>
+                    <Icon className="user-muted" size={16} />
+                    <strong>{t('language') === 'es' && badge.nameEs ? badge.nameEs : badge.nameFr}</strong>
+                    <Badge tone="info">{t('quests.objective', { pts: badge.min })}</Badge>
+                  </div>
               );
             })}
           </div>

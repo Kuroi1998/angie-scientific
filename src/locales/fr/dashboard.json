@@ -1,0 +1,31 @@
+{
+  "title": "Accueil scientifique",
+  "welcome": "Bienvenue, {{username}}",
+  "subtitle": "Pilote tes découvertes, choisis ton prochain module et laisse Angie garder le cap pédagogique.",
+  "explore": "Explorer les éléments",
+  "quiz": "Lancer un quiz",
+  "stats": {
+    "level": "Niveau",
+    "xp": "Expérience",
+    "elements": "Éléments",
+    "badges": "Badges"
+  },
+  "progress": "Progression générale",
+  "badgesTitle": "Derniers badges obtenus",
+  "badgesEmpty": "Complétez des quêtes pour obtenir vos premiers badges.",
+  "discoveriesTitle": "Découvertes récentes",
+  "discoveriesEmpty": "Explorez le tableau pour découvrir de nouveaux éléments.",
+  "nextTitle": "Prochains objectifs conseillés",
+  "objectiveTypes": {
+    "module": "Module",
+    "quiz": "Quiz",
+    "theory": "Théorie"
+  },
+  "objectiveLevels": {
+    "beginner": "Débutant",
+    "intermediate": "Intermédiaire",
+    "advanced": "Avancé",
+    "expert": "Expert"
+  },
+  "go": "Aller"
+}

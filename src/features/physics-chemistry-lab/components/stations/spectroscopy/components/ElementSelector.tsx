@@ -1,6 +1,7 @@
 import React from 'react';
 import type { SpectroscopyMode } from '../types/spectroscopy.types';
 import { emissionDatabase, emissionKeys, absorptionDatabase, absorptionKeys } from '../data/spectroscopyDatabase';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 interface ElementSelectorProps {
   mode: SpectroscopyMode;
@@ -9,23 +10,23 @@ interface ElementSelectorProps {
 }
 
 export const ElementSelector: React.FC<ElementSelectorProps> = ({ mode, selectedId, onSelect }) => {
+  const { t } = useLanguage('lab');
   const isEmission = mode === 'EMISSION';
   const keys = isEmission ? emissionKeys : absorptionKeys;
   const db = isEmission ? emissionDatabase : absorptionDatabase;
   const accentColor = isEmission ? 'var(--as-accent-cyan)' : 'var(--as-accent-amber)';
 
-  const currentItem = isEmission ? emissionDatabase[selectedId] : absorptionDatabase[selectedId];
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <span style={{ fontSize: '11px', color: 'var(--as-text-muted)', fontFamily: 'var(--as-font-title)' }}>
-        {isEmission ? 'ÉLÉMENT ATOMIQUE' : 'MOLÉCULE'}
+        {isEmission ? t('spectroscopy.element.atomic') : t('spectroscopy.element.molecule')}
       </span>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: '8px' }}>
         {keys.map(key => {
           const item = db[key as keyof typeof db];
           const active = key === selectedId;
           const symbol = 'symbol' in item ? item.symbol : item.formula;
+          const dbType = isEmission ? 'emission' : 'absorption';
           
           return (
             <button
@@ -48,7 +49,7 @@ export const ElementSelector: React.FC<ElementSelectorProps> = ({ mode, selected
                 {symbol}
               </div>
               <div style={{ fontSize: '9px', fontFamily: 'var(--as-font-mono)', color: 'var(--as-text-muted)' }}>
-                {item.name}
+                {t(`spectroscopy.database.${dbType}.${key}.name`)}
               </div>
             </button>
           );
@@ -56,7 +57,7 @@ export const ElementSelector: React.FC<ElementSelectorProps> = ({ mode, selected
       </div>
 
       <div style={{ padding: '12px', background: 'var(--surface-card)', borderLeft: `2px solid ${accentColor}`, borderRadius: '0 4px 4px 0', fontSize: '12px', color: 'var(--as-text-secondary)', lineHeight: '1.4' }}>
-        {currentItem?.description}
+        {t(`spectroscopy.database.${isEmission ? 'emission' : 'absorption'}.${selectedId}.desc`)}
       </div>
     </div>
   );

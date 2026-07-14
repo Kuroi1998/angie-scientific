@@ -2,6 +2,7 @@ import { Globe, MonitorOff, Music, Volume2 } from 'lucide-react';
 import { Button, Panel, Switch } from '../../design-system';
 import type { UserProfile } from '../../data/educational/models';
 import { useLanguage } from '../../hooks/useLanguage';
+import { AngieSettingsPanel } from '../../features/angie/components/AngieSettingsPanel';
 import { AudioManager } from '../../services/Audio/AudioManager';
 import { useUserProgress } from '../useUserProgress';
 import { ThemeSelector } from '../../theme/components/ThemeSelector';
@@ -55,6 +56,7 @@ export function UserPreferencesPanel({ compact = false }: UserPreferencesPanelPr
           />
           <p className="user-muted">{t('angieDesc', { ns: 'settings' })}</p>
         </div>
+        <AngieSettingsPanel />
         <div className="user-id-card">
           <strong><MonitorOff size={19} aria-hidden="true" /> {t('accessibility', { ns: 'settings' })}</strong>
           <Switch

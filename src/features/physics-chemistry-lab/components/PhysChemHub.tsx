@@ -9,14 +9,14 @@ const SpectroscopyStation = React.lazy(() => import('./stations/spectroscopy/Spe
 type StationType = 'gas' | 'kinetics' | 'phase' | 'spectroscopy';
 
 export const PhysChemHub: React.FC = () => {
-  const { t } = useLanguage();
+  const { t } = useLanguage('lab');
   const [activeStation, setActiveStation] = useState<StationType>('gas');
 
   const stations: { id: StationType, label: string, desc: string }[] = [
-    { id: 'gas', label: t('lab.gas') || 'Gaz', desc: 'Lois des gaz parfaits et réels' },
-    { id: 'kinetics', label: t('lab.kinetics') || 'Cinétique', desc: 'Vitesse de réaction et équilibre' },
-    { id: 'phase', label: t('lab.phase') || 'Diagrammes', desc: 'Changements d\'état de la matière' },
-    { id: 'spectroscopy', label: t('lab.spectro') || 'Spectrométrie', desc: 'Spectres d\'émission atomique' }
+    { id: 'gas', label: t('hub.gas'), desc: t('hub.gasDesc') },
+    { id: 'kinetics', label: t('hub.kinetics'), desc: t('hub.kineticsDesc') },
+    { id: 'phase', label: t('hub.phase'), desc: t('hub.phaseDesc') },
+    { id: 'spectroscopy', label: t('hub.spectro'), desc: t('hub.spectroDesc') }
   ];
 
   return (
@@ -54,7 +54,7 @@ export const PhysChemHub: React.FC = () => {
       </nav>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '500px' }}>
-        <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center', color: 'var(--as-text-muted)' }}>Chargement de l'équipement...</div>}>
+        <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center', color: 'var(--as-text-muted)' }}>{t('hub.loading')}</div>}>
           {activeStation === 'gas' && <GasEquationsStation />}
           {activeStation === 'kinetics' && <KineticsStation />}
           {activeStation === 'phase' && <PhaseDiagramStation />}

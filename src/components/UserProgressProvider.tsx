@@ -7,12 +7,14 @@ import { useTheme } from '../theme/hooks/useTheme';
 import { THEMES } from '../theme/theme.constants';
 import type { ThemeId } from '../theme/theme.types';
 import { defaultUnlockedThemes } from './UserCenter/userCenterData';
+import { useLanguage } from '../hooks/useLanguage';
 
 export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [progress, setProgress] = useState<UserProgress | null>(null);
   const [loading, setLoading] = useState(true);
   const { theme, setTheme } = useTheme();
+  const { t } = useLanguage('user');
   const themeRef = useRef(theme);
   const setThemeRef = useRef(setTheme);
 
@@ -33,16 +35,16 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
       setProfile(data.profile);
       setProgress(data.progress);
     } catch (error) {
-      console.error('Erreur chargement profil serveur', error);
+      console.error(t('errors.loadProfileLog'), error);
       notifyApp({
-        message: 'Impossible de recuperer le profil depuis le serveur.',
-        title: 'Connexion au profil',
+        message: t('errors.loadProfileMsg'),
+        title: t('errors.loadProfileTitle'),
         tone: 'error',
       });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   const saveProfile = useCallback(async (updates: Partial<UserProfile>) => {
     if (!profile) return;
@@ -54,15 +56,15 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
     try {
       await updateProfile(userId, updates);
     } catch (error) {
-      console.error('Erreur de sauvegarde profil', error);
+      console.error(t('errors.saveProfileLog'), error);
       setProfile(oldProfile);
       notifyApp({
-        message: "Les preferences n'ont pas pu etre sauvegardees.",
-        title: 'Sauvegarde interrompue',
+        message: t('errors.saveProfileMsg'),
+        title: t('errors.saveProfileTitle'),
         tone: 'error',
       });
     }
-  }, [profile]);
+  }, [profile, t]);
 
   useEffect(() => {
     loadData();
@@ -70,14 +72,14 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const handleOnline = async () => {
       const userId = getUserId();
       if (userId) {
-        console.log('Reseau retabli, synchronisation avec le cloud...');
+        console.log(t('errors.syncCloud'));
         await syncWithCloud(userId);
       }
     };
 
     window.addEventListener('online', handleOnline);
     return () => window.removeEventListener('online', handleOnline);
-  }, [loadData]);
+  }, [loadData, t]);
 
   useEffect(() => {
     const activeTheme = profile?.activeTheme;
@@ -124,11 +126,11 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
     try {
       await updateProgress(userId, newProgress);
     } catch (error) {
-      console.error('Erreur de sauvegarde progression', error);
+      console.error(t('errors.saveProgressLog'), error);
       setProgress(oldProgress);
       notifyApp({
-        message: "La progression locale n'a pas pu etre synchronisee.",
-        title: 'Progression non sauvegardee',
+        message: t('errors.saveProgressMsg'),
+        title: t('errors.saveProgressTitle'),
         tone: 'error',
       });
     }

@@ -1,0 +1,63 @@
+{
+  "title": "Perfil y progreso de {{username}}",
+  "subtitle": "Nivel {{level}}, {{xp}} XP, {{count}} elementos rastreados.",
+  "sections": {
+    "profile": "Perfil",
+    "preferences": "Ajustes",
+    "progress": "Progreso",
+    "album": "Álbum y misiones",
+    "themes": "Temas"
+  },
+  "themes": {
+    "title": "Temas y personalización",
+    "compactTitle": "Temas",
+    "equipped": "Tema equipado",
+    "insufficientXp": "XP insuficiente para desbloquear este tema",
+    "unlocked": "Tema desbloqueado y equipado",
+    "active": "Activo",
+    "equip": "Equipar",
+    "unlock": "Desbloquear",
+    "xp": "XP"
+  },
+  "progress": {
+    "global": "Progreso global",
+    "settingsTitle": "Ajustes del laboratorio",
+    "theme": "Tema y apariencia",
+    "audio": "Respuesta de audio",
+    "motion": "Efectos de movimiento",
+    "learningLevel": "Nivel de aprendizaje",
+    "save": "Guardar ajustes",
+    "reset": "Restablecer",
+    "categories": "Progreso por categoría de elementos",
+    "xp": "XP",
+    "level": "Nivel",
+    "elements": "Elementos",
+    "badges": "Insignias",
+    "reactions": "Reacciones",
+    "elementAlbum": "Álbum de elementos",
+    "questsCompleted": "Misiones completadas",
+    "nextLevel": "Aún {{xp}} XP para el próximo nivel.",
+    "recentHistory": "Historial reciente",
+    "lastElements": "Últimos elementos",
+    "noRecentElements": "Ningún elemento reciente",
+    "successfulReactions": "Reacciones exitosas",
+    "noReactions": "Ninguna reacción guardada",
+    "riddles": "Acertijos",
+    "solved": "resueltos"
+  },
+  "album": {
+    "title": "Álbum de descubrimientos",
+    "unlocked": "Desbloqueado",
+    "required": "requerido",
+    "recentElements": "Elementos recientes",
+    "noElements": "Ningún elemento descubierto por el momento."
+  },
+  "themeSelector": {
+    "title": "Apariencia",
+    "description": "Elige el tema de la aplicación. \"Sistema\" se adaptará automáticamente a las preferencias de tu sistema.",
+    "toggleLabel": "Cambiar tema",
+    "currentTheme": "Tema actual: {{theme}}",
+    "quickToggle": "Alternar rápidamente",
+    "openStore": "Abrir la Tienda de Temas"
+  }
+}

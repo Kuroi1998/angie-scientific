@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { readStoredValue, writeStoredValue, removeStoredValue, readLegacyValue } from '../utils/localStorage';
 
 interface UseLocalStorageStateOptions<T> {
@@ -42,6 +42,7 @@ export function useLocalStorageState<T>(
     setValue(prev => {
       const resolved = typeof next === 'function' ? (next as (prev: T) => T)(prev) : next;
       writeStoredValue(key, resolved);
+      window.dispatchEvent(new CustomEvent('local-storage-sync', { detail: { key, newValue: resolved } }));
       return resolved;
     });
   }, [key]);
@@ -49,7 +50,18 @@ export function useLocalStorageState<T>(
   const reset = useCallback(() => {
     removeStoredValue(key);
     setValue(defaultValue);
+    window.dispatchEvent(new CustomEvent('local-storage-sync', { detail: { key, newValue: defaultValue } }));
   }, [key, defaultValue]);
+
+  useEffect(() => {
+    const handleStorageChange = (e: Event) => {
+      if (e instanceof CustomEvent && e.detail.key === key) {
+        setValue(e.detail.newValue);
+      }
+    };
+    window.addEventListener('local-storage-sync', handleStorageChange);
+    return () => window.removeEventListener('local-storage-sync', handleStorageChange);
+  }, [key]);
 
   return [value, setPersisted, reset];
 }

@@ -1,0 +1,56 @@
+{
+  "title": "Profil et progression de {{username}}",
+  "subtitle": "Niveau {{level}}, {{xp}} XP, {{count}} éléments suivis.",
+  "sections": {
+    "profile": "Profil",
+    "preferences": "Paramètres",
+    "progress": "Progression",
+    "album": "Album et quêtes",
+    "themes": "Thèmes"
+  },
+  "themes": {
+    "title": "Thèmes et personnalisation",
+    "compactTitle": "Thèmes",
+    "equipped": "Thème équipé",
+    "insufficientXp": "XP insuffisant pour débloquer ce thème",
+    "unlocked": "Thème débloqué et équipé",
+    "active": "Actif",
+    "equip": "Équiper",
+    "unlock": "Débloquer",
+    "xp": "XP"
+  },
+  "progress": {
+    "global": "Progression globale",
+    "categories": "Progression par catégorie d'éléments",
+    "xp": "XP",
+    "level": "Niveau",
+    "elements": "Éléments",
+    "badges": "Badges",
+    "reactions": "Réactions",
+    "elementAlbum": "Album des éléments",
+    "questsCompleted": "Quêtes complétées",
+    "nextLevel": "Encore {{xp}} XP avant le niveau suivant.",
+    "recentHistory": "Historique récent",
+    "lastElements": "Derniers éléments",
+    "noRecentElements": "Aucun élément récent",
+    "successfulReactions": "Réactions réussies",
+    "noReactions": "Aucune réaction sauvegardée",
+    "riddles": "Devinettes",
+    "solved": "résolues"
+  },
+  "album": {
+    "title": "Album de découvertes",
+    "unlocked": "Débloqué",
+    "required": "requis",
+    "recentElements": "Éléments récents",
+    "noElements": "Aucun élément découvert pour le moment."
+  },
+  "themeSelector": {
+    "title": "Apparence",
+    "description": "Choisissez le thème de l'application. \"Système\" s'adaptera automatiquement à vos préférences système.",
+    "toggleLabel": "Changer le thème",
+    "currentTheme": "Thème actuel: {{theme}}",
+    "quickToggle": "Basculer rapidement",
+    "openStore": "Ouvrir le Theme Store"
+  }
+}

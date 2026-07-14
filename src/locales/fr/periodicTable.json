@@ -11,19 +11,40 @@
   "toolbar": {
     "search": "Recherche",
     "searchPlaceholder": "Nom, symbole ou numéro atomique",
+    "searchPlaceholderExtended": "Rechercher un élément, symbole, n°...",
     "category": "Famille",
     "allCategories": "Toutes les familles",
+    "categories": {
+      "all": "Toutes les familles",
+      "alkali-metal": "Métaux alcalins",
+      "alkaline-earth": "Alcalino-terreux",
+      "transition-metal": "Métaux de transition",
+      "lanthanide": "Lanthanides",
+      "actinide": "Actinides",
+      "post-transition-metal": "Métaux pauvres",
+      "metalloid": "Métalloïdes",
+      "reactive-nonmetal": "Non-métaux réactifs",
+      "noble-gas": "Gaz nobles"
+    },
     "state": "État",
     "allStates": "Tous les états",
     "results": "{{count}} résultats",
-    "reset": "Réinitialiser"
+    "reset": "Réinitialiser",
+    "filtersBtn": "FILTRES",
+    "quizBtn": "MODE QUIZ",
+    "quizComingSoon": "Le mode quiz du tableau périodique arrive bientôt."
   },
   "status": {
     "visibleElements": "{{count}} éléments visibles",
     "filters": "{{count}} filtre(s)",
     "selection": "Sélection : {{symbol}}",
     "inputMethods": "Souris, tactile et clavier",
-    "onlineStatus": "En ligne locale"
+    "onlineStatus": "En ligne locale",
+    "visibleCount": "ÉLÉMENTS VISIBLES : {{visible}}/{{total}}",
+    "activeFilters": "FILTRES ACTIFS: {{filters}}",
+    "zoom": "ZOOM : {{level}}%",
+    "typeToSearch": "TAPEZ / POUR CHERCHER",
+    "online": "EN LIGNE"
   },
   "legend": {
     "ariaLabel": "Légende des familles"
@@ -39,13 +60,45 @@
     "config": "Config.",
     "density": "Densité",
     "atomicMass": "Masse atomique",
+    "atomicMassLabel": "MASSE ATOMIQUE",
+    "naturalState": "ÉTAT NATUREL",
     "meltingPoint": "Point de fusion",
+    "meltingPointLabel": "POINT DE FUSION",
     "boilingPoint": "Point d'ébullition",
+    "boilingPointLabel": "POINT D'ÉBULLITION",
     "angieNote": "Angie conseille de comparer cet élément avec un voisin de même famille pour repérer les tendances périodiques.",
     "fullDetail": "Fiche complète",
     "removeFavorite": "Retirer favori",
     "addFavorite": "Ajouter favori",
     "useInLab": "Utiliser au labo",
     "compare": "Comparer"
+  },
+  "element": {
+    "config": "Configuration e-",
+    "shells": "Couches",
+    "atomicRadius": "Rayon atomique",
+    "crystal": "Réseau cristallin",
+    "electronegativity": "Électronégativité",
+    "ionization": "Énergie d'ionisation",
+    "affinity": "Affinité électronique",
+    "discovery": "Découverte",
+    "uses": "Utilisations",
+    "state": "État naturel",
+    "density": "Densité",
+    "meltingPoint": "Point de fusion",
+    "boilingPoint": "Point d'ébullition",
+    "superpower": "Super-pouvoir",
+    "superpowerDesc": "Cet élément est utilisé dans des objets, des réactions ou des matériaux proches du quotidien.",
+    "bohrSimulation": "Simulation de Bohr",
+    "angieAnalysis": "Analyse Angie"
+  },
+  "lewis": {
+    "nobleGasTitle": "GAZ NOBLE - COUCHE COMPLÈTE",
+    "nobleGasDesc": "{{symbol}} possède une configuration électronique stable et ne forme pas de liaisons covalentes standard.",
+    "configTitle": "CONFIGURATION LIAISON",
+    "ligand": "PARTENAIRE DE LIAISON",
+    "bondCount": "NOMBRE DE LIAISONS",
+    "geometryTitle": "GÉOMÉTRIE VSEPR",
+    "bondCharacter": "CARACTÈRE DE LA LIAISON"
   }
 }

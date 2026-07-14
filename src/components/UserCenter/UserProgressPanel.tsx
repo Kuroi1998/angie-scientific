@@ -3,9 +3,11 @@ import { Atom, FlaskConical, HelpCircle, Medal, Rocket } from 'lucide-react';
 import { Badge, Card, Panel, ProgressBar } from '../../design-system';
 import { ELEMENT_TOTAL, XP_PER_LEVEL } from '../../pages/Dashboard/dashboardModel';
 import { useUserProgress } from '../useUserProgress';
+import { useLanguage } from '../../hooks/useLanguage';
 import { getUserMetrics, latestItems } from './userCenterModel';
 
 export function UserProgressPanel() {
+  const { t } = useLanguage('user');
   const { profile, progress } = useUserProgress();
   const metrics = getUserMetrics(profile, progress);
   const discoveries = latestItems(progress?.discoveredElements);
@@ -13,31 +15,31 @@ export function UserProgressPanel() {
 
   return (
     <div className="user-center-grid">
-      <Panel title="Progression generale">
+      <Panel title={t('progress.global')}>
         <div className="user-stat-grid">
-          <StatCard icon={<Rocket />} label="Niveau" value={metrics.level} />
-          <StatCard icon={<Atom />} label="Elements" value={`${metrics.discoveredCount}/${ELEMENT_TOTAL}`} />
-          <StatCard icon={<Medal />} label="Badges" value={metrics.badgeCount} />
-          <StatCard icon={<FlaskConical />} label="Reactions" value={metrics.reactionCount} />
+          <StatCard icon={<Rocket />} label={t('progress.level')} value={metrics.level} />
+          <StatCard icon={<Atom />} label={t('progress.elements')} value={`${metrics.discoveredCount}/${ELEMENT_TOTAL}`} />
+          <StatCard icon={<Medal />} label={t('progress.badges')} value={metrics.badgeCount} />
+          <StatCard icon={<FlaskConical />} label={t('progress.reactions')} value={metrics.reactionCount} />
         </div>
-        <ProgressBar label={`Niveau ${metrics.level}`} max={XP_PER_LEVEL} value={metrics.xpInLevel} />
-        <ProgressBar label="Album des elements" tone="success" value={metrics.elementPercent} />
-        <ProgressBar label="Quetes completees" tone="warning" value={Math.min(metrics.questCount * 20, 100)} />
-        <p className="user-muted">Encore {metrics.nextLevelXp} XP avant le niveau suivant.</p>
+        <ProgressBar label={`${t('progress.level')} ${metrics.level}`} max={XP_PER_LEVEL} value={metrics.xpInLevel} />
+        <ProgressBar label={t('progress.elementAlbum')} tone="success" value={metrics.elementPercent} />
+        <ProgressBar label={t('progress.questsCompleted')} tone="warning" value={Math.min(metrics.questCount * 20, 100)} />
+        <p className="user-muted">{t('progress.nextLevel', { xp: metrics.nextLevelXp })}</p>
       </Panel>
 
-      <Panel title="Historique recent">
+      <Panel title={t('progress.recentHistory')}>
         <div className="user-activity-card">
-          <strong><Atom size={18} aria-hidden="true" /> Derniers elements</strong>
-          <ChipList empty="Aucun element recent" items={discoveries} tone="info" />
+          <strong><Atom size={18} aria-hidden="true" /> {t('progress.lastElements')}</strong>
+          <ChipList empty={t('progress.noRecentElements')} items={discoveries} tone="info" />
         </div>
         <div className="user-activity-card">
-          <strong><FlaskConical size={18} aria-hidden="true" /> Reactions reussies</strong>
-          <ChipList empty="Aucune reaction sauvegardee" items={reactions} tone="success" />
+          <strong><FlaskConical size={18} aria-hidden="true" /> {t('progress.successfulReactions')}</strong>
+          <ChipList empty={t('progress.noReactions')} items={reactions} tone="success" />
         </div>
         <div className="user-activity-card">
-          <strong><HelpCircle size={18} aria-hidden="true" /> Devinettes</strong>
-          <Badge tone="warning">{metrics.riddleCount} resolues</Badge>
+          <strong><HelpCircle size={18} aria-hidden="true" /> {t('progress.riddles')}</strong>
+          <Badge tone="warning">{metrics.riddleCount} {t('progress.solved')}</Badge>
         </div>
       </Panel>
     </div>

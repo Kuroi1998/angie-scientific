@@ -1,0 +1,192 @@
+{
+  "hub": {
+    "gas": "Gases",
+    "gasDesc": "Leyes de gases ideales y reales",
+    "kinetics": "Cinética",
+    "kineticsDesc": "Velocidad de reacción y equilibrio",
+    "phase": "Diagramas",
+    "phaseDesc": "Cambios de estado de la materia",
+    "spectro": "Espectrometría",
+    "spectroDesc": "Espectros de emisión atómica",
+    "loading": "Cargando el equipo..."
+  },
+  "gas": {
+    "header": {
+      "title": "Ecuaciones de Estado de los Gases",
+      "subtitle": "Comparación en tiempo real entre el modelo de gas ideal y el modelo de Van der Waals.",
+      "reset": "REINICIAR"
+    },
+    "selection": { "title": "Selección del Gas" },
+    "params": {
+      "title": "Parámetros del Sistema",
+      "temperature": "Temperatura",
+      "pressure": "Presión",
+      "volume": "Volumen",
+      "moles": "Cantidad"
+    },
+    "results": {
+      "ideal": "MODELO DE GAS IDEAL",
+      "idealDesc": "{{symbol}} ideal (interacciones despreciadas)",
+      "vdw": "MODELO DE VAN DER WAALS",
+      "vdwDesc": "{{symbol}} real (volumen molecular y atracciones)",
+      "error": "Error",
+      "divergenceLabel": "DESVIACIÓN RELATIVA : {{level}}",
+      "divergenceAbs": "Desviación absoluta :",
+      "compressibility": "FACTOR DE COMPRESIBILIDAD Z",
+      "compressibilityDesc": "Z = PV / nRT (Z=1 para ideal)",
+      "levels": {
+        "none": "NULA",
+        "low": "BAJA",
+        "moderate": "MODERADA",
+        "high": "ALTA",
+        "critical": "MUY ALTA",
+        "unknown": "DESCONOCIDA"
+      }
+    },
+    "alerts": {
+      "errorIdeal": "ERROR GAS IDEAL :",
+      "errorVdw": "ERROR VAN DER WAALS :",
+      "divergence": "DESVIACIÓN IMPORTANTE :",
+      "divergenceDesc": "Las interacciones intermoleculares y el volumen propio de las moléculas influyen fuertemente en el comportamiento del gas. El modelo del gas ideal ya no es fiable en estas condiciones (alta presión / baja temperatura)."
+    },
+    "vdwConstants": {
+      "title": "Constantes de Van der Waals : {{name}}",
+      "paramA": "Parámetro a",
+      "cohesion": "Cohesión (atracciones)",
+      "paramB": "Parámetro b",
+      "covolume": "Covolumen (impedimento estérico)"
+    },
+    "comparisonTable": {
+      "title": "Tabla Comparativa Detallada",
+      "headers": {
+        "magnitude": "Magnitud",
+        "idealGas": "Gas Ideal",
+        "vdw": "Van der Waals",
+        "absDivergence": "Desviación Absoluta",
+        "relDivergence": "Desviación Relativa"
+      },
+      "rows": {
+        "pressure": "Presión (bar)",
+        "volume": "Volumen (L)",
+        "temperature": "Temperatura (K)",
+        "zFactor": "Factor Z"
+      }
+    },
+    "formulas": {
+      "title": "Modelos Matemáticos",
+      "simpleView": "VISTA SIMPLE",
+      "detailedView": "VISTA DETALLADA",
+      "idealTitle": "LEY DE LOS GASES IDEALES",
+      "idealP": "P : Presión (Pa o bar)",
+      "idealV": "V : Volumen (m³ o L)",
+      "idealN": "n : Cantidad de sustancia (mol)",
+      "idealR": "R : Constante universal (8.314 J/mol·K o 0.08314 L·bar/mol·K)",
+      "idealT": "T : Temperatura absoluta (K)",
+      "vdwTitle": "ECUACIÓN DE VAN DER WAALS",
+      "vdwA": "a : Término de cohesión (atracciones intermoleculares)",
+      "vdwB": "b : Covolumen (volumen propio excluido por las moléculas)",
+      "vdwDesc": "Esta ecuación corrige las dos hipótesis principales del gas ideal (volumen puntual y ausencia de interacciones)."
+    },
+    "simulation": {
+      "idealTitle": "GAS IDEAL (Teórico)",
+      "vdwTitle": "GAS REAL (Van der Waals)",
+      "play": "▶ REPRODUCIR",
+      "pause": "⏸ PAUSAR",
+      "particleDensity": "Densidad part.",
+      "simSpeed": "Velocidad sim.",
+      "disclaimer": "* Representación pedagógica simplificada — el tamaño de las partículas y las distancias no están a escala."
+    },
+    "variableSelector": {
+      "title": "VARIABLE A CALCULAR",
+      "calcHint": "Calcular el/la {{label}} en función de las otras variables"
+    }
+  },
+  "kinetics": {
+    "paramsTitle": "Parámetros Termodinámicos",
+    "temperature": "Temperatura",
+    "catalyst": {
+      "title": "CATALIZADOR",
+      "desc": "Reduce la energía de activación sin modificar el estado final de equilibrio (acelera la reacción)."
+    },
+    "header": {
+      "title": "Cinética y Equilibrio Químico",
+      "desc": "Simulador temporal de evolución de concentraciones. Modifique la temperatura o añada un catalizador para observar la ley de Arrhenius en acción. Inyecte reactivos para ver el desplazamiento del equilibrio (Le Chatelier).",
+      "speed": "Velocidad",
+      "injectBtn": "INYECTAR REACTIVOS",
+      "injectTooltip": "Perturba el equilibrio añadiendo reactivos",
+      "play": "▶ REPRODUCIR",
+      "pause": "⏸ PAUSAR",
+      "reset": "REINICIAR"
+    },
+    "results": {
+      "forwardRate": "Velocidad Directa (vf)",
+      "reverseRate": "Velocidad Inversa (vr)",
+      "rateUnit": "mol/(L·s)",
+      "eqConstant": "Constante de Eq. (K)",
+      "tempDependent": "Dependiente de T",
+      "reactionQuotient": "Cociente de R. (Q)",
+      "instantState": "Estado instantáneo"
+    },
+    "selector": {
+      "title": "TIPO DE REACCIÓN"
+    },
+    "equilibrium": {
+      "stateTitle": "ESTADO DEL SISTEMA",
+      "atEq": "EQUILIBRIO ALCANZADO",
+      "forward": "EVOLUCIÓN SENTIDO DIRECTO (Formación de productos)",
+      "reverse": "EVOLUCIÓN SENTIDO INVERSO (Formación de reactivos)"
+    }
+  },
+  "phase": {
+    "station": {
+      "conditions": "Condiciones",
+      "temperature": "Temperatura",
+      "pressure": "Presión"
+    },
+    "header": {
+      "title": "Diagramas de Fase y Termodinámica",
+      "desc": "Explore los cambios de estado de la materia en función de la temperatura y la presión (ecuación de Clausius-Clapeyron). Haga clic en el diagrama P-T para desplazar el punto de funcionamiento."
+    },
+    "properties": {
+      "physicalState": "Estado Físico",
+      "triplePoint": "Punto Triple",
+      "criticalPoint": "Punto Crítico"
+    },
+    "states": {
+      "solid": "Sólido",
+      "liquid": "Líquido",
+      "gas": "Gas",
+      "supercritical": "Supercrítico"
+    },
+    "selector": {
+      "title": "SUSTANCIA QUÍMICA"
+    },
+    "simulation": {
+      "title": "Comportamiento Molecular"
+    }
+  },
+  "spectroscopy": {
+    "station": {
+      "liveAnalyzer": "Analizador de Fotones en Vivo"
+    },
+    "header": {
+      "title": "Espectrometría y Análisis Óptico",
+      "desc": "Analice las firmas luminosas de los átomos (Espectros de emisión en el visible) y los modos de vibración de las moléculas (Espectros de absorción infrarroja). Pase el ratón sobre los espectros para activar el detector de fotones."
+    },
+    "elementSelector": {
+      "atomicElement": "ELEMENTO ATÓMICO",
+      "molecule": "MOLÉCULA"
+    },
+    "modeSelector": {
+      "emission": "EMISIÓN (VISIBLE)",
+      "absorption": "ABSORCIÓN (INFRARROJA)"
+    },
+    "photonPanel": {
+      "hoverHint": "Pase el ratón sobre el espectro para activar el detector de fotones.",
+      "color": "Color",
+      "wavenumber": "Número de onda",
+      "frequency": "Frecuencia (ν)",
+      "energy": "Energía (E = hν)"
+    }
+  }
+}

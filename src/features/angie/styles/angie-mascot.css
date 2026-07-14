@@ -1,9 +1,31 @@
+.as-visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 .angie-mascot-toggle,
 .angie-mascot {
   bottom: calc(var(--as-space-4) + env(safe-area-inset-bottom));
   position: fixed;
-  right: var(--as-space-4);
   z-index: var(--as-z-toast);
+}
+
+.angie-mascot-toggle.is-right,
+.angie-mascot.is-right {
+  right: var(--as-space-4);
+}
+
+.angie-mascot-toggle.is-left,
+.angie-mascot.is-left {
+  left: var(--as-space-4);
 }
 
 .angie-mascot-toggle {
@@ -27,17 +49,69 @@
   gap: var(--as-space-2);
 }
 
+.angie-mascot.is-left {
+  align-items: flex-start;
+}
+
 .angie-mascot-bubble {
   background: var(--as-surface-1);
   border: 1px solid var(--as-border-soft);
   border-radius: var(--as-radius-3) var(--as-radius-3) 0 var(--as-radius-3);
   box-shadow: var(--as-shadow-lg);
   color: var(--as-text-strong);
+  display: flex;
+  flex-direction: column;
   font-family: var(--as-font-display);
   font-size: var(--as-font-size-sm);
-  max-width: 16rem;
+  gap: var(--as-space-2);
+  max-width: min(16rem, calc(100vw - 2 * var(--as-space-4)));
   padding: var(--as-space-3) var(--as-space-4);
   position: relative;
+}
+
+.angie-mascot.is-left .angie-mascot-bubble {
+  border-radius: var(--as-radius-3) var(--as-radius-3) var(--as-radius-3) 0;
+}
+
+.angie-mascot-bubble-text {
+  margin: 0;
+  padding-right: var(--as-space-5);
+}
+
+.angie-mascot-bubble-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--as-space-1);
+}
+
+.angie-mascot-bubble-reply {
+  background: var(--as-surface-2);
+  border: 1px solid var(--as-border-subtle);
+  border-radius: var(--as-radius-2);
+  color: var(--as-text-primary);
+  cursor: pointer;
+  font-size: var(--as-font-size-xs);
+  padding: var(--as-space-1) var(--as-space-2);
+}
+
+.angie-mascot-bubble-actions {
+  align-items: center;
+  display: flex;
+  gap: var(--as-space-1);
+  justify-content: flex-end;
+}
+
+.angie-mascot-bubble-open {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--as-radius-round);
+  color: var(--as-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 32px;
 }
 
 .angie-mascot-close,
@@ -53,11 +127,8 @@
 
 .angie-mascot-close {
   border-radius: var(--as-radius-round);
-  min-height: 44px;
-  min-width: 44px;
-  position: absolute;
-  right: 0;
-  top: 0;
+  min-height: 32px;
+  min-width: 32px;
 }
 
 .angie-mascot-avatar {
@@ -69,28 +140,46 @@
     transform var(--as-duration-fast) var(--as-ease-standard);
 }
 
+.angie-mascot-avatar svg {
+  animation: angie-breathe 4.5s var(--as-ease-standard) infinite;
+}
+
 .angie-mascot-avatar:hover,
 .angie-mascot-avatar:focus-visible {
   filter: drop-shadow(0 8px 18px rgba(24, 184, 200, 0.22));
   transform: translateY(-2px);
 }
 
+@keyframes angie-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.025); }
+}
+
 .angie-emotion-happy,
-.angie-emotion-encouraging {
+.angie-emotion-encouraging,
+.angie-emotion-proud {
   animation: as-attention-pop var(--as-duration-base) var(--as-ease-emphasis) both;
 }
 
-.angie-emotion-impressed,
+.angie-emotion-celebrating,
 .angie-emotion-surprised {
   animation: as-selection-pulse var(--as-duration-slow) var(--as-ease-emphasis);
 }
 
-.angie-emotion-thinking {
+.angie-emotion-thinking,
+.angie-emotion-curious,
+.angie-emotion-explaining {
   animation: as-page-enter var(--as-duration-base) var(--as-ease-emphasis) both;
 }
 
-.angie-emotion-worried {
+.angie-emotion-worried,
+.angie-emotion-confused {
   animation: as-gentle-shake var(--as-duration-base) var(--as-ease-standard) both;
+}
+
+.angie-emotion-sleepy .angie-mascot-avatar svg,
+.angie-emotion-sleepy svg {
+  opacity: 0.75;
 }
 
 .angie-mascot-mini {
@@ -102,8 +191,8 @@
      it needs --as-text-primary, which is designed to pair with it. */
   color: var(--as-text-primary);
   left: -0.5rem;
-  min-height: 44px;
-  min-width: 44px;
+  min-height: 28px;
+  min-width: 28px;
   padding: 0;
   position: absolute;
 }
@@ -116,13 +205,19 @@
 }
 
 @media (max-width: 520px) {
-  .angie-mascot-toggle,
-  .angie-mascot {
+  .angie-mascot-toggle.is-right,
+  .angie-mascot.is-right {
     right: var(--as-space-3);
   }
 
+  .angie-mascot-toggle.is-left,
+  .angie-mascot.is-left {
+    left: var(--as-space-3);
+  }
+
   .angie-mascot-bubble {
-    display: none;
+    font-size: var(--as-font-size-xs);
+    max-width: calc(100vw - 2 * var(--as-space-3) - 3.5rem);
   }
 }
 

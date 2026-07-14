@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ElementType } from './TableGrid';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface SidePanelPropertiesProps {
   element: ElementType;
@@ -7,6 +8,7 @@ interface SidePanelPropertiesProps {
 }
 
 export const SidePanelProperties: React.FC<SidePanelPropertiesProps> = ({ element, catColor }) => {
+  const { t } = useLanguage('periodicTable');
   // Helpers to calculate gauge percentages
   const maxMass = 294; // Oganesson
   const massPercent = Math.min(100, Math.max(0, (element.mass / maxMass) * 100));
@@ -21,7 +23,7 @@ export const SidePanelProperties: React.FC<SidePanelPropertiesProps> = ({ elemen
       {/* Mass Gauge */}
       <div className="lab-gauge-group">
         <div className="lab-gauge-header">
-          <span>MASSE ATOMIQUE</span>
+          <span>{t('sidePanel.atomicMassLabel')}</span>
           <span>{element.mass.toFixed(2)} u</span>
         </div>
         <div className="lab-gauge-track">
@@ -34,16 +36,16 @@ export const SidePanelProperties: React.FC<SidePanelPropertiesProps> = ({ elemen
 
       {/* State Badge */}
       <div className="lab-state-badge">
-        <span className="state-label">ÉTAT NATUREL</span>
+        <span className="state-label">{t('sidePanel.naturalState')}</span>
         <span className={`state-value state-${element.state}`}>
-          {element.state.toUpperCase()}
+          {t(`toolbar.categories.${element.state}`) || element.state.toUpperCase()} 
         </span>
       </div>
 
       {/* Temperature Gauges */}
       <div className="lab-gauge-group">
         <div className="lab-gauge-header">
-          <span>POINT DE FUSION</span>
+          <span>{t('sidePanel.meltingPointLabel')}</span>
           <span>{element.mp ? `${element.mp} K` : 'N/A'}</span>
         </div>
         <div className="lab-gauge-track thermal">
@@ -56,7 +58,7 @@ export const SidePanelProperties: React.FC<SidePanelPropertiesProps> = ({ elemen
 
       <div className="lab-gauge-group">
         <div className="lab-gauge-header">
-          <span>POINT D'ÉBULLITION</span>
+          <span>{t('sidePanel.boilingPointLabel')}</span>
           <span>{element.bp ? `${element.bp} K` : 'N/A'}</span>
         </div>
         <div className="lab-gauge-track thermal">

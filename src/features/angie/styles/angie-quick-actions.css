@@ -1,0 +1,36 @@
+.angie-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--as-space-2);
+}
+
+.angie-quick-action {
+  background: var(--as-surface-1);
+  border: 1px solid var(--as-border-subtle);
+  border-radius: var(--as-radius-2);
+  color: var(--as-text-primary);
+  cursor: pointer;
+  font-size: var(--as-font-size-xs);
+  min-height: 36px;
+  padding: 0 var(--as-space-3);
+}
+
+.angie-quick-action:hover,
+.angie-quick-action:focus-visible {
+  background: var(--as-surface-2);
+}
+
+.angie-settings-group {
+  border: 0;
+  display: grid;
+  gap: var(--as-space-2);
+  margin: 0;
+  padding: 0;
+}
+
+.angie-settings-group legend {
+  color: var(--as-text-muted);
+  font: 600 var(--as-font-size-xs) / 1.2 var(--as-font-mono);
+  padding: 0;
+  text-transform: uppercase;
+}

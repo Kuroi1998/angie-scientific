@@ -14,11 +14,8 @@ vi.mock('../useUserProgress', () => ({
   }),
 }));
 
-vi.mock('../Mascot/useMascot', () => ({
-  useMascot: () => ({
-    showMessage: vi.fn(),
-    setEmotion: vi.fn(),
-  }),
+vi.mock('../../features/angie/triggers/useAngieFireDialogue', () => ({
+  useAngieFireDialogue: () => vi.fn(),
 }));
 
 afterEach(cleanup);

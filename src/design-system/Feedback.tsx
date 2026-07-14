@@ -1,6 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 import type { AsBaseProps, AsSize, AsTone } from './types';
 import { cx, sizeClass, toneClass } from './types';
+import { useLanguage } from '../hooks/useLanguage';
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   size?: AsSize;
@@ -96,11 +97,13 @@ export function ErrorState({ action, children, className, icon, title }: StatePr
   );
 }
 
-export function LoadingState({ children = 'Loading scientific data...', className }: AsBaseProps) {
+export function LoadingState({ children, className }: AsBaseProps) {
+  const { t } = useLanguage('common');
+  const content = children ?? t('feedback.loading');
   return (
     <div className={cx('as-loading-state', className)} role="status">
       <span className="as-spinner" aria-hidden="true" />
-      <span>{children}</span>
+      <span>{content}</span>
     </div>
   );
 }

@@ -2,27 +2,7 @@ import elementsData from '../../engines/data/elements.json';
 import type { ElementType } from '../PeriodicTable/TableGrid';
 import type { LearningDifficulty, QuizQuestion } from './learningTypes';
 
-const ELEMENTS = elementsData as ElementType[];
-const states: Record<string, string> = {
-  gas: 'Gaz',
-  liquid: 'Liquide',
-  solid: 'Solide',
-  synthetic: 'Synthese',
-};
-
-const categories: Record<string, string> = {
-  'alkali-metal': 'Alcalins',
-  'alkaline-earth': 'Alcalino-terreux',
-  halogen: 'Halogenes',
-  lanthanide: 'Lanthanides',
-  metalloid: 'Metalloides',
-  'noble-gas': 'Gaz nobles',
-  nonmetal: 'Non-metaux',
-  'post-transition-metal': 'Metaux pauvres',
-  'reactive-nonmetal': 'Non-metaux reactifs',
-  'transition-metal': 'Transition',
-  unknown: 'Famille incertaine',
-};
+const ELEMENTS = elementsData as any[];
 
 export function questionCount(difficulty: LearningDifficulty) {
   if (difficulty === 'easy') return 6;
@@ -36,66 +16,83 @@ export function examDuration(difficulty: LearningDifficulty) {
   return 60;
 }
 
-export function generateQuizQuestions(difficulty: LearningDifficulty): QuizQuestion[] {
+export function generateQuizQuestions(
+  difficulty: LearningDifficulty,
+  t: (key: string, options?: any) => string,
+  language: string
+): QuizQuestion[] {
   return Array.from({ length: questionCount(difficulty) }, (_, index) => {
     const element = pick(ELEMENTS);
     const type = pick(['symbol', 'number', 'state', 'category'] as const);
-    if (type === 'number') return numberQuestion(element, index);
-    if (type === 'state') return stateQuestion(element, index);
-    if (type === 'category') return categoryQuestion(element, index);
-    return symbolQuestion(element, index);
+    const langKey = language === 'es' ? 'nameES' : 'nameFR';
+    const name = element[langKey] || element.nameFR;
+
+    if (type === 'number') return numberQuestion(element, name, index, t);
+    if (type === 'state') return stateQuestion(element, name, index, t);
+    if (type === 'category') return categoryQuestion(element, name, index, t);
+    return symbolQuestion(element, name, index, t);
   });
 }
 
-function symbolQuestion(element: ElementType, index: number): QuizQuestion {
+function symbolQuestion(element: any, name: string, index: number, t: (key: string, options?: any) => string): QuizQuestion {
   return makeQuestion({
     correct: element.s,
-    explanation: `${element.nameFR} utilise le symbole ${element.s}.`,
-    hint: `Le symbole commence par ${element.s[0]}.`,
+    explanation: t('quizFactory.symbol.explanation', { name, symbol: element.s }),
+    hint: t('quizFactory.symbol.hint', { firstLetter: element.s[0] }),
     id: `symbol-${element.s}-${index}`,
     options: uniqueOptions(element.s, () => pick(ELEMENTS).s),
-    prompt: `Quel est le symbole de ${element.nameFR} ?`,
-    topic: 'Symboles',
+    prompt: t('quizFactory.symbol.prompt', { name }),
+    topic: t('quizFactory.topics.symbol'),
   });
 }
 
-function numberQuestion(element: ElementType, index: number): QuizQuestion {
+function numberQuestion(element: any, name: string, index: number, t: (key: string, options?: any) => string): QuizQuestion {
+  const closeNum = Math.max(1, element.n - 2);
   return makeQuestion({
     correct: String(element.n),
-    explanation: `${element.nameFR} porte le numero atomique ${element.n}.`,
-    hint: `Il est proche de ${Math.max(1, element.n - 2)} dans le tableau.`,
+    explanation: t('quizFactory.number.explanation', { name, number: element.n }),
+    hint: t('quizFactory.number.hint', { closeNumber: closeNum }),
     id: `number-${element.s}-${index}`,
     options: uniqueOptions(String(element.n), () => String(Math.max(1, element.n + Math.floor(Math.random() * 16 - 8)))),
-    prompt: `Quel est le numero atomique de ${element.nameFR} ?`,
-    topic: 'Numeros atomiques',
+    prompt: t('quizFactory.number.prompt', { name }),
+    topic: t('quizFactory.topics.number'),
   });
 }
 
-function stateQuestion(element: ElementType, index: number): QuizQuestion {
+function stateQuestion(element: any, name: string, index: number, t: (key: string, options?: any) => string): QuizQuestion {
+  const stateKey = element.state;
+  const translatedState = t(`quizFactory.states.${stateKey}`);
+  const fallbackState = translatedState.includes('quizFactory') ? element.state : translatedState;
+  
   return makeQuestion({
-    correct: states[element.state] ?? element.state,
-    explanation: `${element.nameFR} est classe comme ${states[element.state] ?? element.state}.`,
-    hint: 'Pense aux conditions ambiantes.',
+    correct: fallbackState,
+    explanation: t('quizFactory.state.explanation', { name, state: fallbackState }),
+    hint: t('quizFactory.state.hint'),
     id: `state-${element.s}-${index}`,
-    options: shuffle(Object.values(states)).slice(0, 4),
-    prompt: `Quel est l'etat naturel de ${element.nameFR} ?`,
-    topic: 'Etats',
+    options: shuffle(['gas', 'liquid', 'solid', 'synthetic'].map(s => t(`quizFactory.states.${s}`))).slice(0, 4),
+    prompt: t('quizFactory.state.prompt', { name }),
+    topic: t('quizFactory.topics.state'),
   });
 }
 
-function categoryQuestion(element: ElementType, index: number): QuizQuestion {
-  const correct = categories[element.cat] ?? element.cat;
+function categoryQuestion(element: any, name: string, index: number, t: (key: string, options?: any) => string): QuizQuestion {
+  const catKey = element.cat;
+  const translatedCat = t(`quizFactory.categories.${catKey}`);
+  const fallbackCat = translatedCat.includes('quizFactory') ? element.cat : translatedCat;
+
   return makeQuestion({
-    correct,
-    explanation: `${element.nameFR} appartient a la famille ${correct}.`,
-    hint: 'Regarde sa colonne ou son bloc dans le tableau.',
+    correct: fallbackCat,
+    explanation: t('quizFactory.category.explanation', { name, category: fallbackCat }),
+    hint: t('quizFactory.category.hint'),
     id: `category-${element.s}-${index}`,
-    options: uniqueOptions(correct, () => {
-      const element = pick(ELEMENTS);
-      return categories[element.cat] ?? element.cat;
+    options: uniqueOptions(fallbackCat, () => {
+      const el = pick(ELEMENTS);
+      const k = el.cat;
+      const tc = t(`quizFactory.categories.${k}`);
+      return tc.includes('quizFactory') ? k : tc;
     }),
-    prompt: `A quelle famille appartient ${element.nameFR} ?`,
-    topic: 'Familles',
+    prompt: t('quizFactory.category.prompt', { name }),
+    topic: t('quizFactory.topics.category'),
   });
 }
 

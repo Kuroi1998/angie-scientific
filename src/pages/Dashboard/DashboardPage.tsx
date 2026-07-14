@@ -18,6 +18,7 @@ import {
   ProgressBar,
   SectionHeader,
 } from '../../design-system';
+import { useLanguage } from '../../hooks/useLanguage';
 import { useUserProgress } from '../../components/useUserProgress';
 import { dashboardActions, nextObjectives } from './dashboardContent';
 import {
@@ -54,6 +55,7 @@ export function DashboardContent({
   profile,
   progress,
 }: DashboardContentProps) {
+  const { t } = useLanguage('dashboard');
   const metrics = getDashboardMetrics(profile, progress);
   const recentBadges = getRecentBadges(progress);
   const discoveries = getRecentDiscoveries(progress);
@@ -62,80 +64,74 @@ export function DashboardContent({
     <div className="dashboard-page">
       <section className="dashboard-hero">
         <div>
-          <p className="as-eyebrow">Accueil scientifique</p>
-          <h2>Bienvenue, {metrics.username}</h2>
-          <p>
-            Pilote tes decouvertes, choisis ton prochain module et laisse Angie
-            garder le cap pedagogique.
-          </p>
+          <p className="as-eyebrow">{t('title')}</p>
+          <h2>{t('welcome', { username: metrics.username })}</h2>
+          <p>{t('subtitle')}</p>
         </div>
         <div className="dashboard-hero-actions">
           <Button onClick={() => onNavigate('table')} iconLeft={<Atom size={18} />}>
-            Explorer les elements
+            {t('explore')}
           </Button>
           <Button
             onClick={() => onNavigate('quiz')}
             iconLeft={<BookOpen size={18} />}
             variant="outline"
           >
-            Lancer un quiz
+            {t('quiz')}
           </Button>
         </div>
       </section>
 
       <section className="dashboard-stat-grid" aria-label="Synthese">
-        <StatCard icon={<Rocket />} label="Niveau" value={metrics.level} />
-        <StatCard icon={<Sparkles />} label="Experience" value={`${metrics.xp} XP`} />
+        <StatCard icon={<Rocket />} label={t('stats.level')} value={metrics.level} />
+        <StatCard icon={<Sparkles />} label={t('stats.xp')} value={`${metrics.xp} XP`} />
         <StatCard
           icon={<Atom />}
-          label="Elements"
+          label={t('stats.elements')}
           value={`${metrics.discoveredCount}/${ELEMENT_TOTAL}`}
         />
-        <StatCard icon={<Medal />} label="Badges" value={metrics.badgeCount} />
+        <StatCard icon={<Medal />} label={t('stats.badges')} value={metrics.badgeCount} />
       </section>
 
       <div className="dashboard-grid">
-        <Panel title="Progression generale">
+        <Panel title={t('progress')}>
           <div className="dashboard-progress-list">
             <ProgressBar
-              label={`Niveau ${metrics.level} vers ${metrics.level + 1}`}
+              label={t('stats.level')}
               max={XP_PER_LEVEL}
               value={metrics.xpInLevel}
             />
             <ProgressBar
-              label="Elements decouverts"
+              label={t('stats.elements')}
               tone="success"
               value={metrics.elementPercent}
             />
             <ProgressBar
-              label="Quetes completees"
+              label={t('stats.quests')}
               tone="warning"
               value={Math.min(metrics.questCount * 20, 100)}
             />
           </div>
           <p className="dashboard-note">
-            Encore {metrics.nextLevelXp} XP avant le prochain niveau.
+            {t('nextLevel', { xp: metrics.nextLevelXp })}
           </p>
         </Panel>
 
-        <Panel title="Angie recommande">
+        <Panel title={t('recommendation')}>
           <div className="dashboard-recommendation">
             <Sparkles size={22} />
-            <p>
-              Commence par deux nouveaux elements, puis consolide avec un quiz
-              court. Les reactions et les badges suivront naturellement.
-            </p>
+            <p>{t('recommendationBody')}</p>
           </div>
           <Button onClick={() => onNavigate('fusion')} variant="soft">
-            Preparer une reaction
+            {t('recommendationAction')}
           </Button>
         </Panel>
       </div>
 
       <section className="dashboard-section">
         <SectionHeader
-          title="Activites recommandees"
-          description="Des raccourcis vers les parcours principaux."
+          title={t('actionsTitle')}
+          description={t('actionsSubtitle')}
         />
         <div className="dashboard-action-grid">
           {dashboardActions.map((action) => (
@@ -151,24 +147,21 @@ export function DashboardContent({
       </section>
 
       <div className="dashboard-grid">
-        <Panel title="Badges et decouvertes">
-          {recentBadges.length || discoveries.length ? (
+        <Panel title={t('badgesTitle')}>
+          {recentBadges.length > 0 ? (
             <div className="dashboard-chip-list">
               {recentBadges.map((badge) => (
                 <Badge key={badge} tone="warning">{badge}</Badge>
               ))}
-              {discoveries.map((element) => (
-                <Badge key={element} tone="info">{element}</Badge>
-              ))}
             </div>
           ) : (
-            <EmptyState icon={<Trophy />} title="Aucune recompense recente">
-              Explore un module pour demarrer ton album scientifique.
+            <EmptyState icon={<Trophy />} title={t('badgesEmpty')}>
+              {t('badgesEmptySub')}
             </EmptyState>
           )}
         </Panel>
 
-        <Panel title="Objectifs suivants">
+        <Panel title={t('objectivesTitle')}>
           <ol className="dashboard-objectives">
             {nextObjectives.map((objective) => (
               <li key={objective}>

@@ -6,12 +6,14 @@ import { AudioManager } from '../../services/Audio/AudioManager';
 import { useUserProgress } from '../useUserProgress';
 import { defaultUnlockedThemes, themeOptions } from './userCenterData';
 import { useTheme } from '../../theme/hooks/useTheme';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface UserThemeGalleryProps {
   compact?: boolean;
 }
 
 export function UserThemeGallery({ compact = false }: UserThemeGalleryProps) {
+  const { t } = useLanguage('user');
   const { progress, unlockTheme } = useUserProgress();
   const { theme, setTheme } = useTheme();
   const currentXp = progress?.experiencePoints ?? 0;
@@ -26,26 +28,26 @@ export function UserThemeGallery({ compact = false }: UserThemeGalleryProps) {
     AudioManager.getInstance().playClick();
     if (unlocked.includes(themeId) || cost === 0) {
       setTheme(themeId as any);
-      setNotice('Theme equipe');
+      setNotice(t('themes.equipped'));
       return;
     }
     if (currentXp < cost) {
       AudioManager.getInstance().playError();
-      setNotice('XP insuffisant pour debloquer ce theme');
+      setNotice(t('themes.insufficientXp'));
       return;
     }
     const success = await unlockTheme(themeId, cost);
     if (success) {
       setTheme(themeId as any);
-      setNotice('Theme debloque et equipe');
+      setNotice(t('themes.unlocked'));
     }
   };
 
   return (
-    <Panel title={compact ? 'Themes' : 'Themes et personnalisation'}>
+    <Panel title={compact ? t('themes.compactTitle') : t('themes.title')}>
       <div className="user-action-row">
-        <Badge tone="warning"><Star size={14} aria-hidden="true" /> {currentXp} XP</Badge>
-        {notice && <Alert title="Theme" tone="info">{notice}</Alert>}
+        <Badge tone="warning"><Star size={14} aria-hidden="true" /> {currentXp} {t('themes.xp')}</Badge>
+        {notice && <Alert title={t('themes.compactTitle')} tone="info">{notice}</Alert>}
       </div>
       <div className="user-theme-grid">
         {themeOptions.map((themeOption) => {
@@ -60,16 +62,16 @@ export function UserThemeGallery({ compact = false }: UserThemeGalleryProps) {
               <strong>{themeOption.name}</strong>
               <p className="user-muted">{themeOption.description}</p>
               <div className="user-action-row">
-                {isActive && <Badge tone="success"><CheckCircle size={14} /> Actif</Badge>}
-                {!isUnlocked && <Badge tone="warning"><Lock size={14} /> {themeOption.cost} XP</Badge>}
+                {isActive && <Badge tone="success"><CheckCircle size={14} /> {t('themes.active')}</Badge>}
+                {!isUnlocked && <Badge tone="warning"><Lock size={14} /> {themeOption.cost} {t('themes.xp')}</Badge>}
                 {!isActive && isUnlocked && (
                   <Button onClick={() => chooseTheme(themeOption.id, themeOption.cost)} size="sm">
-                    Equiper
+                    {t('themes.equip')}
                   </Button>
                 )}
                 {!isActive && !isUnlocked && (
                   <Button onClick={() => chooseTheme(themeOption.id, themeOption.cost)} size="sm" variant="solid">
-                    Debloquer
+                    {t('themes.unlock')}
                   </Button>
                 )}</div>
             </article>

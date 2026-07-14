@@ -9,6 +9,7 @@ import { UserProgressPanel } from './UserProgressPanel';
 import { UserThemeGallery } from './UserThemeGallery';
 import type { UserCenterSection } from './userCenterData';
 import { getUserMetrics } from './userCenterModel';
+import { useLanguage } from '../../hooks/useLanguage';
 import './user-center.css';
 
 interface UserCenterProps {
@@ -16,6 +17,7 @@ interface UserCenterProps {
 }
 
 export function UserCenter({ initialSection = 'profile' }: UserCenterProps) {
+  const { t } = useLanguage('user');
   const { profile, progress } = useUserProgress();
   const [section, setSection] = useState<UserCenterSection>(initialSection);
   const metrics = getUserMetrics(profile, progress);
@@ -27,40 +29,40 @@ export function UserCenter({ initialSection = 'profile' }: UserCenterProps) {
       content: <UserProfilePanel />,
       icon: <UserCircle size={16} />,
       id: 'profile',
-      label: 'Profil',
+      label: t('sections.profile'),
     },
     {
       content: <UserPreferencesPanel />,
       icon: <Settings size={16} />,
       id: 'preferences',
-      label: 'Parametres',
+      label: t('sections.preferences'),
     },
     {
       content: <UserProgressPanel />,
       icon: <Workflow size={16} />,
       id: 'progress',
-      label: 'Progression',
+      label: t('sections.progress'),
     },
     {
       content: <UserAlbumPanel />,
       icon: <Medal size={16} />,
       id: 'album',
-      label: 'Album et quetes',
+      label: t('sections.album'),
     },
     {
       content: <UserThemeGallery />,
       icon: <Palette size={16} />,
       id: 'themes',
-      label: 'Themes',
+      label: t('sections.themes'),
     },
-  ], []);
+  ], [t]);
 
   return (
     <div className="user-center">
       <PageHeader
-        description={`Niveau ${metrics.level}, ${metrics.xp} XP, ${metrics.discoveredCount} elements suivis.`}
+        description={t('subtitle', { level: metrics.level, xp: metrics.xp, count: metrics.discoveredCount })}
         eyebrow="Compte scientifique"
-        title={`Profil et progression de ${metrics.username}`}
+        title={t('title', { username: metrics.username })}
       />
       <Tabs
         ariaLabel="Sections du profil utilisateur"

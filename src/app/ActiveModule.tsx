@@ -11,6 +11,7 @@ import {
   VirtualLab,
 } from './lazyModules';
 import type { TabType } from './appTypes';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface ActiveModuleProps {
   activeTab: TabType;
@@ -31,6 +32,8 @@ export function ActiveModule({
   setReactant1,
   setReactant2,
 }: ActiveModuleProps) {
+  const { t } = useLanguage('navigation');
+  const { t: tc } = useLanguage('common');
   if (activeTab === 'home') {
     return <DashboardPage onNavigate={setActiveTab} />;
   }
@@ -43,7 +46,9 @@ export function ActiveModule({
   if (activeTab === 'fusion') {
     return (
       <ErrorBoundary
-        label="Simulateur de Fusion"
+        label={t('routes.fusion.label')}
+        titlePrefix={tc('errorBoundary.titlePrefix')}
+        retryLabel={tc('errorBoundary.retryLabel')}
         onNavigateHome={() => setActiveTab('home')}
         resetKey="fusion"
       >
@@ -59,7 +64,9 @@ export function ActiveModule({
   if (activeTab === 'quantum') {
     return (
       <ErrorBoundary
-        label="Visualiseur Quantique"
+        label={t('routes.quantum.label')}
+        titlePrefix={tc('errorBoundary.titlePrefix')}
+        retryLabel={tc('errorBoundary.retryLabel')}
         onNavigateHome={() => setActiveTab('home')}
         resetKey="quantum"
       >
@@ -70,7 +77,9 @@ export function ActiveModule({
   if (activeTab === 'physchem') {
     return (
       <ErrorBoundary
-        label="Laboratoire Physique-Chimie"
+        label={t('routes.physchem.label')}
+        titlePrefix={tc('errorBoundary.titlePrefix')}
+        retryLabel={tc('errorBoundary.retryLabel')}
         onNavigateHome={() => setActiveTab('home')}
         resetKey="physchem"
       >
@@ -81,7 +90,9 @@ export function ActiveModule({
   if (activeTab === 'virtuallab') {
     return (
       <ErrorBoundary
-        label="Laboratoire Virtuel"
+        label={t('routes.virtuallab.label')}
+        titlePrefix={tc('errorBoundary.titlePrefix')}
+        retryLabel={tc('errorBoundary.retryLabel')}
         onNavigateHome={() => setActiveTab('home')}
         resetKey="virtuallab"
       >
@@ -92,7 +103,9 @@ export function ActiveModule({
   if (activeTab === 'quests') return <UserCenter initialSection="album" />;
   return (
     <ErrorBoundary
-      label="Mode Quiz"
+      label={t('routes.quiz.label')}
+      titlePrefix={tc('errorBoundary.titlePrefix')}
+      retryLabel={tc('errorBoundary.retryLabel')}
       onNavigateHome={() => setActiveTab('home')}
       resetKey="quiz"
     >

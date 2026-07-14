@@ -11,59 +11,66 @@ export interface VirtualExperiment {
   station: string;
 }
 
-export const experiments: VirtualExperiment[] = [
+export const getExperiments = (t: (k: string) => string): VirtualExperiment[] => [
   {
     id: 'h2o',
-    name: "Synthese de l'eau",
-    station: 'Reaction spectaculaire',
-    description: 'Combustion de dihydrogene et dioxygene initiee par etincelle.',
-    reactants: 'H2 (gaz) + O2 (gaz)',
+    name: t('virtualLab.exp.h2o.name'),
+    station: t('virtualLab.exp.h2o.station'),
+    description: t('virtualLab.exp.h2o.description'),
+    reactants: t('virtualLab.exp.h2o.reactants'),
     product: 'H2O',
     defaultTemp: 298,
     defaultPress: 1,
     hazards: [
-      "Risque d'explosion",
-      'Gaz hautement inflammables',
-      'Degagement de chaleur intense',
+      t('virtualLab.exp.h2o.hazard1'),
+      t('virtualLab.exp.h2o.hazard2'),
+      t('virtualLab.exp.h2o.hazard3'),
     ],
-    explanation: 'La liaison O-H libere assez d energie pour rendre la synthese fortement exothermique.',
+    explanation: t('virtualLab.exp.h2o.explanation'),
   },
   {
     id: 'nacl',
-    name: 'Sodium dans le chlore',
-    station: 'Reaction spectaculaire',
-    description: 'Le sodium metallique brule dans le chlore pour former un cristal ionique.',
-    reactants: 'Na (solide) + Cl2 (gaz)',
+    name: t('virtualLab.exp.nacl.name'),
+    station: t('virtualLab.exp.nacl.station'),
+    description: t('virtualLab.exp.nacl.description'),
+    reactants: t('virtualLab.exp.nacl.reactants'),
     product: 'NaCl',
     defaultTemp: 300,
     defaultPress: 1.2,
-    hazards: ['Chlore toxique', 'Sodium reactif a l eau', 'Flamme tres lumineuse'],
-    explanation: 'Le transfert electronique Na vers Cl forme un reseau stable de chlorure de sodium.',
+    hazards: [
+      t('virtualLab.exp.nacl.hazard1'),
+      t('virtualLab.exp.nacl.hazard2'),
+      t('virtualLab.exp.nacl.hazard3'),
+    ],
+    explanation: t('virtualLab.exp.nacl.explanation'),
   },
   {
     id: 'neutralization',
-    name: 'Titrage acide-base',
-    station: 'Cuisine moleculaire',
-    description: 'Neutralisation HCl / NaOH avec virage de phenolphtaleine.',
-    reactants: 'HCl (acide) + NaOH (base)',
+    name: t('virtualLab.exp.neutralization.name'),
+    station: t('virtualLab.exp.neutralization.station'),
+    description: t('virtualLab.exp.neutralization.description'),
+    reactants: t('virtualLab.exp.neutralization.reactants'),
     product: 'NaCl + H2O',
     defaultTemp: 298,
     defaultPress: 1,
-    hazards: ['Solutions corrosives', 'Reaction exothermique moderee'],
-    explanation: 'Les ions H+ et OH- forment de l eau pendant que Na+ et Cl- restent en solution.',
+    hazards: [
+      t('virtualLab.exp.neutralization.hazard1'),
+      t('virtualLab.exp.neutralization.hazard2'),
+    ],
+    explanation: t('virtualLab.exp.neutralization.explanation'),
   },
 ];
 
-export function getRiskLevel(experimentId: string, temp: number, press: number, m1: number, m2: number) {
-  if (press >= 3 || (experimentId === 'h2o' && temp >= 450)) return 'Eleve';
-  if (experimentId === 'neutralization' && (m1 >= 15 || m2 >= 15)) return 'Moyen';
-  if (experimentId === 'nacl') return 'Eleve';
-  return 'Controle';
+export function getRiskLevel(experimentId: string, temp: number, press: number, m1: number, m2: number, t: (k: string) => string) {
+  if (press >= 3 || (experimentId === 'h2o' && temp >= 450)) return t('virtualLab.riskHigh');
+  if (experimentId === 'neutralization' && (m1 >= 15 || m2 >= 15)) return t('virtualLab.riskMedium');
+  if (experimentId === 'nacl') return t('virtualLab.riskHigh');
+  return t('virtualLab.riskControlled');
 }
 
-export function getProgressLabel(isRunning: boolean, completed: boolean) {
-  if (isRunning) return 'Reaction en cours';
-  if (completed) return 'Experience completee';
-  return 'Prete';
+export function getProgressLabel(isRunning: boolean, completed: boolean, t: (k: string) => string) {
+  if (isRunning) return t('virtualLab.reactionInProgressBadge');
+  if (completed) return t('virtualLab.experimentCompletedBadge');
+  return t('virtualLab.ready');
 }
 

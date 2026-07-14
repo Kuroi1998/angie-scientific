@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Badge } from '../../design-system';
+import { useLanguage } from '../../hooks/useLanguage';
 import './lab-station.css';
 
 interface LabStationProps {
@@ -31,6 +32,7 @@ export function LabStation({
   subtitle,
   title,
 }: LabStationProps) {
+  const { t } = useLanguage('common');
   return (
     <div className="lab-station">
       <header className="lab-station-header">
@@ -42,7 +44,7 @@ export function LabStation({
         {actions && <div className="lab-station-actions">{actions}</div>}
       </header>
       {metrics.length > 0 && (
-        <div className="lab-station-metrics" aria-label="Indicateurs de laboratoire">
+        <div className="lab-station-metrics" aria-label={t('labMetrics')}>
           {metrics.map((metric) => (
             <div className="lab-metric" key={metric.label}>
               <span>{metric.label}</span>

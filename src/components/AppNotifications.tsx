@@ -5,6 +5,7 @@ import {
   appNotificationEvent,
   type AppNotificationPayload,
 } from '../utils/appNotifications';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface NotificationItem extends AppNotificationPayload {
   id: number;
@@ -12,6 +13,7 @@ interface NotificationItem extends AppNotificationPayload {
 
 export function AppNotifications() {
   const [items, setItems] = useState<NotificationItem[]>([]);
+  const { t } = useLanguage('common');
 
   useEffect(() => {
     const addNotification = (event: Event) => {
@@ -39,7 +41,7 @@ export function AppNotifications() {
           action={(
             <IconButton
               icon={<X size={15} />}
-              label="Fermer la notification"
+              label={t('closeNotification')}
               onClick={() => dismiss(item.id)}
               size="sm"
             />

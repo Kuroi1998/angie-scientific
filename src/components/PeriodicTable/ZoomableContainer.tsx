@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PointerEvent, ReactNode, TouchEvent } from 'react';
 import { Maximize, ZoomIn, ZoomOut } from 'lucide-react';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface ZoomableContainerProps {
   children: ReactNode;
@@ -19,6 +20,7 @@ export function ZoomableContainer({
   onScaleChange,
   scale: externalScale,
 }: ZoomableContainerProps) {
+  const { t } = useLanguage('common');
   const containerRef = useRef<HTMLDivElement>(null);
   const [internalScale, setInternalScale] = useState(initialScale);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -102,14 +104,14 @@ export function ZoomableContainer({
 
   return (
     <div className="pt-zoom-shell" ref={containerRef}>
-      <div className="pt-zoom-controls" aria-label="Controle du zoom">
-        <button aria-label="Zoom In" onClick={() => manualZoom(0.2)} type="button">
+      <div className="pt-zoom-controls" aria-label={t('zoomControl')}>
+        <button aria-label={t('zoomIn')} onClick={() => manualZoom(0.2)} type="button">
           <ZoomIn size={17} />
         </button>
-        <button aria-label="Reset Zoom" onClick={resetZoom} type="button">
+        <button aria-label={t('resetZoom')} onClick={resetZoom} type="button">
           <Maximize size={17} />
         </button>
-        <button aria-label="Zoom Out" onClick={() => manualZoom(-0.2)} type="button">
+        <button aria-label={t('zoomOut')} onClick={() => manualZoom(-0.2)} type="button">
           <ZoomOut size={17} />
         </button>
       </div>

@@ -2,9 +2,11 @@ import React from 'react';
 import { Moon, Monitor, Sun } from 'lucide-react';
 import { Dropdown } from '../../design-system';
 import { useTheme } from '../hooks/useTheme';
+import { useLanguage } from '../../hooks/useLanguage';
 
 export const ThemeToggle: React.FC<{ onOpenThemeStore: () => void }> = ({ onOpenThemeStore }) => {
   const { theme, resolvedTheme, setTheme, availableThemes } = useTheme();
+  const { t } = useLanguage('user');
 
   const handleToggle = () => {
     if (theme === 'light') setTheme('dark');
@@ -18,12 +20,12 @@ export const ThemeToggle: React.FC<{ onOpenThemeStore: () => void }> = ({ onOpen
   };
 
   const items = [
-    { label: 'Basculer rapidement', onSelect: handleToggle },
+    { label: t('themeSelector.quickToggle'), onSelect: handleToggle },
     ...availableThemes.map((themeOption) => ({
       label: `${themeOption.name} ${theme === themeOption.id ? '✓' : ''}`,
       onSelect: () => setTheme(themeOption.id)
     })),
-    { label: 'Ouvrir le Theme Store', onSelect: onOpenThemeStore }
+    { label: t('themeSelector.openStore'), onSelect: onOpenThemeStore }
   ];
 
   return (
@@ -31,9 +33,9 @@ export const ThemeToggle: React.FC<{ onOpenThemeStore: () => void }> = ({ onOpen
       variant="ghost"
       label={
         <span
-          aria-label="Changer le thème"
+          aria-label={t('themeSelector.toggleLabel')}
           style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-          title={`Thème actuel: ${theme}`}
+          title={t('themeSelector.currentTheme', { theme })}
         >
           {getIcon()}
         </span>

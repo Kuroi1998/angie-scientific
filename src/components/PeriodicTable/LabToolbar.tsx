@@ -1,6 +1,20 @@
 import React from 'react';
 import { Filter, ZoomIn, ZoomOut, Maximize, PlayCircle } from 'lucide-react';
 import { notifyApp } from '../../utils/appNotifications';
+import { useLanguage } from '../../hooks/useLanguage';
+
+interface LabToolbarProps {
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  selectedCategory: string;
+  setSelectedCategory: (c: string) => void;
+  selectedState: string;
+  setSelectedState: (s: string) => void;
+  zoomLevel: number;
+  setZoomLevel: (z: number) => void;
+}
+
+export const LabToolbar: React.FC<LabToolbarProps> = ({
 
 interface LabToolbarProps {
   searchQuery: string;
@@ -24,18 +38,19 @@ export const LabToolbar: React.FC<LabToolbarProps> = ({
   setZoomLevel
 }) => {
   const [showFilters, setShowFilters] = React.useState(false);
+  const { t } = useLanguage('periodicTable');
 
   const categories = [
-    { id: 'all', label: 'Toutes les familles' },
-    { id: 'alkali-metal', label: 'Métaux alcalins' },
-    { id: 'alkaline-earth', label: 'Alcalino-terreux' },
-    { id: 'transition-metal', label: 'Métaux de transition' },
-    { id: 'lanthanide', label: 'Lanthanides' },
-    { id: 'actinide', label: 'Actinides' },
-    { id: 'post-transition-metal', label: 'Métaux pauvres' },
-    { id: 'metalloid', label: 'Métalloïdes' },
-    { id: 'reactive-nonmetal', label: 'Non-métaux réactifs' },
-    { id: 'noble-gas', label: 'Gaz nobles' }
+    { id: 'all', label: t('toolbar.categories.all') },
+    { id: 'alkali-metal', label: t('toolbar.categories.alkali-metal') },
+    { id: 'alkaline-earth', label: t('toolbar.categories.alkaline-earth') },
+    { id: 'transition-metal', label: t('toolbar.categories.transition-metal') },
+    { id: 'lanthanide', label: t('toolbar.categories.lanthanide') },
+    { id: 'actinide', label: t('toolbar.categories.actinide') },
+    { id: 'post-transition-metal', label: t('toolbar.categories.post-transition-metal') },
+    { id: 'metalloid', label: t('toolbar.categories.metalloid') },
+    { id: 'reactive-nonmetal', label: t('toolbar.categories.reactive-nonmetal') },
+    { id: 'noble-gas', label: t('toolbar.categories.noble-gas') }
   ];
 
   return React.createElement('div', { className: 'lab-command-deck' },
@@ -56,7 +71,7 @@ export const LabToolbar: React.FC<LabToolbarProps> = ({
             type: 'text',
             value: searchQuery,
             onChange: (e) => setSearchQuery(e.target.value),
-            placeholder: "Rechercher un élément, symbole, n°...",
+            placeholder: t('toolbar.searchPlaceholderExtended'),
             className: 'lab-command-input'
           })
         ),
@@ -65,7 +80,7 @@ export const LabToolbar: React.FC<LabToolbarProps> = ({
           className: `lab-action-btn ${showFilters ? 'active' : ''}`
         },
           React.createElement(Filter, { size: 14 }),
-          "FILTRES"
+          t('toolbar.filtersBtn')
         )
       ),
 
@@ -74,19 +89,11 @@ export const LabToolbar: React.FC<LabToolbarProps> = ({
         React.createElement('button', {
           className: 'lab-quiz-btn',
           onClick: () => notifyApp({
-            message: 'Le mode quiz du tableau periodique arrive bientot.',
-            title: 'Mode quiz',
+            message: t('toolbar.quizComingSoon'),
+            title: t('header.quiz'),
             tone: 'info'
           })
         },
-          React.createElement(PlayCircle, { size: 14 }),
-          "MODE QUIZ"
-        ),
-        React.createElement('div', { style: { width: '1px', height: '24px', background: 'var(--glass-border)', margin: '0 8px' } }),
-        React.createElement('button', { className: 'lab-action-btn', onClick: () => setZoomLevel(Math.max(0.5, zoomLevel - 0.2)), style: { padding: '8px' } }, React.createElement(ZoomOut, { size: 16 })),
-        React.createElement('button', { className: 'lab-action-btn', onClick: () => setZoomLevel(1), style: { padding: '8px' } }, React.createElement(Maximize, { size: 14 })),
-        React.createElement('button', { className: 'lab-action-btn', onClick: () => setZoomLevel(Math.min(3, zoomLevel + 0.2)), style: { padding: '8px' } }, React.createElement(ZoomIn, { size: 16 }))
-      )
     ),
 
     // Active Filters Panel

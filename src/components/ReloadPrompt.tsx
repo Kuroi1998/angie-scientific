@@ -1,8 +1,10 @@
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { RefreshCw, X } from 'lucide-react';
 import { Button, IconButton, Toast } from '../design-system';
+import { useLanguage } from '../hooks/useLanguage';
 
 export function ReloadPrompt() {
+  const { t } = useLanguage('common');
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
@@ -34,24 +36,24 @@ export function ReloadPrompt() {
                 onClick={() => updateServiceWorker(true)}
                 size="sm"
               >
-                Recharger
+                {t('pwa.reload')}
               </Button>
             )}
             <IconButton
               icon={<X size={15} />}
-              label="Fermer la notification"
+              label={t('pwa.close')}
               onClick={close}
               size="sm"
             />
           </div>
         )}
         className="as-toast-floating"
-        title={needRefresh ? 'Mise a jour disponible' : 'Pret hors ligne'}
+        title={needRefresh ? t('pwa.updateAvailable') : t('pwa.offlineReady')}
         tone={needRefresh ? 'warning' : 'success'}
       >
         {needRefresh
-          ? "Une nouvelle version d'Angie Scientific est disponible."
-          : "L'application est installee en cache et fonctionne sans connexion."}
+          ? t('pwa.updateDesc')
+          : t('pwa.offlineDesc')}
       </Toast>
     </div>
   );

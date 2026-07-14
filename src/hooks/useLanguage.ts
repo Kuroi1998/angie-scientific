@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 
 export type Language = 'fr' | 'es';
 
-export function useLanguage() {
-  const { t, i18n } = useTranslation();
+export function useLanguage(ns?: string | string[]) {
+  const { t, i18n } = useTranslation(ns);
 
   return {
     language: (i18n.language || 'fr').split('-')[0] as Language,

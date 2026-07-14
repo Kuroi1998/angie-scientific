@@ -3,6 +3,7 @@ import type { AbsorptionMolecule } from '../types/spectroscopy.types';
 import { ScientificPanel } from '../../../../../../components/shared/ScientificPanel';
 import { resolveCssColor } from '../../../../../../utils/resolveCssColor';
 import { resolveCssFont } from '../../../../../../utils/resolveCssFont';
+import { useLanguage } from '../../../../../../../hooks/useLanguage';
 
 interface AbsorptionSpectrumChartProps {
   molecule: AbsorptionMolecule;
@@ -12,8 +13,9 @@ interface AbsorptionSpectrumChartProps {
 
 export const AbsorptionSpectrumChart: React.FC<AbsorptionSpectrumChartProps> = ({ molecule, hoveredWavenumber, onHover }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const maxWn = 4000;
-  const minWn = 400; // IR typically goes from 4000 to 400 cm-1
+  const { t } = useLanguage('lab');
+  const minWn = 4000;
+  const maxWn = 400; // Reversed axis for IR!
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -26,28 +28,50 @@ export const AbsorptionSpectrumChart: React.FC<AbsorptionSpectrumChartProps> = (
     
     ctx.clearRect(0, 0, w, h);
 
-    // Map wavenumber (inverse axis!)
-    const mapX = (wn: number) => w - ((wn - minWn) / (maxWn - minWn)) * w;
-    const mapY = (t: number) => 20 + (1 - t) * (h - 60);
+    const padX = 40;
+    const padY = 30;
+    const chartW = w - 2 * padX;
+    const chartH = h - 2 * padY;
 
-    const gridColor = resolveCssColor('var(--surface-border)', '#8b99a6');
-    const mutedColor = resolveCssColor('var(--as-text-muted)', '#8b99a6');
-    const gridFont = resolveCssFont('10px var(--as-font-mono)', 'monospace');
+    const mapX = (wn: number) => padX + ((wn - minWn) / (maxWn - minWn)) * chartW;
+    const mapY = (transmittance: number) => padY + ((100 - transmittance) / 100) * chartH;
 
-    // Draw Grid
-    ctx.strokeStyle = gridColor;
+    // Axes
+    ctx.strokeStyle = resolveCssColor('var(--surface-border)', '#8b99a6');
     ctx.lineWidth = 1;
-    for (let wn = 1000; wn <= 4000; wn += 1000) {
-      const x = mapX(wn);
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h - 30); ctx.stroke();
-      ctx.fillStyle = mutedColor;
-      ctx.font = gridFont;
-      ctx.fillText(wn.toString(), x - 12, h - 15);
-    }
+    ctx.beginPath();
+    ctx.moveTo(padX, padY);
+    ctx.lineTo(padX, h - padY);
+    ctx.lineTo(w - padX, h - padY);
+    ctx.stroke();
 
-    // Baseline (T = 1.0)
-    ctx.strokeStyle = gridColor;
-    ctx.beginPath(); ctx.moveTo(0, mapY(1.0)); ctx.lineTo(w, mapY(1.0)); ctx.stroke();
+    ctx.fillStyle = resolveCssColor('var(--as-text-muted)', '#8b99a6');
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'center';
+    
+    // X Axis Labels (reversed)
+    for (let wn = 4000; wn >= 500; wn -= 500) {
+      const x = mapX(wn);
+      ctx.fillText(wn.toString(), x, h - padY + 15);
+      ctx.beginPath();
+      ctx.moveTo(x, h - padY);
+      ctx.lineTo(x, h - padY + 5);
+      ctx.stroke();
+    }
+    ctx.fillText('cm⁻¹', w / 2, h - 5);
+
+    // Y Axis Labels
+    ctx.textAlign = 'right';
+    for (let t = 0; t <= 100; t += 50) {
+      const y = mapY(t);
+      ctx.fillText(t.toString(), padX - 5, y + 3);
+    }
+    ctx.save();
+    ctx.translate(15, h / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillText(t('spectroscopy.charts.transmittance'), 0, 0);
+    ctx.restore();
 
     // Draw Curve
     ctx.beginPath();

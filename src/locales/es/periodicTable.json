@@ -11,19 +11,40 @@
   "toolbar": {
     "search": "Buscar",
     "searchPlaceholder": "Nombre, símbolo o número atómico",
+    "searchPlaceholderExtended": "Buscar un elemento, símbolo, n°...",
     "category": "Familia",
     "allCategories": "Todas las familias",
+    "categories": {
+      "all": "Todas las familias",
+      "alkali-metal": "Metales alcalinos",
+      "alkaline-earth": "Alcalinotérreos",
+      "transition-metal": "Metales de transición",
+      "lanthanide": "Lantánidos",
+      "actinide": "Actínidos",
+      "post-transition-metal": "Metales del bloque p",
+      "metalloid": "Metaloides",
+      "reactive-nonmetal": "No metales reactivos",
+      "noble-gas": "Gases nobles"
+    },
     "state": "Estado",
     "allStates": "Todos los estados",
     "results": "{{count}} resultados",
-    "reset": "Restablecer"
+    "reset": "Restablecer",
+    "filtersBtn": "FILTROS",
+    "quizBtn": "MODO QUIZ",
+    "quizComingSoon": "El modo quiz de la tabla periódica llegará pronto."
   },
   "status": {
     "visibleElements": "{{count}} elementos visibles",
     "filters": "{{count}} filtro(s)",
     "selection": "Selección: {{symbol}}",
     "inputMethods": "Ratón, táctil y teclado",
-    "onlineStatus": "En línea local"
+    "onlineStatus": "En línea local",
+    "visibleCount": "ELEMENTOS VISIBLES: {{visible}}/{{total}}",
+    "activeFilters": "FILTROS ACTIVOS: {{filters}}",
+    "zoom": "ZOOM: {{level}}%",
+    "typeToSearch": "ESCRIBE / PARA BUSCAR",
+    "online": "EN LÍNEA"
   },
   "legend": {
     "ariaLabel": "Leyenda de las familias"
@@ -39,13 +60,45 @@
     "config": "Config.",
     "density": "Densidad",
     "atomicMass": "Masa atómica",
+    "atomicMassLabel": "MASA ATÓMICA",
+    "naturalState": "ESTADO NATURAL",
     "meltingPoint": "Punto de fusión",
+    "meltingPointLabel": "PUNTO DE FUSIÓN",
     "boilingPoint": "Punto de ebullición",
+    "boilingPointLabel": "PUNTO DE EBULLICIÓN",
     "angieNote": "Angie aconseja comparar este elemento con un vecino de la misma familia para detectar tendencias periódicas.",
     "fullDetail": "Ficha completa",
     "removeFavorite": "Quitar favorito",
     "addFavorite": "Añadir favorito",
     "useInLab": "Usar en laboratorio",
     "compare": "Comparar"
+  },
+  "element": {
+    "config": "Configuración e-",
+    "shells": "Capas",
+    "atomicRadius": "Radio atómico",
+    "crystal": "Red cristalina",
+    "electronegativity": "Electronegatividad",
+    "ionization": "Energía de ionización",
+    "affinity": "Afinidad electrónica",
+    "discovery": "Descubrimiento",
+    "uses": "Usos",
+    "state": "Estado natural",
+    "density": "Densidad",
+    "meltingPoint": "Punto de fusión",
+    "boilingPoint": "Punto de ebullición",
+    "superpower": "Superpoder",
+    "superpowerDesc": "Este elemento se utiliza en objetos, reacciones o materiales de la vida cotidiana.",
+    "bohrSimulation": "Simulación de Bohr",
+    "angieAnalysis": "Análisis Angie"
+  },
+  "lewis": {
+    "nobleGasTitle": "GAS NOBLE - CAPA COMPLETA",
+    "nobleGasDesc": "{{symbol}} tiene una configuración electrónica estable y no forma enlaces covalentes estándar.",
+    "configTitle": "CONFIGURACIÓN ENLACE",
+    "ligand": "COMPAÑERO DE ENLACE",
+    "bondCount": "NÚMERO DE ENLACES",
+    "geometryTitle": "GEOMETRÍA VSEPR",
+    "bondCharacter": "CARÁCTER DEL ENLACE"
   }
 }

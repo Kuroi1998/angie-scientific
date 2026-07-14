@@ -4,13 +4,16 @@ import { Badge, Button, Slider, Switch } from '../../design-system';
 import { useLocalStorageState } from '../../hooks/useLocalStorageState';
 import { LabReadout, LabStation, SafetyList, StationPanel } from '../LabStation';
 import { drawVirtualExperiment } from './virtualLabCanvas';
-import { experiments, getProgressLabel, getRiskLevel } from './virtualLabData';
+import { getExperiments, getProgressLabel, getRiskLevel } from './virtualLabData';
+import { useLanguage } from '../../hooks/useLanguage';
 import './virtual-lab.css';
 
 const isStringArray = (raw: unknown): raw is string[] =>
   Array.isArray(raw) && raw.every((item) => typeof item === 'string');
 
 export const VirtualLab: React.FC = () => {
+  const { t } = useLanguage('gamification');
+  const experiments = getExperiments(t);
   const [selectedExpId, setSelectedExpId] = useState('h2o');
   const [temp, setTemp] = useState(298);
   const [press, setPress] = useState(1);
@@ -28,8 +31,8 @@ export const VirtualLab: React.FC = () => {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const experiment = experiments.find((item) => item.id === selectedExpId) ?? experiments[0];
-  const riskLevel = getRiskLevel(selectedExpId, temp, press, m1, m2);
-  const statusLabel = getProgressLabel(isRunning, completed);
+  const riskLevel = getRiskLevel(selectedExpId, temp, press, m1, m2, t);
+  const statusLabel = getProgressLabel(isRunning, completed, t);
 
   useEffect(() => {
     setIsRunning(false);
@@ -85,13 +88,13 @@ export const VirtualLab: React.FC = () => {
 
   const hazards = useMemo(() => {
     const items = [...experiment.hazards];
-    if (press >= 3) items.push('Surpression de cuve');
-    if (selectedExpId === 'h2o' && temp >= 450) items.push('Auto-allumage thermique');
+    if (press >= 3) items.push(t('virtualLab.hazards.overpressure'));
+    if (selectedExpId === 'h2o' && temp >= 450) items.push(t('virtualLab.hazards.autoignition'));
     if (selectedExpId === 'neutralization' && (m1 >= 15 || m2 >= 15)) {
-      items.push('Concentration corrosive elevee');
+      items.push(t('virtualLab.hazards.corrosive'));
     }
     return items;
-  }, [experiment.hazards, m1, m2, press, selectedExpId, temp]);
+  }, [experiment.hazards, m1, m2, press, selectedExpId, temp, t]);
 
   const startExperiment = () => {
     if (isRunning) return;
@@ -103,14 +106,14 @@ export const VirtualLab: React.FC = () => {
   return (
     <LabStation
       actions={<Badge tone={completed ? 'success' : 'info'}>{statusLabel}</Badge>}
-      eyebrow="Laboratoire guide"
+      eyebrow={t('virtualLab.eyebrow')}
       metrics={[
-        { label: 'Station', value: experiment.station, tone: 'info' },
-        { label: 'Risque', value: riskLevel, tone: riskLevel === 'Eleve' ? 'error' : 'warning' },
-        { label: 'Completes', value: `${completedExperiments.length}/${experiments.length}`, tone: 'success' },
+        { label: t('virtualLab.stationLabel'), value: experiment.station, tone: 'info' },
+        { label: t('virtualLab.riskLabel'), value: riskLevel, tone: riskLevel === t('virtualLab.riskHigh') ? 'error' : 'warning' },
+        { label: t('virtualLab.completedLabel'), value: `${completedExperiments.length}/${experiments.length}`, tone: 'success' },
       ]}
-      subtitle="Preparer une experience, regler les parametres, observer la reaction et consigner le resultat."
-      title="Labo Virtuel"
+      subtitle={t('virtualLab.subtitle')}
+      title={t('virtualLab.title')}
     >
       <div
         aria-label="Statut du labo virtuel"
@@ -129,15 +132,15 @@ export const VirtualLab: React.FC = () => {
         }}
       >
         {isRunning
-          ? `Reaction en cours : ${experiment.name}.`
+          ? t('virtualLab.reactionInProgress', { name: experiment.name })
           : completed
-            ? `Experience terminee : ${experiment.name} completee avec succes.`
+            ? t('virtualLab.experimentCompleted', { name: experiment.name })
             : ''}
       </div>
 
       <div className="lab-layout-grid">
         <div className="lab-station-column">
-          <StationPanel eyebrow="Selection" title="Experiences">
+          <StationPanel eyebrow={t('virtualLab.selection')} title={t('virtualLab.experiments')}>
             <div className="virtual-exp-list">
               {experiments.map((item) => (
                 <button
@@ -150,16 +153,16 @@ export const VirtualLab: React.FC = () => {
                   <strong>{item.name}</strong>
                   <small>{item.station}</small>
                   {completedExperiments.includes(item.id) && (
-                    <Badge tone="success">Completee</Badge>
+                    <Badge tone="success">{t('virtualLab.completedBadge')}</Badge>
                   )}
                 </button>
               ))}
             </div>
           </StationPanel>
 
-          <StationPanel eyebrow="Parametres" title="Preparation">
+          <StationPanel eyebrow={t('virtualLab.parameters')} title={t('virtualLab.preparation')}>
             <Slider
-              label="Temperature"
+              label={t('virtualLab.temperature')}
               max={800}
               min={100}
               onChange={(event) => setTemp(Number.parseInt(event.target.value, 10))}
@@ -167,7 +170,7 @@ export const VirtualLab: React.FC = () => {
               valueLabel={`${temp} K`}
             />
             <Slider
-              label="Pression"
+              label={t('virtualLab.pressure')}
               max={5}
               min={0.1}
               onChange={(event) => setPress(Number.parseFloat(event.target.value))}
@@ -177,7 +180,7 @@ export const VirtualLab: React.FC = () => {
             />
             <div className="lab-control-grid">
               <Slider
-                label="Reactif A"
+                label={t('virtualLab.reactantA')}
                 max={20}
                 min={1}
                 onChange={(event) => setM1(Number.parseInt(event.target.value, 10))}
@@ -185,7 +188,7 @@ export const VirtualLab: React.FC = () => {
                 valueLabel={`${m1} g`}
               />
               <Slider
-                label="Reactif B"
+                label={t('virtualLab.reactantB')}
                 max={20}
                 min={1}
                 onChange={(event) => setM2(Number.parseInt(event.target.value, 10))}
@@ -196,7 +199,7 @@ export const VirtualLab: React.FC = () => {
             {selectedExpId === 'neutralization' && (
               <Switch
                 checked={hasIndicator}
-                label="Ajouter phenolphtaleine"
+                label={t('virtualLab.addIndicator')}
                 onChange={(event) => setHasIndicator(event.target.checked)}
               />
             )}
@@ -211,10 +214,10 @@ export const VirtualLab: React.FC = () => {
                 iconLeft={completed ? <CheckCircle size={16} /> : <Play size={16} />}
                 onClick={startExperiment}
               >
-                {completed ? "Experience completee" : isRunning ? 'Reaction en cours...' : "Lancer l'experience"}
+                {completed ? t('virtualLab.experimentCompletedBadge') : isRunning ? t('virtualLab.reactionInProgressBadge') : t('virtualLab.startExperiment')}
               </Button>
             }
-            eyebrow="Apercu"
+            eyebrow={t('virtualLab.preview')}
             title={experiment.name}
           >
             <p className="virtual-explanation">{experiment.description}</p>
@@ -235,11 +238,11 @@ export const VirtualLab: React.FC = () => {
             </div>
           </StationPanel>
 
-          <StationPanel eyebrow="Resultat" title="Observation">
+          <StationPanel eyebrow={t('virtualLab.result')} title={t('virtualLab.observation')}>
             <div className="lab-readout-grid">
-              <LabReadout label="Reactifs" value={experiment.reactants} />
-              <LabReadout label="Produit attendu" tone="success" value={experiment.product} />
-              <LabReadout label="Etat" tone={completed ? 'success' : 'info'} value={statusLabel} />
+              <LabReadout label={t('virtualLab.reactants')} value={experiment.reactants} />
+              <LabReadout label={t('virtualLab.expectedProduct')} tone="success" value={experiment.product} />
+              <LabReadout label={t('virtualLab.status')} tone={completed ? 'success' : 'info'} value={statusLabel} />
             </div>
             <p className="virtual-explanation">{experiment.explanation}</p>
             <Button
@@ -251,13 +254,13 @@ export const VirtualLab: React.FC = () => {
               }}
               variant="outline"
             >
-              Repreparer
+              {t('virtualLab.reprepare')}
             </Button>
           </StationPanel>
         </div>
       </div>
 
-      <StationPanel eyebrow="Securite" title="Consignes actives">
+      <StationPanel eyebrow={t('virtualLab.security')} title={t('virtualLab.activeGuidelines')}>
         <SafetyList items={hazards} />
       </StationPanel>
     </LabStation>

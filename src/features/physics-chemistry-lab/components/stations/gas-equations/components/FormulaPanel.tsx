@@ -1,59 +1,76 @@
 import React, { useState } from 'react';
 import { ScientificPanel } from '../../../../../../components/shared/ScientificPanel';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 export const FormulaPanel: React.FC = () => {
-  const [detailed, setDetailed] = useState(false);
+  const [showDetailed, setShowDetailed] = useState(false);
+  const { t } = useLanguage('lab');
 
   return (
-    <ScientificPanel title="Modèles Mathématiques" variant="glass">
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-        <button
-          onClick={() => setDetailed(!detailed)}
+    <ScientificPanel title={t('gas.formulas.title')} variant="primary">
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+        <button 
+          onClick={() => setShowDetailed(!showDetailed)}
           style={{
             background: 'transparent',
             border: '1px solid var(--as-border-inverse)',
-            color: 'rgba(247, 250, 252, 0.7)',
+            color: 'var(--as-text-primary)',
             padding: '4px 8px',
             borderRadius: '4px',
             fontSize: '10px',
-            fontFamily: 'var(--as-font-title)',
             cursor: 'pointer'
           }}
         >
-          {detailed ? 'VUE SIMPLE' : 'VUE DÉTAILLÉE'}
+          {showDetailed ? t('gas.formulas.simpleView') : t('gas.formulas.detailedView')}
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div style={{ background: 'var(--surface-card)', padding: '12px', borderRadius: '8px' }}>
-          <h4 style={{ margin: '0 0 8px 0', fontSize: '11px', color: 'color-mix(in srgb, var(--as-accent-cyan) 75%, var(--as-text-primary) 25%)', fontFamily: 'var(--as-font-title)' }}>LOI DES GAZ PARFAITS</h4>
-          <div style={{ fontSize: '16px', fontFamily: 'var(--as-font-mono)', color: 'var(--text-primary)', marginBottom: '8px', textAlign: 'center' }}>
-            P × V = n × R × T
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        
+        {/* Loi des Gaz Parfaits */}
+        <div>
+          <h4 style={{ margin: '0 0 12px 0', color: 'var(--as-accent-cyan)', fontSize: '13px', fontFamily: 'var(--as-font-title)' }}>
+            {t('gas.formulas.idealTitle')}
+          </h4>
+          <div style={{ padding: '16px', background: 'rgba(24, 184, 200, 0.05)', borderRadius: '8px', border: '1px solid var(--as-accent-cyan)', textAlign: 'center' }}>
+            <span style={{ fontSize: '24px', fontFamily: 'var(--as-font-mono)', color: 'var(--text-primary)' }}>
+              P · V = n · R · T
+            </span>
           </div>
-          {detailed && (
-            <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11px', color: 'var(--as-text-muted)' }}>
-              <li><strong>P</strong> : Pression (Pa ou bar)</li>
-              <li><strong>V</strong> : Volume (m³ ou L)</li>
-              <li><strong>n</strong> : Quantité de matière (mol)</li>
-              <li><strong>R</strong> : Constante universelle (8.314 J/mol·K ou 0.08314 L·bar/mol·K)</li>
-              <li><strong>T</strong> : Température absolue (K)</li>
+          {showDetailed && (
+            <ul style={{ margin: '12px 0 0 0', paddingLeft: '20px', fontSize: '11px', color: 'var(--as-text-muted)', lineHeight: '1.6' }}>
+              <li>{t('gas.formulas.idealP')}</li>
+              <li>{t('gas.formulas.idealV')}</li>
+              <li>{t('gas.formulas.idealN')}</li>
+              <li>{t('gas.formulas.idealR')}</li>
+              <li>{t('gas.formulas.idealT')}</li>
             </ul>
           )}
         </div>
 
-        <div style={{ background: 'var(--surface-card)', padding: '12px', borderRadius: '8px' }}>
-          <h4 style={{ margin: '0 0 8px 0', fontSize: '11px', color: 'color-mix(in srgb, var(--as-accent-magenta) 75%, var(--as-text-primary) 25%)', fontFamily: 'var(--as-font-title)' }}>ÉQUATION DE VAN DER WAALS</h4>
-          <div style={{ fontSize: '16px', fontFamily: 'var(--as-font-mono)', color: 'var(--text-primary)', marginBottom: '8px', textAlign: 'center' }}>
-            (P + a·(n/V)²) × (V - n·b) = n × R × T
+        {/* Équation de Van der Waals */}
+        <div>
+          <h4 style={{ margin: '0 0 12px 0', color: 'var(--as-accent-magenta)', fontSize: '13px', fontFamily: 'var(--as-font-title)' }}>
+            {t('gas.formulas.vdwTitle')}
+          </h4>
+          <div style={{ padding: '16px', background: 'rgba(239, 107, 91, 0.05)', borderRadius: '8px', border: '1px solid var(--as-accent-magenta)', textAlign: 'center' }}>
+            <span style={{ fontSize: '20px', fontFamily: 'var(--as-font-mono)', color: 'var(--text-primary)' }}>
+              (P + a·n²/V²) · (V - n·b) = n · R · T
+            </span>
           </div>
-          {detailed && (
-            <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11px', color: 'var(--as-text-muted)' }}>
-              <li><strong>a</strong> : Terme de cohésion (attractions intermoléculaires)</li>
-              <li><strong>b</strong> : Covolume (volume propre exclu par les molécules)</li>
-              <li>Cette équation corrige les deux hypothèses principales du gaz parfait (volume ponctuel et absence d'interactions).</li>
-            </ul>
+          {showDetailed && (
+            <div style={{ marginTop: '12px' }}>
+              <ul style={{ margin: '0 0 12px 0', paddingLeft: '20px', fontSize: '11px', color: 'var(--as-text-muted)', lineHeight: '1.6' }}>
+                <li><strong style={{ color: 'var(--as-accent-magenta)' }}>{t('gas.formulas.vdwA')}</strong></li>
+                <li><strong style={{ color: 'var(--as-accent-cyan)' }}>{t('gas.formulas.vdwB')}</strong></li>
+              </ul>
+              <div style={{ fontSize: '11px', color: 'var(--as-text-secondary)', padding: '8px', background: 'var(--surface-background)', borderRadius: '4px' }}>
+                💡 {t('gas.formulas.vdwDesc')}
+              </div>
+            </div>
           )}
         </div>
+
       </div>
     </ScientificPanel>
   );

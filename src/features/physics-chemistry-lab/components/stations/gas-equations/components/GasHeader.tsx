@@ -1,15 +1,17 @@
 import React from 'react';
-
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 export const GasHeader: React.FC<{ onReset: () => void }> = ({ onReset }) => {
+  const { t } = useLanguage('lab');
+
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--as-border-inverse)' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         <h2 style={{ margin: 0, fontFamily: 'var(--as-font-title)', color: 'var(--as-text-primary)', fontSize: '20px' }}>
-          Équations d'état des gaz
+          {t('gas.header.title')}
         </h2>
         <span style={{ color: 'var(--as-text-muted)', fontSize: '12px' }}>
-          Comparaison temps réel entre le modèle de gaz parfait et le modèle de Van der Waals.
+          {t('gas.header.subtitle')}
         </span>
       </div>
       
@@ -28,7 +30,7 @@ export const GasHeader: React.FC<{ onReset: () => void }> = ({ onReset }) => {
             transition: 'all 0.2s'
           }}
         >
-          RÉINITIALISER
+          {t('gas.header.reset')}
         </button>
       </div>
     </div>

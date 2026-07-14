@@ -33,8 +33,8 @@ vi.mock('../useUserProgress', () => ({
   }),
 }));
 
-vi.mock('../Mascot/useMascot', () => ({
-  useMascot: () => ({ showMessage: vi.fn() }),
+vi.mock('../../features/angie/state/useAngie', () => ({
+  useAngie: () => ({ showMessage: vi.fn() }),
 }));
 
 afterEach(() => cleanup());

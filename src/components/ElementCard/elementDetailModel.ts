@@ -1,4 +1,5 @@
 import type { Language } from '../../hooks/useLanguage';
+import type { Emotion } from '../../features/angie/state/angie.types';
 import type { ElementType } from '../PeriodicTable/periodicTableTypes';
 import {
   getCategoryLabel,
@@ -65,9 +66,10 @@ export function getElementDetailTabs(
   ] satisfies { id: ElementDetailTab; label: string }[];
 }
 
-export function getFactEmotion(category: string) {
-  if (category === 'surprising') return 'impressed';
-  if (category === 'reaction' || category === 'safety') return 'surprised';
+export function getFactEmotion(category: string): Emotion {
+  if (category === 'surprising') return 'surprised';
+  if (category === 'safety') return 'worried';
+  if (category === 'reaction') return 'curious';
   if (category === 'discovery') return 'thinking';
   return 'happy';
 }

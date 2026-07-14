@@ -1,14 +1,16 @@
 import React from 'react';
 import { useTheme } from '../hooks/useTheme';
+import { useLanguage } from '../../hooks/useLanguage';
 
 export const ThemeSelector: React.FC = () => {
   const { theme, setTheme, availableThemes } = useTheme();
+  const { t } = useLanguage('user');
 
   return (
     <div className="as-theme-selector">
-      <h3 style={{ margin: '0 0 1rem 0', color: 'var(--as-text-primary)' }}>Apparence</h3>
+      <h3 style={{ margin: '0 0 1rem 0', color: 'var(--as-text-primary)' }}>{t('themeSelector.title')}</h3>
       <p style={{ color: 'var(--as-text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-        Choisissez le thème de l'application. "Système" s'adaptera automatiquement à vos préférences système.
+        {t('themeSelector.description')}
       </p>
       
       <div style={{

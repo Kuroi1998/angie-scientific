@@ -1,0 +1,50 @@
+{
+  "chrome": {
+    "show": "Afficher Angie",
+    "hide": "Masquer Angie",
+    "activate": "Demander un fait a Angie",
+    "closeMessage": "Fermer le message d'Angie",
+    "openConversation": "Ouvrir la conversation avec Angie"
+  },
+  "chat": {
+    "title": "Discuter avec Angie",
+    "close": "Fermer la conversation",
+    "empty": "Pose une question ou choisis une action rapide pour commencer.",
+    "placeholder": "Ecris ta question a Angie...",
+    "inputLabel": "Message a Angie",
+    "send": "Envoyer",
+    "stop": "Arreter la reponse",
+    "thinking": "Angie reflechit",
+    "newConversation": "Nouvelle conversation",
+    "clearHistory": "Effacer l'historique",
+    "copy": "Copier la reponse"
+  },
+  "intent": {
+    "explainPage": "Explique cette page",
+    "summarize": "Resume",
+    "giveExample": "Donne un exemple",
+    "stepByStep": "Etape par etape",
+    "simplify": "Simplifie",
+    "deepen": "Approfondis",
+    "hint": "Indice",
+    "whatNext": "Quoi faire ensuite",
+    "verifyResult": "Verifie mon resultat",
+    "trivia": "Fait surprenant",
+    "joke": "Blague scientifique"
+  },
+  "settings": {
+    "title": "Assistant Angie",
+    "frequencyLabel": "Frequence des messages",
+    "frequency": {
+      "discrete": "Discrete",
+      "balanced": "Equilibree",
+      "talkative": "Bavarde"
+    },
+    "autoDialogue": "Messages automatiques",
+    "quickSuggestions": "Suggestions rapides",
+    "history": "Historique de conversation",
+    "positionLabel": "Position a l'ecran",
+    "positionRight": "A droite",
+    "positionLeft": "A gauche"
+  }
+}

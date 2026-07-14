@@ -11,9 +11,11 @@ import { VdwConstantsInfo } from './components/VdwConstantsInfo';
 import { ComparisonTable } from './components/ComparisonTable';
 import { FormulaPanel } from './components/FormulaPanel';
 import { PVChart } from './charts/PVChart';
+import { useLanguage } from '../../../../../hooks/useLanguage';
 
 export const GasEquationsStation: React.FC = () => {
   const { state, setVariable, gas, comparison } = useGasState();
+  const { t } = useLanguage('lab');
 
   const handleReset = () => {
     setVariable('gasKey', 'co2');
@@ -32,12 +34,12 @@ export const GasEquationsStation: React.FC = () => {
         {/* Colonne Gauche : Contrôles */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div style={{ background: 'var(--as-surface-secondary)', padding: '16px', borderRadius: '8px', border: '1px solid var(--as-border-inverse)' }}>
-            <h3 style={{ margin: '0 0 16px 0', fontSize: '14px', fontFamily: 'var(--as-font-title)', color: 'var(--text-primary)' }}>Sélection du Gaz</h3>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '14px', fontFamily: 'var(--as-font-title)', color: 'var(--text-primary)' }}>{t('gas.selection.title')}</h3>
             <GasSelector selectedKey={state.gasKey} onSelect={(k) => setVariable('gasKey', k)} />
           </div>
 
           <div style={{ background: 'var(--as-surface-secondary)', padding: '16px', borderRadius: '8px', border: '1px solid var(--as-border-inverse)' }}>
-            <h3 style={{ margin: '0 0 16px 0', fontSize: '14px', fontFamily: 'var(--as-font-title)', color: 'var(--text-primary)' }}>Paramètres du Système</h3>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '14px', fontFamily: 'var(--as-font-title)', color: 'var(--text-primary)' }}>{t('gas.params.title')}</h3>
             <VariableSelector value={state.calculatedVariable} onChange={(v) => setVariable('calculatedVariable', v)} />
             <ParameterPanel state={state} onUpdateState={setVariable} />
           </div>

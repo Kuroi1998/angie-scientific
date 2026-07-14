@@ -1,13 +1,15 @@
 import React from 'react';
 import type { KineticsResult } from '../types/kinetics.types';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 export const EquilibriumIndicator: React.FC<{ result: KineticsResult }> = ({ result }) => {
+  const { t } = useLanguage('lab');
   const { Q, K, isAtEquilibrium } = result;
 
   const getDirection = () => {
-    if (isAtEquilibrium || !Number.isFinite(Q) || !Number.isFinite(K)) return 'ÉQUILIBRE ATTEINT';
-    if (Q < K) return 'ÉVOLUTION SENS DIRECT (Formation de produits)';
-    return 'ÉVOLUTION SENS INDIRECT (Formation de réactifs)';
+    if (isAtEquilibrium || !Number.isFinite(Q) || !Number.isFinite(K)) return t('kinetics.equilibrium.atEq');
+    if (Q < K) return t('kinetics.equilibrium.forward');
+    return t('kinetics.equilibrium.reverse');
   };
 
   const getColor = () => {
@@ -22,7 +24,7 @@ export const EquilibriumIndicator: React.FC<{ result: KineticsResult }> = ({ res
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px', background: 'var(--surface-card)', borderRadius: '8px', border: `1px solid ${getColor()}`, transition: 'all 0.3s' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: '11px', color: 'var(--as-text-secondary)', fontFamily: 'var(--as-font-title)' }}>ÉTAT DU SYSTÈME</span>
+        <span style={{ fontSize: '11px', color: 'var(--as-text-secondary)', fontFamily: 'var(--as-font-title)' }}>{t('kinetics.equilibrium.stateTitle')}</span>
         <span style={{ fontSize: '10px', color: `color-mix(in srgb, ${getColor()} 75%, var(--as-text-primary) 25%)`, fontFamily: 'var(--as-font-title)', fontWeight: 'bold' }}>{getDirection()}</span>
       </div>
 

@@ -1,0 +1,192 @@
+{
+  "hub": {
+    "gas": "Gaz",
+    "gasDesc": "Lois des gaz parfaits et réels",
+    "kinetics": "Cinétique",
+    "kineticsDesc": "Vitesse de réaction et équilibre",
+    "phase": "Diagrammes",
+    "phaseDesc": "Changements d'état de la matière",
+    "spectro": "Spectrométrie",
+    "spectroDesc": "Spectres d'émission atomique",
+    "loading": "Chargement de l'équipement..."
+  },
+  "gas": {
+    "header": {
+      "title": "Équations d'état des gaz",
+      "subtitle": "Comparaison temps réel entre le modèle de gaz parfait et le modèle de Van der Waals.",
+      "reset": "RÉINITIALISER"
+    },
+    "selection": { "title": "Sélection du Gaz" },
+    "params": {
+      "title": "Paramètres du Système",
+      "temperature": "Température",
+      "pressure": "Pression",
+      "volume": "Volume",
+      "moles": "Quantité"
+    },
+    "results": {
+      "ideal": "MODÈLE GAZ PARFAIT",
+      "idealDesc": "{{symbol}} idéal (interactions négligées)",
+      "vdw": "MODÈLE VAN DER WAALS",
+      "vdwDesc": "{{symbol}} réel (volume moléculaire et attractions)",
+      "error": "Erreur",
+      "divergenceLabel": "ÉCART RELATIF : {{level}}",
+      "divergenceAbs": "Écart absolu :",
+      "compressibility": "FACTEUR DE COMPRESSIBILITÉ Z",
+      "compressibilityDesc": "Z = PV / nRT (Z=1 pour l'idéal)",
+      "levels": {
+        "none": "NULLE",
+        "low": "FAIBLE",
+        "moderate": "MODÉRÉE",
+        "high": "IMPORTANTE",
+        "critical": "TRÈS IMPORTANTE",
+        "unknown": "INCONNUE"
+      }
+    },
+    "alerts": {
+      "errorIdeal": "ERREUR GAZ PARFAIT :",
+      "errorVdw": "ERREUR VAN DER WAALS :",
+      "divergence": "DIVERGENCE IMPORTANTE :",
+      "divergenceDesc": "Les interactions intermoléculaires et le volume propre des molécules influencent fortement le comportement du gaz. Le modèle du gaz parfait n'est plus fiable dans ces conditions (haute pression / basse température)."
+    },
+    "vdwConstants": {
+      "title": "Constantes de Van der Waals : {{name}}",
+      "paramA": "Paramètre a",
+      "cohesion": "Cohésion (attractions)",
+      "paramB": "Paramètre b",
+      "covolume": "Covolume (encombrement)"
+    },
+    "comparisonTable": {
+      "title": "Tableau Comparatif Détaillé",
+      "headers": {
+        "magnitude": "Grandeur",
+        "idealGas": "Gaz Parfait",
+        "vdw": "Van der Waals",
+        "absDivergence": "Écart Absolu",
+        "relDivergence": "Écart Relatif"
+      },
+      "rows": {
+        "pressure": "Pression (bar)",
+        "volume": "Volume (L)",
+        "temperature": "Température (K)",
+        "zFactor": "Facteur Z"
+      }
+    },
+    "formulas": {
+      "title": "Modèles Mathématiques",
+      "simpleView": "VUE SIMPLE",
+      "detailedView": "VUE DÉTAILLÉE",
+      "idealTitle": "LOI DES GAZ PARFAITS",
+      "idealP": "P : Pression (Pa ou bar)",
+      "idealV": "V : Volume (m³ ou L)",
+      "idealN": "n : Quantité de matière (mol)",
+      "idealR": "R : Constante universelle (8.314 J/mol·K ou 0.08314 L·bar/mol·K)",
+      "idealT": "T : Température absolue (K)",
+      "vdwTitle": "ÉQUATION DE VAN DER WAALS",
+      "vdwA": "a : Terme de cohésion (attractions intermoléculaires)",
+      "vdwB": "b : Covolume (volume propre exclu par les molécules)",
+      "vdwDesc": "Cette équation corrige les deux hypothèses principales du gaz parfait (volume ponctuel et absence d'interactions)."
+    },
+    "simulation": {
+      "idealTitle": "GAZ PARFAIT (Théorique)",
+      "vdwTitle": "GAZ RÉEL (Van der Waals)",
+      "play": "▶ LECTURE",
+      "pause": "⏸ PAUSE",
+      "particleDensity": "Densité part.",
+      "simSpeed": "Vitesse sim.",
+      "disclaimer": "* Représentation pédagogique simplifiée — la taille des particules et les distances ne sont pas à l'échelle."
+    },
+    "variableSelector": {
+      "title": "VARIABLE À CALCULER",
+      "calcHint": "Calculer le {{label}} en fonction des autres variables"
+    }
+  },
+  "kinetics": {
+    "paramsTitle": "Paramètres Thermodynamiques",
+    "temperature": "Température",
+    "catalyst": {
+      "title": "CATALYSEUR",
+      "desc": "Abaisse l'énergie d'activation sans modifier l'état final d'équilibre (accélère la réaction)."
+    },
+    "header": {
+      "title": "Cinétique et Équilibre Chimique",
+      "desc": "Simulateur temporel d'évolution des concentrations. Modifiez la température ou ajoutez un catalyseur pour observer la loi d'Arrhenius en action. Injectez des réactifs pour constater le déplacement d'équilibre (Le Chatelier).",
+      "speed": "Vitesse",
+      "injectBtn": "INJECTER RÉACTIFS",
+      "injectTooltip": "Perturbe l'équilibre en ajoutant des réactifs",
+      "play": "▶ LECTURE",
+      "pause": "⏸ PAUSE",
+      "reset": "RÉINITIALISER"
+    },
+    "results": {
+      "forwardRate": "Vitesse Directe (vf)",
+      "reverseRate": "Vitesse Inverse (vr)",
+      "rateUnit": "mol/(L·s)",
+      "eqConstant": "Constante d'Éq. (K)",
+      "tempDependent": "Dépendant de T",
+      "reactionQuotient": "Quotient de R. (Q)",
+      "instantState": "État instantané"
+    },
+    "selector": {
+      "title": "TYPE DE RÉACTION"
+    },
+    "equilibrium": {
+      "stateTitle": "ÉTAT DU SYSTÈME",
+      "atEq": "ÉQUILIBRE ATTEINT",
+      "forward": "ÉVOLUTION SENS DIRECT (Formation de produits)",
+      "reverse": "ÉVOLUTION SENS INDIRECT (Formation de réactifs)"
+    }
+  },
+  "phase": {
+    "station": {
+      "conditions": "Conditions",
+      "temperature": "Température",
+      "pressure": "Pression"
+    },
+    "header": {
+      "title": "Diagrammes de Phase et Thermodynamique",
+      "desc": "Explorez les changements d'état de la matière en fonction de la température et de la pression (équation de Clausius-Clapeyron). Cliquez sur le diagramme P-T pour déplacer le point de fonctionnement."
+    },
+    "properties": {
+      "physicalState": "État Physique",
+      "triplePoint": "Point Triple",
+      "criticalPoint": "Point Critique"
+    },
+    "states": {
+      "solid": "Solide",
+      "liquid": "Liquide",
+      "gas": "Gaz",
+      "supercritical": "Supercritique"
+    },
+    "selector": {
+      "title": "SUBSTANCE CHIMIQUE"
+    },
+    "simulation": {
+      "title": "Comportement Moléculaire"
+    }
+  },
+  "spectroscopy": {
+    "station": {
+      "liveAnalyzer": "Analyseur de Photon en Direct"
+    },
+    "header": {
+      "title": "Spectrométrie & Analyse Optique",
+      "desc": "Analysez les signatures lumineuses des atomes (Spectres d'émission dans le visible) et les modes de vibration des molécules (Spectres d'absorption infrarouge). Survolez les spectres avec la souris pour activer le capteur de photons."
+    },
+    "elementSelector": {
+      "atomicElement": "ÉLÉMENT ATOMIQUE",
+      "molecule": "MOLÉCULE"
+    },
+    "modeSelector": {
+      "emission": "ÉMISSION (VISIBLE)",
+      "absorption": "ABSORPTION (INFRAROUGE)"
+    },
+    "photonPanel": {
+      "hoverHint": "Survolez le spectre pour activer le détecteur de photons.",
+      "color": "Couleur",
+      "wavenumber": "Nombre d'onde",
+      "frequency": "Fréquence (ν)",
+      "energy": "Énergie (E = hν)"
+    }
+  }
+}

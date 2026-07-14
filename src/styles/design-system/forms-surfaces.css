@@ -109,9 +109,39 @@
 }
 
 .as-choice input {
-  accent-color: var(--as-accent-cyan);
+  appearance: none;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--as-accent-cyan);
+  border-radius: 4px;
   height: 1.15rem;
   width: 1.15rem;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: inset 0 0 5px rgba(24, 184, 200, 0.2);
+  cursor: pointer;
+  margin: 0;
+}
+
+.as-choice input[type="radio"] {
+  border-radius: 50%;
+}
+
+.as-choice input:checked {
+  background: rgba(24, 184, 200, 0.2);
+  box-shadow: 0 0 10px rgba(24, 184, 200, 0.4), inset 0 0 5px rgba(24, 184, 200, 0.5);
+}
+
+.as-choice input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: var(--as-accent-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 5px var(--as-accent-cyan);
 }
 
 .as-switch input {
@@ -125,32 +155,38 @@
 }
 
 .as-switch-track {
-  background: var(--as-border-strong);
-  border-radius: var(--as-radius-round);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--as-accent-cyan);
+  border-radius: 4px;
   height: 1.35rem;
   pointer-events: none;
   position: relative;
   width: 2.5rem;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 0 5px rgba(24, 184, 200, 0.2);
 }
 
 .as-switch-track::after {
-  background: white;
-  border-radius: 50%;
+  background: var(--as-text-muted);
+  border-radius: 2px;
   content: "";
   height: 1rem;
   left: 0.18rem;
   position: absolute;
-  top: 0.18rem;
-  transition: transform var(--as-duration-fast) var(--as-ease-standard);
+  top: 0.13rem;
+  transition: transform var(--as-duration-fast) var(--as-ease-standard), background 0.2s;
   width: 1rem;
 }
 
 .as-switch input:checked + .as-switch-track {
-  background: var(--as-accent-cyan);
+  background: rgba(24, 184, 200, 0.2);
+  box-shadow: 0 0 10px rgba(24, 184, 200, 0.4), inset 0 0 5px rgba(24, 184, 200, 0.5);
 }
 
 .as-switch input:checked + .as-switch-track::after {
-  transform: translateX(1.15rem);
+  background: var(--as-accent-cyan);
+  box-shadow: 0 0 5px var(--as-accent-cyan);
+  transform: translateX(1.1rem);
 }
 
 .as-slider-row {

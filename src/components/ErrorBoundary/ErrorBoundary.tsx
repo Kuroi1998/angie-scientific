@@ -16,6 +16,10 @@ interface ErrorBoundaryProps {
    * mount instead of staying stuck on the fallback forever.
    */
   resetKey?: unknown;
+  /** Translated text for the title prefix. */
+  titlePrefix?: string;
+  /** Translated text for the retry button. */
+  retryLabel?: string;
 }
 
 interface ErrorBoundaryState {
@@ -81,7 +85,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           color: 'var(--text-primary)',
           margin: 0
         }
-      }, `UNE ERREUR EST SURVENUE — ${this.props.label.toUpperCase()}`),
+      }, `${this.props.titlePrefix || 'UNE ERREUR EST SURVENUE'} — ${this.props.label.toUpperCase()}`),
       React.createElement('p', {
         style: { fontSize: '12.5px', color: 'var(--text-secondary)', maxWidth: '480px', lineHeight: '1.5', margin: 0 }
       },
@@ -98,17 +102,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             borderRadius: '4px',
             color: 'var(--neon-cyan)',
             fontFamily: 'var(--font-title)',
-            fontSize: '11px',
-            fontWeight: 'bold',
-            letterSpacing: '1px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
+            fontSize: '13px',
+            cursor: 'pointer'
           }
         },
-          React.createElement(RotateCcw, { size: 13 }),
-          'RÉESSAYER'
+          React.createElement(RotateCcw, { size: 14, style: { marginRight: '6px', verticalAlign: 'middle' } }),
+          this.props.retryLabel || 'Réessayer'
         ),
         this.props.onNavigateHome && React.createElement('button', {
           onClick: this.props.onNavigateHome,
@@ -119,17 +118,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             borderRadius: '4px',
             color: 'var(--text-secondary)',
             fontFamily: 'var(--font-title)',
-            fontSize: '11px',
-            fontWeight: 'bold',
-            letterSpacing: '1px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
+            fontSize: '13px',
+            cursor: 'pointer'
           }
         },
-          React.createElement(Home, { size: 13 }),
-          (this.props.homeLabel || 'RETOUR AU TABLEAU PÉRIODIQUE').toUpperCase()
+          React.createElement(Home, { size: 14, style: { marginRight: '6px', verticalAlign: 'middle' } }),
+          this.props.homeLabel || "Retour à l'accueil"
         )
       ),
       isDev && React.createElement('pre', {

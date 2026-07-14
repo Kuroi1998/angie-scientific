@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import type { ReactionDefinition } from '../types/kinetics.types';
 import { ScientificPanel } from '../../../../../../components/shared/ScientificPanel';
 import { resolveCssColor } from '../../../../../../utils/resolveCssColor';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 interface EnergyProfileChartProps {
   reaction: ReactionDefinition;
@@ -10,6 +11,7 @@ interface EnergyProfileChartProps {
 
 export const EnergyProfileChart: React.FC<EnergyProfileChartProps> = ({ reaction, catalystEaReduction }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { t } = useLanguage('lab');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -96,7 +98,7 @@ export const EnergyProfileChart: React.FC<EnergyProfileChartProps> = ({ reaction
   }, [reaction, catalystEaReduction]);
 
   return (
-    <ScientificPanel title="Profil Énergétique" variant="glass">
+    <ScientificPanel title={t('kinetics.charts.energyProfileTitle')} variant="glass">
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <canvas ref={canvasRef} width={300} height={200} style={{ background: 'var(--as-surface-inverse)', borderRadius: '4px', maxWidth: '100%' }} />
       </div>

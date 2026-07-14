@@ -1,6 +1,7 @@
 import React from 'react';
 import { Activity, GitCommit } from 'lucide-react';
 import type { BondDetails, VseprResult } from '../../engines/bondingEngine';
+import { useLanguage } from '../../hooks/useLanguage';
 import {
   canvasPanelStyle,
   canvasStyle,
@@ -54,16 +55,15 @@ interface GeometrySummaryProps {
   language: string;
 }
 
-const pick = (language: string, fr: string, es: string) => language === 'fr' ? fr : es;
-
 export const NobleGasNotice: React.FC<NobleGasNoticeProps> = ({ centralSymbol, language }) => {
+  const { t } = useLanguage('periodicTable');
   return React.createElement('div', { style: nobleNoticeStyle },
     React.createElement('span', {
       style: { fontFamily: 'var(--font-title)', fontSize: '22px', color: 'var(--neon-cyan)' }
     }, centralSymbol),
     React.createElement('p', {
       style: { fontFamily: 'var(--font-title)', fontSize: '12px', color: 'var(--neon-cyan)', margin: 0 }
-    }, pick(language, 'GAZ NOBLE - COUCHE COMPLETE', 'GAS NOBLE - CAPA COMPLETA')),
+    }, t('lewis.nobleGasTitle')),
     React.createElement('p', {
       style: {
         fontFamily: 'var(--font-mono)',
@@ -73,25 +73,22 @@ export const NobleGasNotice: React.FC<NobleGasNoticeProps> = ({ centralSymbol, l
         lineHeight: '1.5',
         maxWidth: '280px'
       }
-    }, pick(
-      language,
-      `${centralSymbol} possede une configuration electronique stable et ne forme pas de liaisons covalentes standard.`,
-      `${centralSymbol} tiene una configuracion electronica estable y no forma enlaces covalentes estandar.`
-    ))
+    }, t('lewis.nobleGasDesc', { symbol: centralSymbol }))
   );
 };
 
 export const BondConfigurationPanel: React.FC<BondConfigurationPanelProps> = (props) => {
   const { centralSymbol, ligand, count, bond, language, onLigandChange, onCountChange } = props;
+  const { t } = useLanguage('periodicTable');
 
   return React.createElement('div', { className: 'glass-panel', style: panelStyle },
     React.createElement('h4', { style: panelTitleStyle },
       React.createElement(GitCommit, { size: 14 }),
-      pick(language, 'CONFIGURATION LIAISON', 'CONFIGURACION ENLACE')
+      t('lewis.configTitle')
     ),
     React.createElement('div', null,
       React.createElement('label', { style: fieldLabelStyle },
-        pick(language, 'PARTENAIRE DE LIAISON', 'COMPANERO DE ENLACE')
+        t('lewis.ligand')
       ),
       React.createElement('select', {
         value: ligand,
@@ -104,9 +101,9 @@ export const BondConfigurationPanel: React.FC<BondConfigurationPanelProps> = (pr
         })
       )
     ),
-    React.createElement('div', null,
-      React.createElement('label', { style: sliderLabelStyle },
-        React.createElement('span', null, pick(language, "NOMBRE D'ATOMES LIGAND", 'NUMERO DE ATOMOS LIGANDO')),
+    React.createElement('div', { style: { marginTop: '16px' } },
+      React.createElement('div', { style: sliderLabelStyle },
+        React.createElement('span', null, t('lewis.bondCount')),
         React.createElement('span', { style: { color: 'var(--neon-magenta)', fontWeight: 'bold' } }, count)
       ),
       React.createElement('input', {
@@ -120,7 +117,7 @@ export const BondConfigurationPanel: React.FC<BondConfigurationPanelProps> = (pr
     ),
     React.createElement('div', { style: telemetryStyle },
       metric('FORMULA', `${centralSymbol}${count > 1 ? count : ''}${ligand}`, '#fff'),
-      metric('BOND TYPE', pick(language, bond.typeFR, bond.typeES), 'var(--neon-cyan)'),
+      metric('BOND TYPE', bond.type, 'var(--neon-cyan)'),
       metric('DELTA ELECTRONEGATIVITY', bond.polarityDiff, '#fff'),
       metric('BOND ENERGY', `${bond.energy} kJ/mol`, 'var(--neon-yellow)'),
       metric('BOND LENGTH', `${bond.length} pm`, 'var(--neon-yellow)')
@@ -138,14 +135,15 @@ export const VisualsGrid: React.FC<VisualsGridProps> = ({
   geometryLabel,
   language
 }) => {
+  const { t } = useLanguage('periodicTable');
   return React.createElement('div', { style: visualsGridStyle },
     canvasPanel(
-      pick(language, 'STRUCTURE DE LEWIS (2D)', 'ESTRUCTURA DE LEWIS (2D)'),
+      t('lewis.lewisStructure'),
       lewisCanvasRef,
       `Structure de Lewis: ${centralSymbol} lie a ${count} ${ligand}, ${vsepr.lonePairs} doublet(s) non liant(s)`
     ),
     canvasPanel(
-      pick(language, 'GEOMETRIE VSEPR (3D)', 'GEOMETRIA VSEPR (3D)'),
+      t('lewis.vseprGeometry'),
       vseprCanvasRef,
       `Geometrie VSEPR: ${geometryLabel}, angle de liaison ${vsepr.bondAngle}`
     )
@@ -158,20 +156,27 @@ export const GeometrySummary: React.FC<GeometrySummaryProps> = ({
   bondCharacterLabel,
   language
 }) => {
-  return React.createElement('div', { className: 'glass-panel', style: summaryStyle },
-    React.createElement('div', { style: summaryHeaderStyle },
-      React.createElement(Activity, { size: 13 }),
-      pick(language, 'ANALYSE DE GEOMETRIE QUANTIQUE & HYBRIDATION', 'ANALISIS DE GEOMETRIA CUANTICA E HIBRIDACION')
-    ),
-    React.createElement('div', { style: summaryGridStyle },
-      React.createElement('div', null,
-        metricLine('GEOMETRY', geometryLabel, '#fff'),
-        metricLine('BOND ANGLE', vsepr.bondAngle, 'var(--neon-magenta)')
+  const { t } = useLanguage('periodicTable');
+  return React.createElement('div', { style: summaryStyle },
+    React.createElement('div', null,
+      React.createElement('div', { style: summaryHeaderStyle },
+        React.createElement(Activity, { size: 14 }),
+        React.createElement('span', null, t('lewis.geometryTitle'))
       ),
-      React.createElement('div', null,
-        metricLine('HYBRIDIZATION', vsepr.hybridization, '#fff'),
-        metricLine('LONE PAIRS (LP)', vsepr.lonePairs, 'var(--neon-magenta)')
+      React.createElement('div', { style: summaryGridStyle },
+        React.createElement('div', { style: { color: 'var(--neon-green)', fontWeight: 'bold' } },
+          geometryLabel
+        ),
+        React.createElement('div', { style: { color: 'var(--text-secondary)' } },
+          `${vsepr.bondPairs} liantes, ${vsepr.lonePairs} non-liantes`
+        )
       )
+    ),
+    React.createElement('div', null,
+      React.createElement('div', { style: summaryHeaderStyle },
+        React.createElement(GitCommit, { size: 14 }),
+        React.createElement('span', null, t('lewis.bondCharacter'))
+      ),
     ),
     React.createElement('p', {
       style: { fontSize: '10px', color: 'var(--text-muted)', margin: '6px 0 0 0', lineHeight: '1.4' }

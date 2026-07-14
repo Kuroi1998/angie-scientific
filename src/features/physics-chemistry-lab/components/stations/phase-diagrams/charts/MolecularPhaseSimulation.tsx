@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import type { PhaseState, SubstanceParams } from '../types/phase.types';
 import { ScientificPanel } from '../../../../../../components/shared/ScientificPanel';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 interface MolecularPhaseSimulationProps {
   phase: PhaseState;
@@ -11,6 +12,7 @@ interface MolecularPhaseSimulationProps {
 
 export const MolecularPhaseSimulation: React.FC<MolecularPhaseSimulationProps> = ({ phase, substance, temperature, pressure }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { t } = useLanguage('lab');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -87,7 +89,7 @@ export const MolecularPhaseSimulation: React.FC<MolecularPhaseSimulationProps> =
   }, [phase, substance, temperature, pressure]);
 
   return (
-    <ScientificPanel title="Comportement Moléculaire" variant="glass">
+    <ScientificPanel title={t('phase.charts.molecularBehavior')} variant="glass">
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
         <canvas 
           ref={canvasRef} width={250} height={250} 

@@ -3,6 +3,7 @@ import type { SubstanceParams } from '../types/phase.types';
 import { getSublimationPressure, getVaporizationPressure, getFusionPressure } from '../services/phaseCalculator.service';
 import { ScientificPanel } from '../../../../../../components/shared/ScientificPanel';
 import { resolveCssColor } from '../../../../../../utils/resolveCssColor';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 interface PTDiagramChartProps {
   substance: SubstanceParams;
@@ -13,6 +14,7 @@ interface PTDiagramChartProps {
 
 export const PTDiagramChart: React.FC<PTDiagramChartProps> = ({ substance, temperature, pressure, onPointChange }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { t } = useLanguage('lab');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -148,7 +150,7 @@ export const PTDiagramChart: React.FC<PTDiagramChartProps> = ({ substance, tempe
   };
 
   return (
-    <ScientificPanel title="Diagramme P-T" variant="glass">
+    <ScientificPanel title={t('phase.charts.ptDiagram')} variant="glass">
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <canvas 
           ref={canvasRef} width={400} height={250} 
@@ -157,9 +159,9 @@ export const PTDiagramChart: React.FC<PTDiagramChartProps> = ({ substance, tempe
         />
       </div>
       <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '12px', fontSize: '10px', fontFamily: 'var(--as-font-mono)' }}>
-        <span style={{ color: 'var(--as-accent-cyan)' }}>— Sublimation</span>
-        <span style={{ color: 'var(--as-accent-amber)' }}>— Fusion</span>
-        <span style={{ color: 'var(--as-accent-coral)' }}>— Vaporisation</span>
+        <span style={{ color: 'var(--as-accent-cyan)' }}>— {t('phase.charts.sublimation')}</span>
+        <span style={{ color: 'var(--as-accent-amber)' }}>— {t('phase.charts.fusion')}</span>
+        <span style={{ color: 'var(--as-accent-coral)' }}>— {t('phase.charts.vaporization')}</span>
       </div>
     </ScientificPanel>
   );

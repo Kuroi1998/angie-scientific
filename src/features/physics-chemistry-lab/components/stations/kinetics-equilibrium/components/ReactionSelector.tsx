@@ -1,5 +1,6 @@
 import React from 'react';
-import { reactionDatabase, reactionKeys } from '../data/reactionDatabase';
+import { reactionKeys } from '../data/reactionDatabase';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 interface ReactionSelectorProps {
   selectedId: string;
@@ -7,12 +8,13 @@ interface ReactionSelectorProps {
 }
 
 export const ReactionSelector: React.FC<ReactionSelectorProps> = ({ selectedId, onSelect }) => {
+  const { t } = useLanguage('lab');
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      <span style={{ fontSize: '11px', color: 'var(--as-text-muted)', fontFamily: 'var(--as-font-title)' }}>TYPE DE RÉACTION</span>
+      <span style={{ fontSize: '11px', color: 'var(--as-text-muted)', fontFamily: 'var(--as-font-title)' }}>{t('kinetics.reaction.title')}</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {reactionKeys.map(key => {
-          const reaction = reactionDatabase[key];
           const active = key === selectedId;
           
           return (
@@ -33,10 +35,10 @@ export const ReactionSelector: React.FC<ReactionSelectorProps> = ({ selectedId, 
               }}
             >
               <div style={{ fontSize: '12px', fontFamily: 'var(--as-font-title)', color: active ? 'color-mix(in srgb, var(--as-accent-cyan) 75%, var(--as-text-primary) 25%)' : 'var(--as-text-muted)' }}>
-                {reaction.name}
+                {t(`kinetics.reactions.${key}.name`)}
               </div>
               <div style={{ fontSize: '10px', color: 'var(--as-text-secondary)', marginTop: '4px' }}>
-                {reaction.description}
+                {t(`kinetics.reactions.${key}.desc`)}
               </div>
             </button>
           );

@@ -3,6 +3,7 @@ import { Badge, Button, Select } from '../../design-system';
 import type { LearningDifficulty, LearningMode, QuizSessionResult } from './learningTypes';
 import { difficultyLabels, modeLabels } from './quizLabels';
 import { examDuration, questionCount } from './quizQuestionFactory';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface QuizSetupProps {
   difficulty: LearningDifficulty;
@@ -23,14 +24,15 @@ export function QuizSetup({
   onOpenRiddles,
   onStart,
 }: QuizSetupProps) {
+  const { t, language } = useLanguage('gamification');
   const latest = history[0];
   return (
     <div className="quiz-grid">
       <section className="lab-panel">
         <div className="lab-panel-header">
           <div>
-            <p className="as-eyebrow">Selection du mode</p>
-            <h2>Session pedagogique</h2>
+            <p className="as-eyebrow">{t('quiz.setupEyebrow')}</p>
+            <h2>{t('quiz.setupTitle')}</h2>
           </div>
         </div>
         <div className="lab-panel-body">
@@ -43,31 +45,31 @@ export function QuizSetup({
                 onClick={() => onModeChange(item)}
                 type="button"
               >
-                <strong>{modeLabels[item]}</strong>
+                <strong>{language === 'es' && item === 'training' ? 'Entrenamiento' : language === 'es' ? 'Examen' : modeLabels[item]}</strong>
                 <span>
                   {item === 'training'
-                    ? 'Correction calme, indices disponibles, sans limite stricte.'
-                    : 'Chronometre, penalites et resultat enregistre.'}
+                    ? t('quiz.modeTrainingDesc')
+                    : t('quiz.modeExamDesc')}
                 </span>
               </button>
             ))}
             <button className="quiz-mode-card" onClick={onOpenRiddles} type="button">
-              <strong>Devinettes</strong>
-              <span>Resoudre une enigme elementaire avec indice et explication.</span>
+              <strong>{t('quiz.riddlesEyebrow')}</strong>
+              <span>{t('quiz.riddleDesc')}</span>
             </button>
           </div>
           <Select
-            label="Difficulte"
+            label={t('quiz.difficulty')}
             onChange={(event) => onDifficultyChange(event.target.value as LearningDifficulty)}
             options={[
-              { label: difficultyLabels.easy, value: 'easy' },
-              { label: difficultyLabels.medium, value: 'medium' },
-              { label: difficultyLabels.hard, value: 'hard' },
+              { label: language === 'es' ? 'Fácil' : difficultyLabels.easy, value: 'easy' },
+              { label: language === 'es' ? 'Medio' : difficultyLabels.medium, value: 'medium' },
+              { label: language === 'es' ? 'Difícil' : difficultyLabels.hard, value: 'hard' },
             ]}
             value={difficulty}
           />
           <Button iconLeft={<Brain size={16} />} onClick={onStart}>
-            Commencer
+            {t('quiz.start')}
           </Button>
         </div>
       </section>
@@ -75,24 +77,26 @@ export function QuizSetup({
       <section className="lab-panel">
         <div className="lab-panel-header">
           <div>
-            <p className="as-eyebrow">Apercu</p>
-            <h2>Contrat de session</h2>
+            <p className="as-eyebrow">{t('quiz.previewEyebrow')}</p>
+            <h2>{t('quiz.previewTitle')}</h2>
           </div>
-          <Badge tone={mode === 'exam' ? 'warning' : 'info'}>{modeLabels[mode]}</Badge>
+          <Badge tone={mode === 'exam' ? 'warning' : 'info'}>
+            {language === 'es' && mode === 'training' ? 'Entrenamiento' : language === 'es' ? 'Examen' : modeLabels[mode]}
+          </Badge>
         </div>
         <div className="lab-panel-body">
           <div className="lab-readout-grid">
-            <div className="lab-readout"><span>Questions</span><Badge>{questionCount(difficulty)}</Badge></div>
-            <div className="lab-readout"><span>Temps</span><Badge>{mode === 'exam' ? `${examDuration(difficulty)}s` : 'Libre'}</Badge></div>
-            <div className="lab-readout"><span>Dernier score</span><Badge tone="success">{latest ? `${latest.score}/${latest.total}` : '--'}</Badge></div>
+            <div className="lab-readout"><span>{t('quiz.questions')}</span><Badge>{questionCount(difficulty)}</Badge></div>
+            <div className="lab-readout"><span>{t('quiz.time')}</span><Badge>{mode === 'exam' ? `${examDuration(difficulty)}s` : t('quiz.timeFree')}</Badge></div>
+            <div className="lab-readout"><span>{t('quiz.lastScore')}</span><Badge tone="success">{latest ? `${latest.score}/${latest.total}` : '--'}</Badge></div>
           </div>
           <div className="quiz-feedback">
-            <strong><GraduationCap size={16} aria-hidden="true" /> Objectif</strong>
-            <span>Verifier les acquis, lire la correction et relancer une session plus difficile.</span>
+            <strong><GraduationCap size={16} aria-hidden="true" /> {t('quiz.objective')}</strong>
+            <span>{t('quiz.objectiveDesc')}</span>
           </div>
           <div className="quiz-feedback">
-            <strong><HelpCircle size={16} aria-hidden="true" /> Etats couverts</strong>
-            <span>Question active, reponse selectionnee, validation, correction, chrono, resultat et historique.</span>
+            <strong><HelpCircle size={16} aria-hidden="true" /> {t('quiz.statesCovered')}</strong>
+            <span>{t('quiz.statesCoveredDesc')}</span>
           </div>
         </div>
       </section>

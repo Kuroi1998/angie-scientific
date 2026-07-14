@@ -26,10 +26,10 @@ export function ElementDetailContent({
 }: ElementDetailContentProps) {
   if (activeTab === 'superpowers') {
     const copy = learningLevel === 'discovery'
-      ? 'Cet element est utilise dans des objets, des reactions ou des materiaux proches du quotidien.'
+      ? t('element.superpowerDesc')
       : texts.desc;
     return (
-      <Alert className="element-detail-callout" tone="warning" title="Super-pouvoir">
+      <Alert className="element-detail-callout" tone="warning" title={t('element.superpower')}>
         <Star size={18} aria-hidden="true" />
         {copy}
       </Alert>
@@ -41,7 +41,7 @@ export function ElementDetailContent({
       <DataGrid
         items={[
           [t('element.config'), element.config],
-          ['Shells', element.shells.join(', ')],
+          [t('element.shells'), element.shells.join(', ')],
           [t('element.atomicRadius'), formatElementValue(element.ar, 'pm')],
           [t('element.crystal'), element.crystal],
         ]}
