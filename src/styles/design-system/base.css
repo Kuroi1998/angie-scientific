@@ -1,0 +1,144 @@
+.as-button,
+.as-icon-button,
+.as-nav-item,
+.as-tab,
+.as-menu-item {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--as-radius-2);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 var(--as-font-size-sm) / 1 var(--as-font-body);
+  gap: var(--as-space-2);
+  justify-content: center;
+  min-height: var(--as-size-touch);
+  transition:
+    background var(--as-duration-fast) var(--as-ease-standard),
+    border-color var(--as-duration-fast) var(--as-ease-standard),
+    color var(--as-duration-fast) var(--as-ease-standard),
+    transform var(--as-duration-fast) var(--as-ease-standard);
+}
+
+.as-button:focus-visible,
+.as-icon-button:focus-visible,
+.as-input:focus-visible,
+.as-choice input:focus-visible,
+.as-switch input:focus-visible + .as-switch-track,
+.as-slider:focus-visible,
+.as-tab:focus-visible,
+.as-nav-item:focus-visible,
+.as-menu-item:focus-visible {
+  outline: 2px solid var(--as-border-focus);
+  outline-offset: 2px;
+  box-shadow: var(--as-shadow-focus);
+}
+
+.as-button:hover:not(:disabled),
+.as-icon-button:hover:not(:disabled),
+.as-nav-item:hover:not(:disabled),
+.as-tab:hover:not(:disabled),
+.as-menu-item:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.as-button:active:not(:disabled),
+.as-icon-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.as-button:disabled,
+.as-icon-button:disabled,
+.as-nav-item:disabled,
+.as-tab:disabled,
+.as-menu-item:disabled,
+.as-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.as-size-sm {
+  min-height: 44px;
+  padding: 0 var(--as-space-3);
+}
+
+.as-size-md {
+  min-height: var(--as-size-touch);
+  padding: 0 var(--as-space-4);
+}
+
+.as-size-lg {
+  min-height: 3.25rem;
+  padding: 0 var(--as-space-5);
+}
+
+.as-icon-button {
+  aspect-ratio: 1;
+  min-width: 44px;
+  padding: 0;
+}
+
+.as-variant-solid.as-tone-accent {
+  background: var(--as-accent-cyan);
+  /* Fixed dark text: cyan is too light/bright for --as-text-on-accent (white)
+     to read well (measured ~2.5:1), and --as-bg-space flips light in the
+     light-family themes, erasing this text there. */
+  color: #0a1018;
+}
+
+.as-variant-soft {
+  /* --as-accent-cyan-soft varies unpredictably in lightness across themes
+     (dark in scientific-night/high-contrast, light everywhere else), so no
+     single text color could pair with it reliably. --as-info-bg/--as-info
+     are a fixed, always-light pairing already proven by info badges. */
+  background: var(--as-info-bg);
+  color: var(--as-info);
+}
+
+.as-variant-solid.as-tone-success {
+  background: var(--as-success);
+  color: var(--as-text-on-accent);
+}
+
+.as-variant-solid.as-tone-error {
+  background: var(--as-error);
+  color: var(--as-text-on-accent);
+}
+
+.as-variant-outline,
+.as-variant-ghost {
+  background: transparent;
+  color: var(--as-text-body);
+}
+
+.as-variant-outline {
+  border-color: var(--as-border-soft);
+}
+
+.as-button[data-selected="true"],
+.as-tab[aria-selected="true"],
+.as-nav-item.is-active {
+  background: var(--as-accent-cyan-soft);
+  border-color: var(--as-accent-cyan);
+  color: var(--as-text-strong);
+}
+
+.as-spinner {
+  animation: as-spin 0.8s linear infinite;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  border-right-color: transparent;
+  height: 1rem;
+  width: 1rem;
+}
+
+@keyframes as-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .as-spinner {
+    animation: none;
+  }
+}

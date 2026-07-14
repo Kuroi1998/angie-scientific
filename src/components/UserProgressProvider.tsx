@@ -1,44 +1,27 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { UserProfile, UserProgress } from '../data/educational/models';
-import { fetchUserData, updateProfile, updateProgress, getUserId, syncWithCloud } from '../api/progress';
-
-interface ProgressContextType {
-  profile: UserProfile | null;
-  progress: UserProgress | null;
-  loading: boolean;
-  saveProfile: (updates: Partial<UserProfile>) => Promise<void>;
-  addDiscoveredElement: (elementId: string) => Promise<void>;
-  addSuccessfulReaction: (reactionId: string) => Promise<void>;
-  unlockBadge: (badgeId: string) => Promise<void>;
-  addExperience: (points: number) => Promise<void>;
-  solveRiddle: (riddleId: string) => Promise<void>;
-  unlockTheme: (themeId: string, cost: number) => Promise<boolean>;
-  equipTheme: (themeId: string) => Promise<void>;
-}
-
-const ProgressContext = createContext<ProgressContextType | undefined>(undefined);
+import { fetchUserData, getUserId, syncWithCloud, updateProfile, updateProgress } from '../api/progress';
+import { ProgressContext } from './UserProgressContext';
+import { notifyApp } from '../utils/appNotifications';
+import { useTheme } from '../theme/hooks/useTheme';
+import { THEMES } from '../theme/theme.constants';
+import type { ThemeId } from '../theme/theme.types';
+import { defaultUnlockedThemes } from './UserCenter/userCenterData';
 
 export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [progress, setProgress] = useState<UserProgress | null>(null);
   const [loading, setLoading] = useState(true);
+  const { theme, setTheme } = useTheme();
+  const themeRef = useRef(theme);
+  const setThemeRef = useRef(setTheme);
 
   useEffect(() => {
-    loadData();
+    themeRef.current = theme;
+    setThemeRef.current = setTheme;
+  }, [setTheme, theme]);
 
-    const handleOnline = async () => {
-      const userId = getUserId();
-      if (userId) {
-        console.log("Réseau rétabli, synchronisation avec le cloud...");
-        await syncWithCloud(userId);
-      }
-    };
-
-    window.addEventListener('online', handleOnline);
-    return () => window.removeEventListener('online', handleOnline);
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const userId = getUserId();
     if (!userId) {
       setLoading(false);
@@ -50,14 +33,18 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
       setProfile(data.profile);
       setProgress(data.progress);
     } catch (error) {
-      console.error("Erreur chargement profil serveur", error);
-      alert("Erreur de connexion au serveur pour récupérer le profil.");
+      console.error('Erreur chargement profil serveur', error);
+      notifyApp({
+        message: 'Impossible de recuperer le profil depuis le serveur.',
+        title: 'Connexion au profil',
+        tone: 'error',
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const saveProfile = async (updates: Partial<UserProfile>) => {
+  const saveProfile = useCallback(async (updates: Partial<UserProfile>) => {
     if (!profile) return;
     const userId = getUserId();
     if (!userId) return;
@@ -67,11 +54,48 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
     try {
       await updateProfile(userId, updates);
     } catch (error) {
-      console.error("Erreur de sauvegarde profil", error);
-      setProfile(oldProfile); // Rollback
-      alert("Erreur réseau: impossible de sauvegarder les préférences.");
+      console.error('Erreur de sauvegarde profil', error);
+      setProfile(oldProfile);
+      notifyApp({
+        message: "Les preferences n'ont pas pu etre sauvegardees.",
+        title: 'Sauvegarde interrompue',
+        tone: 'error',
+      });
     }
-  };
+  }, [profile]);
+
+  useEffect(() => {
+    loadData();
+
+    const handleOnline = async () => {
+      const userId = getUserId();
+      if (userId) {
+        console.log('Reseau retabli, synchronisation avec le cloud...');
+        await syncWithCloud(userId);
+      }
+    };
+
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, [loadData]);
+
+  useEffect(() => {
+    const activeTheme = profile?.activeTheme;
+    if (activeTheme && activeTheme in THEMES && activeTheme !== themeRef.current) {
+      setThemeRef.current(activeTheme as ThemeId);
+    }
+  }, [profile?.activeTheme]);
+
+  useEffect(() => {
+    const handleThemeChange = (e: Event) => {
+      const newTheme = (e as CustomEvent<{ theme: ThemeId }>).detail?.theme;
+      if (newTheme && getUserId()) {
+        void saveProfile({ activeTheme: newTheme });
+      }
+    };
+    window.addEventListener('themechange', handleThemeChange);
+    return () => window.removeEventListener('themechange', handleThemeChange);
+  }, [saveProfile]);
 
   const checkBadges = (currentProgress: UserProgress): string[] => {
     const newBadges: string[] = [];
@@ -86,7 +110,6 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const userId = getUserId();
     if (!userId) return;
 
-    // Auto-unlock badges logic
     const autoUnlocked = checkBadges(newProgress);
     if (autoUnlocked.length > 0) {
       newProgress = {
@@ -101,9 +124,13 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
     try {
       await updateProgress(userId, newProgress);
     } catch (error) {
-      console.error("Erreur de sauvegarde progression", error);
-      setProgress(oldProgress); // Rollback
-      alert("Erreur réseau: progression locale non sauvegardée !");
+      console.error('Erreur de sauvegarde progression', error);
+      setProgress(oldProgress);
+      notifyApp({
+        message: "La progression locale n'a pas pu etre synchronisee.",
+        title: 'Progression non sauvegardee',
+        tone: 'error',
+      });
     }
   };
 
@@ -153,7 +180,7 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const unlockTheme = async (themeId: string, cost: number): Promise<boolean> => {
     if (!progress) return false;
-    const unlocked = progress.unlockedThemes || ['default', 'high-contrast'];
+    const unlocked = progress.unlockedThemes || defaultUnlockedThemes;
     if (unlocked.includes(themeId)) return true;
     if (progress.experiencePoints < cost) return false;
 
@@ -176,12 +203,4 @@ export const UserProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
       {children}
     </ProgressContext.Provider>
   );
-};
-
-export const useUserProgress = () => {
-  const context = useContext(ProgressContext);
-  if (context === undefined) {
-    throw new Error('useUserProgress must be used within a UserProgressProvider');
-  }
-  return context;
 };

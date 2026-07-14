@@ -1,0 +1,51 @@
+{
+  "header": {
+    "eyebrow": "Estación elemental",
+    "title": "Tabla periódica",
+    "description": "Explorar, filtrar, comparar y enviar elementos a los laboratorios.",
+    "discovered": "{{count}}/{{total}} descubiertos",
+    "sync": "Sinc. local",
+    "quizActive": "Modo quiz activo",
+    "quiz": "Modo quiz"
+  },
+  "toolbar": {
+    "search": "Buscar",
+    "searchPlaceholder": "Nombre, símbolo o número atómico",
+    "category": "Familia",
+    "allCategories": "Todas las familias",
+    "state": "Estado",
+    "allStates": "Todos los estados",
+    "results": "{{count}} resultados",
+    "reset": "Restablecer"
+  },
+  "status": {
+    "visibleElements": "{{count}} elementos visibles",
+    "filters": "{{count}} filtro(s)",
+    "selection": "Selección: {{symbol}}",
+    "inputMethods": "Ratón, táctil y teclado",
+    "onlineStatus": "En línea local"
+  },
+  "legend": {
+    "ariaLabel": "Leyenda de las familias"
+  },
+  "comparison": {
+    "title": "Comparación rápida",
+    "clear": "Borrar"
+  },
+  "sidePanel": {
+    "close": "Cerrar",
+    "state": "Estado",
+    "mass": "Masa",
+    "config": "Config.",
+    "density": "Densidad",
+    "atomicMass": "Masa atómica",
+    "meltingPoint": "Punto de fusión",
+    "boilingPoint": "Punto de ebullición",
+    "angieNote": "Angie aconseja comparar este elemento con un vecino de la misma familia para detectar tendencias periódicas.",
+    "fullDetail": "Ficha completa",
+    "removeFavorite": "Quitar favorito",
+    "addFavorite": "Añadir favorito",
+    "useInLab": "Usar en laboratorio",
+    "compare": "Comparar"
+  }
+}

@@ -1,382 +1,270 @@
-<div align="center">
+# Angie Scientific
 
-<img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React"/>
-<img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
-<img src="https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/>
-<img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License"/>
-<img src="https://img.shields.io/badge/Tests-10%20passing-success?style=for-the-badge&logo=vitest" alt="Tests"/>
+Interactive bilingual science learning app for chemistry, physics and quantum
+visualization.
 
-<br/><br/>
+Angie Scientific is a React application for exploring scientific concepts
+through visual modules instead of static encyclopedia pages. It combines a
+periodic table, reaction and fusion simulations, quantum visualizations,
+physics-chemistry laboratories, quizzes, user progress and a local Angie mascot
+experience.
 
-# ⚗️ AngieScientific — Tableau Périodique Interactif
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=111)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=fff)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=fff)
+![Languages](https://img.shields.io/badge/Languages-FR%20%2F%20ES-2f855a)
+![License](https://img.shields.io/badge/License-MIT-2f855a)
 
-### *Application Web Bilingue de Chimie Futuriste*
+Status: active refactor branch. Last local validation in this branch ran lint,
+type-check, Vitest, production build, Playwright E2E and npm audit on
+2026-07-14.
 
-**[🇫🇷 Français](#français) · [🇪🇸 Español](#español)**
+## Contents
 
-<br/>
+- [Screenshots](#screenshots)
+- [Features](#features)
+- [Angie Mascot](#angie-mascot)
+- [Themes](#themes)
+- [Internationalization](#internationalization)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Scripts](#scripts)
+- [Quality](#quality)
+- [Project Structure](#project-structure)
+- [Roadmap](#roadmap)
+- [Security](#security)
+- [Contribution](#contribution)
+- [License](#license)
 
-</div>
+## Screenshots
 
----
+| Dashboard | Quantum visualizer |
+| --- | --- |
+| <img src="docs/images/home.png" alt="Angie Scientific dashboard" width="420"> | <img src="docs/images/quantum.png" alt="Quantum visualizer" width="420"> |
 
-## 🇫🇷 Français {#français}
+| Physics-chemistry lab | Element detail |
+| --- | --- |
+| <img src="docs/images/physchem.png" alt="Physics chemistry lab" width="420"> | <img src="docs/images/element-detail.png" alt="Element detail modal" width="420"> |
 
-### 🚀 Présentation
+## Features
 
-**AngieScientific** est une application web interactive et bilingue (Français / Espagnol) dédiée à l'enseignement de la chimie moderne. Elle combine le tableau périodique classique avec des simulations avancées de chimie quantique, de liaisons moléculaires, de laboratoire virtuel et d'un système de quêtes gamifié — le tout dans une interface ultra-futuriste à thème cyberpunk/néon.
+- Interactive periodic table with element tiles, search, filtering, favorites,
+  comparison and an element detail modal.
+- Lewis, VSEPR and atomic visualizations rendered with canvas helpers.
+- Fusion and reaction simulator with equation rendering, telemetry,
+  stoichiometry and energy diagrams.
+- Quantum visualizer with orbital controls, hybridization, comparison panels
+  and a Heisenberg experiment.
+- Physics-chemistry lab stations for gas equations, kinetics and equilibrium,
+  phase diagrams and spectroscopy.
+- Virtual lab with canvas-based experiments, parameter controls and accessible
+  status updates.
+- Quiz, riddles, quests, badges, discovery album and local progress tracking.
+- User center for profile, preferences, progress, album and theme choices.
+- Responsive app shell with keyboard navigation, skip link and error
+  boundaries around the main scientific modules.
+- PWA registration with auto-update prompt and a GitHub Pages base path.
 
-<div align="center">
+Experimental or optional parts:
 
-| Module | Description |
-|---|---|
-| 🔬 **Tableau Périodique** | 118 éléments avec fiches détaillées interactives |
-| ⚗️ **Simulateur de Fusion** | Prédiction de réactions + stoichiométrie avancée |
-| ⚛️ **Chimie Quantique** | Orbitales 3D, principe de Heisenberg, spectroscopie |
-| 🧪 **Physico-Chimie** | Diagrammes de phases, gaz réels, électrochimie |
-| 🏭 **Laboratoire Virtuel** | Expériences animées avec dials et alertes de sécurité |
-| 🏆 **Quêtes & Défis** | Progression gamifiée avec badges et XP |
+- The `server/` package is a small local Express and SQLite API for profiles
+  and progress. The production frontend is currently able to fall back to local
+  storage and does not require this server to run.
 
-</div>
+## Angie Mascot
 
----
+Angie is implemented as a local mascot component and context provider. It can
+show contextual messages, react to user actions and play notification sounds
+when user preferences allow it.
 
-### ✨ Fonctionnalités Principales
+Current limits:
 
-#### 🔬 Tableau Périodique Interactif
-- Affichage complet des **118 éléments** avec code couleur par catégorie
-- **Fiches détaillées** : numéro atomique, masse, électronégativité, configuration électronique, états d'oxydation
-- **Onglet Liaisons** : Visualiseur Lewis 2D + Géométrie VSEPR 3D sur canvas HTML5
-- Bouton **"Ajouter à la Fusion"** pour charger un élément directement dans le simulateur
+- Angie messages are local application strings and service responses.
+- No remote AI service is configured in this repository.
+- Sound, mascot visibility and reduced-motion behavior are controlled through
+  the user profile preferences.
 
-#### ⚗️ Simulateur de Réactions Chimiques
-- **Moteur de prédiction** de réactions avec ΔH, ΔS, ΔG (spontanéité)
-- **Équilibrage automatique** avec coefficients stœchiométriques
-- **Calculs stœchiométriques** : masse, moles, rendement expérimental, réactif limitant
-- **Mécanismes réactionnels** étape par étape avec intermédiaires et rôle des catalyseurs
-- **Réactions en cascade** (ex : Synthèse de l'eau → Sodium + Eau)
-- **Diagramme énergétique** de la coordonnée réactionnelle
+## Themes
 
-#### ⚛️ Chimie Quantique
-- Visualisation 3D des **orbitales atomiques** (s, p, d, f) avec fonctions d'onde
-- **Principe d'incertitude de Heisenberg** avec simulation interactive
-- **Niveaux d'énergie** et transitions électroniques (diagramme de Jablonski)
-- **Spectroscopie** : UV-Vis, IR, NMR, spectrométrie de masse
+The app ships with these theme IDs:
 
-#### 🧲 Liaisons Chimiques (Moteur VSEPR)
-- Calcul automatique de la **géométrie moléculaire** (Linéaire, Angulaire, Tétraédrique, Trigonale plane, etc.)
-- **Hybridation** prédite (sp, sp², sp³, sp³d, sp³d²)
-- **Type de liaison** : Ionique, Covalente Polaire/Apolaire (différence d'électronégativité)
-- **Longueurs et énergies de liaisons** en pm et kJ/mol
+- `system`
+- `light`
+- `dark`
+- `scientific-night`
+- `laboratory`
+- `high-contrast`
 
-#### 🏭 Laboratoire Virtuel
-- **3 expériences animées** sur canvas HTML5 :
-  - 💥 Combustion explosive H₂ + O₂ → H₂O
-  - 🧂 Fusion Na dans Cl₂ → NaCl (sel de table)
-  - 🩷 Titrage Acide-Base avec indicateur phénolphtaléine (virage rose)
-- **Dials interactifs** : Température (K), Pression (atm), Masses (g)
-- **Alertes de sécurité dynamiques** (Corrosif, Toxique, Inflammable, Explosif)
+Themes are provided through `ThemeProvider`, CSS theme files and design tokens
+under `src/theme` and `src/styles`. The selected theme is persisted with the
+`angie-scientific-theme` storage key. The system theme follows the browser color
+scheme preference.
 
-#### 🏆 Système de Quêtes & Gamification
-- **5 quêtes progressives** : Débutant → Intermédiaire → Avancé
-- **Points d'expérience (XP)** cumulatifs avec persistance `localStorage`
-- **4 badges** à débloquer : Apprenti Chimiste, Maître des Équilibres, Quantum Wizard, Commandeur Scientifique
+## Internationalization
 
----
+The app uses i18next and react-i18next. French is the fallback language and
+Spanish is also supported.
 
-### 🛠️ Technologies
+Translation files live in:
 
+```text
+src/locales/fr/
+src/locales/es/
 ```
-React 18 + TypeScript 5      →  Framework UI + typage statique
-Vite 8                       →  Bundler ultra-rapide
-HTML5 Canvas API             →  Animations scientifiques (orbitales, beaker, VSEPR)
-Lucide React                 →  Icônes modernes
-Vitest                       →  Tests unitaires (10 tests, 2 suites)
-localStorage                 →  Persistance des préférences et quêtes
-CSS Custom Properties        →  Thème cyberpunk/néon dynamique
+
+Namespaces currently include `common`, `navigation`, `auth`, `settings`,
+`periodicTable`, `quantum` and `fusion`. The language detector checks local
+storage and the browser language, then stores the choice in local storage.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    App["React app shell"]
+    Modules["Lazy scientific modules"]
+    DS["Design system and theme tokens"]
+    I18N["i18next FR/ES"]
+    Services["Audio, storage, game and education services"]
+    Local["Local storage"]
+    Server["Optional Express SQLite API"]
+
+    App --> Modules
+    App --> DS
+    App --> I18N
+    Modules --> Services
+    Services --> Local
+    Services -. optional sync .-> Server
 ```
 
----
+## Tech Stack
 
-### ⚙️ Installation & Démarrage
+- React 19 for the UI.
+- TypeScript 6 for static typing in the frontend.
+- Vite 8 for development and production build.
+- vite-plugin-pwa for PWA registration and assets.
+- i18next and react-i18next for FR/ES localization.
+- lucide-react for interface icons.
+- Vitest and React Testing Library for unit and component tests.
+- Playwright for end-to-end tests.
+- oxlint for linting.
+- Optional local backend: Express 5, SQLite and TypeScript in `server/`.
+
+## Installation
+
+Prerequisites:
+
+- Node.js 20 or newer is recommended. GitHub Actions uses Node.js 20.
+- npm, from the Node.js installation.
 
 ```bash
-# 1. Cloner le dépôt
 git clone https://github.com/Kuroi1998/angie-scientific.git
 cd angie-scientific
-
-# 2. Installer les dépendances
 npm install
-
-# 3. Démarrer le serveur de développement
 npm run dev
-
-# 4. Ouvrir dans le navigateur
-# → http://localhost:5173/
 ```
 
-### 📦 Scripts disponibles
+Vite opens the app on `http://localhost:5173/` by default.
 
-| Commande | Description |
-|---|---|
-| `npm run dev` | Serveur de développement avec HMR |
-| `npm run build` | Build de production optimisé |
-| `npm run preview` | Prévisualiser le build de production |
-| `npx vitest run` | Lancer les 10 tests unitaires |
-
----
-
-### 🧪 Tests Unitaires
-
-```
-✓ src/engines/chemistryEngine.test.ts  (5 tests)
-✓ src/engines/bondingEngine.test.ts    (5 tests)
-
-Test Files: 2 passed | Tests: 10 passed
-```
-
-**Couverture :**
-- Fonctions d'onde quantiques (formes s, p, d)
-- Spontanéité des réactions (ΔG de Gibbs)
-- Stœchiométrie et masses molaires
-- Géométries VSEPR (Linéaire, Coudée, Tétraédrique)
-- Types de liaisons chimiques (Ionique, Covalente Polaire/Apolaire)
-
----
-
-### 📁 Architecture du Projet
-
-```
-src/
-├── components/
-│   ├── PeriodicTable/          # Grille du tableau périodique
-│   ├── ElementCard/            # Fiche détaillée + LewisVisualizer
-│   ├── ReactionSimulator/      # FusionCore + Stoichiometry
-│   ├── QuantumVisualizer/      # Orbitales + spectroscopie + Heisenberg
-│   ├── PhysicsChemistry/       # Diagrammes de phases + gaz réels
-│   ├── VirtualLab/             # Laboratoire animé
-│   └── Gamification/           # QuestSystem + badges XP
-├── engines/
-│   ├── chemistryEngine.ts      # Moteur de réactions + stœchiométrie
-│   ├── bondingEngine.ts        # Calculs VSEPR + hybridation
-│   └── data/
-│       └── elements.json       # Base de données 118 éléments
-├── hooks/
-│   └── useLanguage.ts          # Internationalisation FR/ES
-└── styles/
-    ├── theme.css               # Variables CSS + thème néon
-    └── animations.css          # Animations cyberpunk
-```
-
----
-
-### 🌐 Bilingue FR / ES
-
-L'interface est entièrement traduite via un système de clés de traduction. La préférence de langue est persistée dans `localStorage`.
-
-```typescript
-// Exemple d'utilisation
-const { language, t } = useLanguage();
-// t('nav.table') → "Tableau Périodique" ou "Tabla Periódica"
-```
-
----
-
-### 🤝 Contribution
-
-Les contributions sont les bienvenues ! Pour contribuer :
-1. Fork le dépôt
-2. Créer une branche : `git checkout -b feature/ma-fonctionnalite`
-3. Committer : `git commit -m 'feat: ajouter ma fonctionnalité'`
-4. Pusher : `git push origin feature/ma-fonctionnalite`
-5. Ouvrir une Pull Request
-
----
-
-### 📄 Licence
-
-Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](./LICENSE) pour plus de détails.
-
----
----
-
-## 🇪🇸 Español {#español}
-
-### 🚀 Presentación
-
-**AngieScientific** es una aplicación web interactiva y bilingüe (Francés / Español) dedicada a la enseñanza de la química moderna. Combina la tabla periódica clásica con simulaciones avanzadas de química cuántica, enlaces moleculares, laboratorio virtual y un sistema de misiones gamificado — todo en una interfaz ultra-futurista con temática cyberpunk/neón.
-
-<div align="center">
-
-| Módulo | Descripción |
-|---|---|
-| 🔬 **Tabla Periódica** | 118 elementos con fichas detalladas interactivas |
-| ⚗️ **Simulador de Fusión** | Predicción de reacciones + estequiometría avanzada |
-| ⚛️ **Química Cuántica** | Orbitales 3D, principio de Heisenberg, espectroscopía |
-| 🧪 **Físico-Química** | Diagramas de fase, gases reales, electroquímica |
-| 🏭 **Laboratorio Virtual** | Experimentos animados con diales y alertas de seguridad |
-| 🏆 **Misiones & Desafíos** | Progresión gamificada con insignias y XP |
-
-</div>
-
----
-
-### ✨ Funcionalidades Principales
-
-#### 🔬 Tabla Periódica Interactiva
-- Visualización completa de los **118 elementos** con código de colores por categoría
-- **Fichas detalladas**: número atómico, masa, electronegatividad, configuración electrónica, estados de oxidación
-- **Pestaña de enlaces**: Visualizador Lewis 2D + Geometría VSEPR 3D en canvas HTML5
-- Botón **"Añadir a la Fusión"** para cargar un elemento directamente en el simulador
-
-#### ⚗️ Simulador de Reacciones Químicas
-- **Motor de predicción** de reacciones con ΔH, ΔS, ΔG (espontaneidad)
-- **Balanceo automático** con coeficientes estequiométricos
-- **Cálculos estequiométricos**: masa, moles, rendimiento experimental, reactivo limitante
-- **Mecanismos de reacción** paso a paso con intermediarios y papel de los catalizadores
-- **Reacciones en cascada** (ej: Síntesis del agua → Sodio + Agua)
-- **Diagrama energético** de la coordenada de reacción
-
-#### ⚛️ Química Cuántica
-- Visualización 3D de **orbitales atómicos** (s, p, d, f) con funciones de onda
-- **Principio de incertidumbre de Heisenberg** con simulación interactiva
-- **Niveles de energía** y transiciones electrónicas (diagrama de Jablonski)
-- **Espectroscopía**: UV-Vis, IR, NMR, espectrometría de masas
-
-#### 🧲 Enlace Químico (Motor VSEPR)
-- Cálculo automático de la **geometría molecular** (Lineal, Angular, Tetraédrica, Trigonal plana, etc.)
-- **Hibridación** predicha (sp, sp², sp³, sp³d, sp³d²)
-- **Tipo de enlace**: Iónico, Covalente Polar/Apolar (diferencia de electronegatividad)
-- **Longitudes y energías de enlace** en pm y kJ/mol
-
-#### 🏭 Laboratorio Virtual
-- **3 experimentos animados** en canvas HTML5:
-  - 💥 Combustión explosiva H₂ + O₂ → H₂O
-  - 🧂 Fusión de Na en Cl₂ → NaCl (sal de mesa)
-  - 🩷 Titulación Ácido-Base con indicador fenolftaleína (viraje rosa)
-- **Diales interactivos**: Temperatura (K), Presión (atm), Masas (g)
-- **Alertas de seguridad dinámicas** (Corrosivo, Tóxico, Inflamable, Explosivo)
-
-#### 🏆 Sistema de Misiones y Gamificación
-- **5 misiones progresivas**: Principiante → Intermedio → Avanzado
-- **Puntos de experiencia (XP)** acumulativos con persistencia `localStorage`
-- **4 insignias** para desbloquear: Aprendiz Químico, Maestro de Equilibrios, Mago Cuántico, Comandante Científico
-
----
-
-### 🛠️ Tecnologías
-
-```
-React 18 + TypeScript 5      →  Framework UI + tipado estático
-Vite 8                       →  Bundler ultrarrápido
-HTML5 Canvas API             →  Animaciones científicas (orbitales, beaker, VSEPR)
-Lucide React                 →  Iconos modernos
-Vitest                       →  Tests unitarios (10 tests, 2 suites)
-localStorage                 →  Persistencia de preferencias y misiones
-CSS Custom Properties        →  Tema cyberpunk/neón dinámico
-```
-
----
-
-### ⚙️ Instalación & Inicio
+Optional local backend:
 
 ```bash
-# 1. Clonar el repositorio
-git clone https://github.com/Kuroi1998/angie-scientific.git
-cd angie-scientific
-
-# 2. Instalar las dependencias
+cd server
 npm install
-
-# 3. Iniciar el servidor de desarrollo
 npm run dev
-
-# 4. Abrir en el navegador
-# → http://localhost:5173/
 ```
 
-### 📦 Scripts disponibles
+The backend listens on `http://localhost:3001` by default.
 
-| Comando | Descripción |
-|---|---|
-| `npm run dev` | Servidor de desarrollo con HMR |
-| `npm run build` | Build de producción optimizado |
-| `npm run preview` | Previsualizar el build de producción |
-| `npx vitest run` | Ejecutar los 10 tests unitarios |
+## Configuration
 
----
+No secret is required to run the frontend. See `.env.example` for optional local
+ports. Do not commit real `.env` files.
 
-### 🧪 Tests Unitarios
+The production frontend build uses this base path:
 
-```
-✓ src/engines/chemistryEngine.test.ts  (5 tests)
-✓ src/engines/bondingEngine.test.ts    (5 tests)
-
-Test Files: 2 passed | Tests: 10 passed
+```text
+/angie-scientific/
 ```
 
-**Cobertura:**
-- Funciones de onda cuánticas (formas s, p, d)
-- Espontaneidad de reacciones (ΔG de Gibbs)
-- Estequiometría y masas molares
-- Geometrías VSEPR (Lineal, Angular, Tetraédrica)
-- Tipos de enlace químico (Iónico, Covalente Polar/Apolar)
+## Scripts
 
----
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start Vite with HMR. |
+| `npm run build` | Run TypeScript build and create the production bundle. |
+| `npm run preview` | Preview the production bundle locally. |
+| `npm run lint` | Run oxlint. |
+| `npm run typecheck` | Run TypeScript without emitting files. |
+| `npm run test` | Run Vitest once. |
+| `npm run test:watch` | Run Vitest in watch mode. |
+| `npm run test:e2e` | Run Playwright end-to-end tests. |
 
-### 📁 Arquitectura del Proyecto
+## Quality
 
-```
+Validated locally in this branch on 2026-07-14:
+
+- `npm audit --audit-level=moderate`: 0 vulnerabilities.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed.
+- `npm run test`: 127 tests passed.
+- `npm run build`: passed.
+- `npm run test:e2e`: 14 tests passed.
+
+No coverage percentage is published because no coverage report is generated by
+the current scripts.
+
+## Project Structure
+
+```text
 src/
-├── components/
-│   ├── PeriodicTable/          # Cuadrícula de la tabla periódica
-│   ├── ElementCard/            # Ficha detallada + LewisVisualizer
-│   ├── ReactionSimulator/      # FusionCore + Stoichiometry
-│   ├── QuantumVisualizer/      # Orbitales + espectroscopía + Heisenberg
-│   ├── PhysicsChemistry/       # Diagramas de fase + gases reales
-│   ├── VirtualLab/             # Laboratorio animado
-│   └── Gamification/           # QuestSystem + insignias XP
-├── engines/
-│   ├── chemistryEngine.ts      # Motor de reacciones + estequiometría
-│   ├── bondingEngine.ts        # Cálculos VSEPR + hibridación
-│   └── data/
-│       └── elements.json       # Base de datos 118 elementos
-├── hooks/
-│   └── useLanguage.ts          # Internacionalización FR/ES
-└── styles/
-    ├── theme.css               # Variables CSS + tema neón
-    └── animations.css          # Animaciones cyberpunk
+  app/                 App routing and lazy module loading
+  components/          Shared UI and scientific components
+  design-system/       Buttons, forms, data, overlays and surfaces
+  engines/             Chemistry, bonding and quantum helpers
+  features/            Quantum and physics-chemistry feature modules
+  hooks/               Language, storage and tutorial hooks
+  layout/              App shell and responsive navigation
+  locales/             French and Spanish i18n namespaces
+  pages/               Dashboard and page-level content
+  services/            Audio, storage, game, education and visuals
+  styles/              Global tokens, foundation and responsive CSS
+  theme/               Theme provider, storage and theme CSS
+  utils/               Canvas, CSS, formula and notification utilities
 ```
 
----
+## Roadmap
 
-### 🌐 Bilingüe FR / ES
+- [x] React and TypeScript frontend.
+- [x] Periodic table, element detail and scientific visualizations.
+- [x] FR/ES localization.
+- [x] Light, dark, system, high-contrast and laboratory themes.
+- [x] Local profile and progress persistence.
+- [x] Unit, component and E2E test suites.
+- [ ] Decide whether the optional backend remains part of production scope.
+- [ ] Add generated coverage reporting if the project needs coverage badges.
+- [ ] Continue expanding physics-chemistry simulations.
 
-La interfaz está completamente traducida mediante un sistema de claves de traducción. La preferencia de idioma se persiste en `localStorage`.
+## Security
 
----
+- Never commit `.env`, database files, private keys or local logs.
+- Use `.env.example` for non-sensitive configuration examples.
+- Run `npm audit --audit-level=moderate` before releases.
+- See `SECURITY.md` for responsible vulnerability reporting.
 
-### 🤝 Contribución
+## Contribution
 
-¡Las contribuciones son bienvenidas! Para contribuir:
-1. Haz un fork del repositorio
-2. Crea una rama: `git checkout -b feature/mi-funcionalidad`
-3. Commitea: `git commit -m 'feat: añadir mi funcionalidad'`
-4. Haz push: `git push origin feature/mi-funcionalidad`
-5. Abre un Pull Request
+See `CONTRIBUTING.md`.
 
----
+Important project rules:
 
-### 📄 Licencia
+- Keep manually maintained source files at or below 300 lines.
+- Add or update tests for behavior changes.
+- Keep FR and ES translations in sync for user-facing text.
+- Verify both light and dark themes for visible UI changes.
+- Update documentation when adding or changing public features.
 
-Este proyecto está bajo licencia **MIT**. Ver el archivo [LICENSE](./LICENSE) para más detalles.
+## License
 
----
-
-<div align="center">
-
-**Fait avec ❤️ pour la science / Hecho con ❤️ para la ciencia**
-
-*AngieScientific © 2026 — Kuroi1998*
-
-</div>
+MIT. See `LICENSE`.

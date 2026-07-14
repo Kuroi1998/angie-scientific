@@ -1,0 +1,55 @@
+.welcome-modal {
+  max-width: 32rem;
+}
+
+.welcome-modal .as-overlay-header {
+  border-bottom: 1px solid var(--as-border-soft);
+}
+
+.welcome-modal-body {
+  background: radial-gradient(circle at top, var(--as-surface-3), var(--as-surface-1));
+}
+
+.welcome-modal-content {
+  align-items: center;
+  display: grid;
+  gap: var(--as-space-4);
+  justify-items: center;
+  text-align: center;
+}
+
+.welcome-modal-icon {
+  align-items: center;
+  background: var(--as-info-bg);
+  border: 1px solid var(--as-info);
+  border-radius: var(--as-radius-round);
+  color: var(--as-info);
+  display: inline-flex;
+  height: 4.75rem;
+  justify-content: center;
+  width: 4.75rem;
+}
+
+.welcome-modal-content p {
+  color: var(--as-text-body);
+  line-height: var(--as-line-relaxed);
+  margin: 0;
+  max-width: 24rem;
+}
+
+.welcome-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--as-space-3);
+  justify-content: center;
+  width: 100%;
+}
+
+.welcome-modal-security {
+  align-items: center;
+  color: var(--as-text-muted);
+  display: inline-flex;
+  font: 700 var(--as-font-size-xs) / 1.2 var(--as-font-mono);
+  gap: var(--as-space-2);
+  text-transform: uppercase;
+}

@@ -3,7 +3,25 @@
    rules live here, keyed off the className hooks the components already set. */
 
 .app-root {
+  min-width: 0;
+  overflow-x: clip;
   padding: 20px 40px;
+}
+
+.as-app-shell,
+.as-shell-main,
+.as-shell-content,
+.as-shell-stage,
+.as-card,
+.as-panel,
+.lab-panel {
+  min-width: 0;
+}
+
+@media (min-width: 1800px) {
+  .app-root {
+    padding-inline: 32px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -19,10 +37,43 @@
   .responsive-card-grid {
     grid-template-columns: minmax(0, 1fr) !important;
   }
+
+  .as-card,
+  .as-panel-body,
+  .as-panel-header,
+  .as-overlay-body,
+  .as-overlay-header,
+  .as-overlay-actions {
+    padding: var(--as-space-4);
+  }
+
+  .as-section-header,
+  .as-page-header,
+  .as-panel-header,
+  .as-overlay-header,
+  .as-overlay-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .as-button,
+  .as-input,
+  .as-select {
+    min-height: 44px;
+  }
 }
 
 @media (max-width: 420px) {
   .app-root {
     padding: 10px 10px;
+  }
+
+  .as-card,
+  .as-panel-body,
+  .as-panel-header,
+  .as-overlay-body,
+  .as-overlay-header,
+  .as-overlay-actions {
+    padding: var(--as-space-3);
   }
 }

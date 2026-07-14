@@ -1,114 +1,88 @@
-import React, { useState, useEffect } from 'react';
-import { useUserProgress } from '../UserProgressProvider';
-import { useLanguage } from '../../hooks/useLanguage';
-import { useMascot } from '../Mascot/MascotContext';
-import { HelpCircle, Check, X, Trophy } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Check, HelpCircle, Trophy, X } from 'lucide-react';
+import { Alert, Button, Input } from '../../design-system';
+import { useMascot } from '../Mascot/useMascot';
+import { useUserProgress } from '../useUserProgress';
 import type { Riddle } from '../../data/educational/models';
 import { ParticleEngine } from '../../services/Visuals/ParticleEngine';
 
-const RIDDLES: Riddle[] = [
+const riddles: Riddle[] = [
   {
     id: 'r1',
     category: 'daily_use',
     difficulty: 'easy',
-    questionFr: 'Je suis le gaz qui fait voler les ballons à la fête foraine. Qui suis-je ?',
-    questionEs: 'Soy el gas que hace volar los globos en la feria. ¿Quién soy?',
+    questionFr: 'Je suis le gaz qui fait voler les ballons. Qui suis-je ?',
+    questionEs: 'Soy el gas que hace volar globos. Quien soy?',
     answerElementSymbol: 'He',
-    explanationFr: 'L\'Hélium (He) est plus léger que l\'air !',
-    explanationEs: '¡El Helio (He) es más ligero que el aire!'
+    explanationFr: "L'helium (He) est plus leger que l'air.",
+    explanationEs: 'El helio (He) es mas ligero que el aire.',
   },
   {
     id: 'r2',
     category: 'property',
     difficulty: 'medium',
-    questionFr: 'Je suis le seul métal liquide à température ambiante. Je servais autrefois dans les thermomètres.',
-    questionEs: 'Soy el único metal líquido a temperatura ambiente. Antes me usaban en termómetros.',
+    questionFr: 'Je suis le seul metal liquide a temperature ambiante.',
+    questionEs: 'Soy el unico metal liquido a temperatura ambiente.',
     answerElementSymbol: 'Hg',
-    explanationFr: 'Le Mercure (Hg) est un métal liquide !',
-    explanationEs: '¡El Mercurio (Hg) es un metal líquido!'
-  }
+    explanationFr: 'Le mercure (Hg) est un metal liquide.',
+    explanationEs: 'El mercurio (Hg) es un metal liquido.',
+  },
 ];
 
 export const RiddleMinigame: React.FC = () => {
   const { profile, progress, solveRiddle } = useUserProgress();
-  const { language } = useLanguage();
   const { showMessage } = useMascot();
-  
   const [currentRiddle, setCurrentRiddle] = useState<Riddle | null>(null);
   const [userAnswer, setUserAnswer] = useState('');
-  const [status, setStatus] = useState<'idle'|'correct'|'wrong'>('idle');
+  const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
 
   useEffect(() => {
-    if (progress && status !== 'correct') {
-      const unsolved = RIDDLES.find(r => !progress.solvedRiddles.includes(r.id));
-      setCurrentRiddle(unsolved || null);
-    }
+    if (!progress || status === 'correct') return;
+    setCurrentRiddle(riddles.find((riddle) => !progress.solvedRiddles.includes(riddle.id)) ?? null);
   }, [progress, status]);
 
   if (!progress) return null;
-
-  if (!currentRiddle && progress.solvedRiddles.length >= RIDDLES.length) {
+  if (!currentRiddle && progress.solvedRiddles.length >= riddles.length) {
     return (
-      <div style={{ background: 'rgba(57, 255, 20, 0.1)', padding: '16px', borderRadius: '8px', border: '1px solid var(--neon-green)', marginBottom: '20px', textAlign: 'center' }}>
-        <h3 style={{ fontFamily: 'var(--font-title)', color: 'var(--neon-green)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', margin: '0 0 12px 0' }}>
-          <Trophy size={18} />
-          {language === 'fr' ? 'Champion des Devinettes !' : '¡Campeón de Acertijos!'}
-        </h3>
-        <p style={{ margin: '0', fontSize: '14px', color: '#fff' }}>
-          {language === 'fr' ? "Tu as résolu toutes les énigmes actuelles." : "Has resuelto todos los acertijos actuales."}
-        </p>
-      </div>
+      <Alert title="Champion des devinettes" tone="success">
+        <Trophy size={18} aria-hidden="true" /> Toutes les enigmes actuelles sont resolues.
+      </Alert>
     );
   }
-
   if (!currentRiddle) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (userAnswer.trim().toLowerCase() === currentRiddle.answerElementSymbol.toLowerCase()) {
-      setStatus('correct');
-      
-      if (profile?.reducedMotion !== true) {
-        ParticleEngine.getInstance().fireFusionSuccess();
-      }
-
-      showMessage(language === 'fr' ? currentRiddle.explanationFr : currentRiddle.explanationEs, 5000, 'impressed');
-      await solveRiddle(currentRiddle.id);
-      
-      setTimeout(() => {
-        setStatus('idle');
-        setUserAnswer('');
-      }, 5000);
-    } else {
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const correct = userAnswer.trim().toLowerCase() === currentRiddle.answerElementSymbol.toLowerCase();
+    if (!correct) {
       setStatus('wrong');
-      showMessage(language === 'fr' ? "Hmm... non, cherche encore dans le tableau périodique !" : "Hmm... ¡no, busca en la tabla periódica!", 3000, 'thinking');
-      setTimeout(() => setStatus('idle'), 2000);
+      showMessage('Cherche encore dans le tableau periodique.', 3000, 'thinking');
+      window.setTimeout(() => setStatus('idle'), 1800);
+      return;
     }
+    setStatus('correct');
+    if (profile?.reducedMotion !== true) ParticleEngine.getInstance().fireFusionSuccess();
+    showMessage(currentRiddle.explanationFr, 5000, 'impressed');
+    await solveRiddle(currentRiddle.id);
+    window.setTimeout(() => {
+      setStatus('idle');
+      setUserAnswer('');
+    }, 2500);
   };
 
   return (
-    <div style={{ background: 'var(--bg-secondary)', padding: '16px', borderRadius: '8px', border: '1px solid var(--neon-cyan)', marginBottom: '20px' }}>
-      <h3 style={{ fontFamily: 'var(--font-title)', color: 'var(--neon-cyan)', display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 12px 0' }}>
-        <HelpCircle size={18} />
-        {language === 'fr' ? 'Devinette de la semaine' : 'Acertijo de la semana'}
-      </h3>
-      <p style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#fff' }}>
-        {language === 'fr' ? currentRiddle.questionFr : currentRiddle.questionEs}
-      </p>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px' }}>
-        <input 
-          type="text" 
-          value={userAnswer}
-          onChange={(e) => setUserAnswer(e.target.value)}
-          placeholder={language === 'fr' ? 'Symbole (ex: O, Fe...)' : 'Símbolo (ej: O, Fe...)'}
-          style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.5)', color: '#fff', fontFamily: 'var(--font-title)' }}
-        />
-        <button type="submit" style={{ padding: '8px 16px', borderRadius: '4px', background: 'var(--neon-cyan)', border: 'none', color: '#000', fontWeight: 'bold', cursor: 'pointer' }}>
-          {language === 'fr' ? 'Valider' : 'Validar'}
-        </button>
-      </form>
-      {status === 'correct' && <div style={{ color: 'var(--neon-green)', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}><Check size={14} /> Correct !</div>}
-      {status === 'wrong' && <div style={{ color: 'var(--neon-magenta)', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}><X size={14} /> Faux, essaie encore !</div>}
-    </div>
+    <form className="quiz-feedback" onSubmit={submit}>
+      <strong><HelpCircle size={18} aria-hidden="true" /> Devinette active</strong>
+      <span>{currentRiddle.questionFr}</span>
+      <Input
+        label="Reponse"
+        onChange={(event) => setUserAnswer(event.target.value)}
+        placeholder="Symbole, ex: O ou Fe"
+        value={userAnswer}
+      />
+      <Button type="submit">Valider</Button>
+      {status === 'correct' && <Alert title="Correct" tone="success"><Check size={16} /> {currentRiddle.explanationFr}</Alert>}
+      {status === 'wrong' && <Alert title="Faux" tone="error"><X size={16} /> Essaie encore.</Alert>}
+    </form>
   );
 };

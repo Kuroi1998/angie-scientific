@@ -1,0 +1,65 @@
+{
+  "hub": {
+    "tabs": {
+      "orbital": "Estructura del Átomo",
+      "compare": "Comparación",
+      "heisenberg": "Incertidumbre",
+      "hybrid": "Hibridación"
+    },
+    "quantumParams": "Parámetros Cuánticos",
+    "visualizer": "Visualizador 2D/3D"
+  },
+  "controls": {
+    "nLabel": "Número Cuántico Principal (n)",
+    "nTooltip": "Nivel de energía principal",
+    "lLabel": "Número Cuántico Azimutal (l)",
+    "lTooltip": "Define la forma del orbital (s=0, p=1, d=2)",
+    "mLabel": "Número Cuántico Magnético (m)",
+    "mTooltip": "Define la orientación espacial del orbital",
+    "viewMode": "Modo de visualización"
+  },
+  "heisenberg": {
+    "title": "Principio de Incertidumbre de Heisenberg",
+    "uncertaintyPosition": "Incertidumbre en la posición (Δx)",
+    "space": "Espacio (Posición)",
+    "momentum": "Impulso (Cantidad de movimiento)",
+    "inequality": "Desigualdad de Heisenberg",
+    "description": "La naturaleza cuántica limita fundamentalmente la precisión con la que se puede conocer simultáneamente la posición y la cantidad de movimiento. No es un límite instrumental, sino una propiedad intrínseca de la onda."
+  },
+  "hybrid": {
+    "title": "Módulo de Hibridación",
+    "hybridType": "Tipo de Hibridación",
+    "geometry": "Geometría",
+    "desc_sp": "Presente en el etino (acetileno).",
+    "desc_sp2": "Presente en el eteno (etileno).",
+    "desc_sp3": "Presente en el metano.",
+    "geom_sp": "Lineal",
+    "geom_sp2": "Trigonal plana",
+    "geom_sp3": "Tetraédrica"
+  },
+  "compare": {
+    "orbitalA": "Orbital A: {{label}}",
+    "orbitalB": "Orbital B: {{label}}",
+    "chooseA": "ELEGIR EL ORBITAL A",
+    "chooseB": "ELEGIR EL ORBITAL B",
+    "totalNodes": "Nodos totales: {{nodes}}",
+    "relativeEnergy": "Energía relativa: {{energy}}"
+  },
+  "info": {
+    "title": "Comprender este orbital",
+    "simple": "SIMPLE",
+    "advanced": "AVANZADO",
+    "orbital": "Orbital",
+    "relativeEnergy": "Energía relativa",
+    "desc1": "El orbital {{label}} es una región del espacio donde hay una alta probabilidad de encontrar un electrón.",
+    "desc2_base": "Se encuentra en la capa n={{n}}.",
+    "desc2_s": "Tiene forma esférica, lo que significa que la probabilidad es la misma en todas las direcciones.",
+    "desc2_p": "Tiene forma de pesa con dos lóbulos a cada lado del núcleo.",
+    "desc2_d": "Tiene una forma compleja con varios lóbulos.",
+    "desc3": "Las zonas cian y magenta representan las dos fases opuestas de la onda del electrón.",
+    "waveFunction": "Función de onda $\\Psi_{{{n}}{{l}}{{m}}}$",
+    "waveFunctionDesc": "El color cian indica la fase positiva y el magenta la fase negativa.",
+    "radialNodes": "Nodos Radiales (n-l-1)",
+    "angularNodes": "Nodos Angulares (l)"
+  }
+}

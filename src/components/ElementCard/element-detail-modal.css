@@ -1,0 +1,223 @@
+.element-detail-modal {
+  border: 1px solid color-mix(in srgb, var(--element-accent) 42%, transparent);
+  max-width: 76rem;
+  width: min(100%, 76rem);
+}
+
+.element-detail-modal .as-overlay-header {
+  align-items: flex-start;
+}
+
+.element-detail-body {
+  padding: 0;
+}
+
+.element-detail-title {
+  align-items: center;
+  display: flex;
+  gap: var(--as-space-3);
+  min-width: 0;
+}
+
+.element-detail-token {
+  align-items: center;
+  background: color-mix(in srgb, var(--element-accent) 16%, var(--as-surface-1));
+  border: 1px solid var(--element-accent);
+  border-radius: var(--as-radius-2);
+  display: grid;
+  height: 4rem;
+  justify-items: center;
+  width: 4rem;
+}
+
+.element-detail-token span,
+.element-detail-grid dt,
+.element-detail-visual-label {
+  color: var(--as-text-muted);
+  font: 700 var(--as-font-size-xs) / 1.2 var(--as-font-mono);
+  text-transform: uppercase;
+}
+
+.element-detail-token strong {
+  color: var(--as-text-strong);
+  font-family: var(--as-font-display);
+  font-size: var(--as-font-size-xl);
+  line-height: 1;
+}
+
+.element-detail-title-copy {
+  display: grid;
+  gap: var(--as-space-2);
+  min-width: 0;
+}
+
+.element-detail-shell {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.85fr) minmax(0, 1.15fr);
+  min-height: 32rem;
+}
+
+.element-detail-visual,
+.element-detail-data {
+  padding: var(--as-space-5);
+}
+
+.element-detail-visual {
+  background: color-mix(in srgb, var(--element-accent) 8%, var(--as-surface-2));
+  border-right: 1px solid var(--as-border-soft);
+  display: grid;
+  gap: var(--as-space-4);
+  grid-template-rows: auto minmax(20rem, 1fr) auto;
+}
+
+.element-detail-visual-label {
+  align-items: center;
+  display: flex;
+  gap: var(--as-space-2);
+}
+
+.element-detail-canvas {
+  min-height: 20rem;
+}
+
+.element-detail-angie > div,
+.element-detail-callout > div {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--as-space-2);
+}
+
+.element-detail-data {
+  min-width: 0;
+}
+
+.element-detail-grid {
+  display: grid;
+  gap: var(--as-space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.element-detail-grid div,
+.element-detail-story article,
+.element-detail-description {
+  background: var(--as-surface-2);
+  border: 1px solid var(--as-border-soft);
+  border-radius: var(--as-radius-2);
+  padding: var(--as-space-4);
+}
+
+.element-detail-grid dd {
+  color: var(--as-text-strong);
+  font-weight: 800;
+  margin: var(--as-space-1) 0 0;
+  overflow-wrap: anywhere;
+}
+
+.element-detail-description,
+.element-detail-story p {
+  color: var(--as-text-body);
+  line-height: var(--as-line-relaxed);
+  margin: 0;
+}
+
+.element-detail-general,
+.element-detail-story {
+  display: grid;
+  gap: var(--as-space-4);
+}
+
+.element-detail-story h3 {
+  color: var(--element-accent);
+  font: 700 var(--as-font-size-sm) / 1.2 var(--as-font-mono);
+  margin: 0 0 var(--as-space-2);
+  text-transform: uppercase;
+}
+
+@media (max-width: 980px) {
+  .element-detail-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .element-detail-visual {
+    border-bottom: 1px solid var(--as-border-soft);
+    border-right: 0;
+    grid-template-rows: auto minmax(16rem, 1fr) auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .element-detail-modal .as-overlay-header {
+    align-items: flex-start;
+    flex-direction: row;
+    gap: var(--as-space-2);
+    padding: var(--as-space-3);
+  }
+
+  .element-detail-modal .as-overlay-header h2 {
+    flex: 1;
+  }
+
+  .element-detail-title {
+    align-items: center;
+    gap: var(--as-space-2);
+  }
+
+  .element-detail-title,
+  .element-detail-modal .as-overlay-actions,
+  .element-detail-grid {
+    flex-direction: column;
+    grid-template-columns: 1fr;
+  }
+
+  .element-detail-visual,
+  .element-detail-data {
+    padding: var(--as-space-4);
+  }
+
+  .element-detail-token {
+    height: 3rem;
+    width: 3rem;
+  }
+
+  .element-detail-shell {
+    min-height: 0;
+  }
+
+  .element-detail-visual {
+    gap: var(--as-space-3);
+    grid-template-rows: auto 10rem;
+  }
+
+  .element-detail-canvas {
+    height: 10rem;
+    min-height: 10rem;
+  }
+
+  .element-detail-angie {
+    display: none;
+  }
+
+  .element-detail-modal .as-overlay-actions {
+    background: var(--as-surface-1);
+    border-top: 1px solid var(--as-border-soft);
+    position: sticky;
+    bottom: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .element-detail-visual,
+  .element-detail-data {
+    padding: var(--as-space-3);
+  }
+
+  .element-detail-visual {
+    grid-template-rows: auto 8.5rem;
+  }
+
+  .element-detail-canvas {
+    height: 8.5rem;
+    min-height: 8.5rem;
+  }
+}

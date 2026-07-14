@@ -1,0 +1,36 @@
+[data-theme="scientific-night"] {
+  --as-bg-space: #030614;
+  --as-bg-lab: #050818;
+  --as-bg-orbit: #02040d;
+  --as-bg-soft: #060b1c;
+
+  --as-surface-1: #0a1128;
+  --as-surface-2: #0e1834;
+  --as-surface-3: #122040;
+  --as-surface-inverse: #e2e8f0;
+  --as-surface-glass: rgba(10, 17, 40, 0.85);
+  --as-surface-glass-dark: rgba(10, 17, 40, 0.85);
+  --surface-card: rgba(124, 110, 230, 0.05);
+  --surface-border: rgba(124, 110, 230, 0.15);
+
+  --as-text-primary: #e6f0ff;
+  --as-text-secondary: #a3b8cc;
+  --as-text-muted: #7d92a8;
+  --as-text-subtle: #455973;
+  --as-text-inverse: #050818;
+  --as-text-disabled: #455973;
+  --as-text-on-accent: #ffffff;
+  --as-text-body: #c8d6e8;
+  --as-text-strong: #ffffff;
+
+  --as-accent-cyan: #00d2ff;
+  --as-accent-cyan-soft: rgba(0, 210, 255, 0.15);
+  --as-accent-violet: #9b8bff;
+  --as-accent-violet-soft: rgba(155, 139, 255, 0.15);
+  --as-accent-magenta: #ff4fd8;
+  --as-accent-magenta-soft: rgba(255, 79, 216, 0.15);
+
+  --as-shadow-1: 0 1px 3px rgba(0, 0, 0, 0.7);
+  --as-shadow-2: 0 4px 6px -1px rgba(0, 0, 0, 0.7);
+  --as-shadow-3: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
+}

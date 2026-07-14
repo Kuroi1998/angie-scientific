@@ -13,7 +13,7 @@ export default defineConfig({
       manifest: {
         name: 'Angie Scientific',
         short_name: 'AngieSci',
-        description: 'Tableau Périodique Interactif FR/ES',
+        description: 'Tableau Periodique Interactif FR/ES',
         theme_color: '#0a0a0f',
         background_color: '#0a0a0f',
         display: 'standalone',
@@ -38,11 +38,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,ttf,woff,woff2}'],
-        maximumFileSizeToCacheInBytes: 5000000 // 5MB to handle heavy bundles/models if any
+        maximumFileSizeToCacheInBytes: 5000000
       }
     })
   ],
-  // Base path for GitHub Pages: https://kuroi1998.github.io/angie-scientific/
   base: '/angie-scientific/',
   server: {
     port: process.env.PORT ? Number(process.env.PORT) : 5173,

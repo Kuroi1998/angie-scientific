@@ -1,0 +1,232 @@
+.as-app-shell {
+  /* All three gradient stops must be theme tokens — two of them used to be
+     hardcoded light hex values, which left every page washed out in the
+     dark-family themes regardless of the selected theme. */
+  background:
+    radial-gradient(circle at 16% 10%, rgba(24, 184, 200, 0.16), transparent 28rem),
+    linear-gradient(135deg, var(--as-bg-soft), var(--as-bg-lab) 42%, var(--as-bg-orbit));
+  color: var(--as-text-body);
+  display: grid;
+  grid-template-columns: var(--as-size-sidebar) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.as-skip-link {
+  background: var(--as-accent-cyan);
+  /* Fixed dark text: --as-bg-space is only dark in the dark-family themes —
+     in light/laboratory it's light too, which nearly erases this link
+     against the vivid cyan background. Cyan is bright enough that dark text
+     reads far better than light text in every theme (measured ~8:1 vs ~2.5:1). */
+  color: #0a1018;
+  left: var(--as-space-4);
+  padding: var(--as-space-3) var(--as-space-4);
+  position: fixed;
+  top: -5rem;
+  z-index: var(--as-z-toast);
+}
+
+.as-skip-link:focus {
+  top: var(--as-space-4);
+}
+
+.as-shell-sidebar {
+  background: rgba(16, 23, 32, 0.96);
+  border-right: 1px solid var(--as-border-inverse);
+  /* This sidebar is deliberately dark in every theme, so its text must stay a
+     fixed light color too — --as-text-inverse would flip to black in the
+     dark-family themes (dark/scientific-night/high-contrast), which pairs
+     correctly with an inverted *surface* but not with this fixed background. */
+  color: rgba(247, 250, 252, 0.92);
+  display: grid;
+  gap: var(--as-space-5);
+  grid-template-rows: auto 1fr auto;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: var(--as-space-5);
+  position: sticky;
+  top: 0;
+}
+
+.as-shell-brand {
+  align-items: center;
+  display: flex;
+  gap: var(--as-space-3);
+}
+
+.as-shell-brand-mark {
+  align-items: center;
+  background: rgba(24, 184, 200, 0.16);
+  border: 1px solid rgba(24, 184, 200, 0.36);
+  border-radius: var(--as-radius-3);
+  color: var(--as-accent-cyan);
+  display: inline-flex;
+  height: 3rem;
+  justify-content: center;
+  width: 3rem;
+}
+
+.as-shell-brand strong,
+.as-shell-heading h1 {
+  color: var(--as-text-strong);
+  display: block;
+  font-family: var(--as-font-display);
+  line-height: var(--as-line-tight);
+}
+
+.as-shell-brand strong {
+  color: rgba(247, 250, 252, 0.92);
+}
+
+.as-shell-brand span {
+  color: rgba(247, 250, 252, 0.68);
+  display: block;
+  font-size: var(--as-font-size-sm);
+  margin-top: var(--as-space-1);
+}
+
+.as-shell-nav {
+  display: grid;
+  gap: var(--as-space-2);
+}
+
+.as-shell-nav .as-nav-item {
+  color: rgba(247, 250, 252, 0.82);
+  padding: var(--as-space-3);
+}
+
+.as-shell-nav .as-nav-item.is-active {
+  color: var(--as-text-strong);
+}
+
+.as-shell-nav-label {
+  display: grid;
+  gap: var(--as-space-1);
+  text-align: left;
+}
+
+.as-shell-nav-label small {
+  color: currentColor;
+  font-size: var(--as-font-size-xs);
+  font-weight: 500;
+  opacity: 0.72;
+}
+
+.as-shell-angie {
+  background: rgba(247, 250, 252, 0.08);
+  border: 1px solid var(--as-border-inverse);
+  border-radius: var(--as-radius-3);
+  display: grid;
+  gap: var(--as-space-3);
+  padding: var(--as-space-4);
+}
+
+.as-shell-angie p {
+  color: rgba(247, 250, 252, 0.72);
+  font-size: var(--as-font-size-sm);
+  margin: var(--as-space-1) 0 0;
+}
+
+.as-shell-main {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.as-shell-header {
+  align-items: center;
+  background: var(--as-surface-glass);
+  border-bottom: 1px solid var(--as-border-soft);
+  display: grid;
+  gap: var(--as-space-4);
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 5.5rem;
+  padding: var(--as-space-4) var(--as-space-6);
+  position: sticky;
+  top: 0;
+  z-index: var(--as-z-nav);
+}
+
+.as-shell-heading {
+  min-width: 0;
+}
+
+.as-shell-heading h1 {
+  font-size: var(--as-font-size-2xl);
+  margin: var(--as-space-1) 0;
+}
+
+.as-shell-heading p {
+  color: var(--as-text-muted);
+  margin: 0;
+}
+
+.as-shell-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--as-space-2);
+  justify-content: flex-end;
+}
+
+.as-shell-shortcuts {
+  display: flex;
+  gap: var(--as-space-2);
+}
+
+.as-shell-notification {
+  align-items: center;
+  background: var(--as-surface-1);
+  border: 1px solid var(--as-border-soft);
+  border-radius: var(--as-radius-round);
+  color: var(--as-text-body);
+  display: inline-flex;
+  gap: var(--as-space-2);
+  min-height: var(--as-size-touch);
+  padding: 0 var(--as-space-3);
+}
+
+.as-shell-user-label {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--as-space-2);
+}
+
+.as-shell-menu-button {
+  display: none;
+}
+
+.as-shell-content {
+  min-width: 0;
+  overflow: hidden;
+  padding: var(--as-space-5);
+}
+
+.as-shell-stage {
+  background: var(--as-surface-glass);
+  border: 1px solid var(--as-border-soft);
+  border-radius: var(--as-radius-3);
+  min-height: calc(100vh - 10.5rem);
+  overflow: hidden;
+}
+
+.as-shell-statusbar {
+  align-items: center;
+  background: var(--as-surface-1);
+  border-top: 1px solid var(--as-border-soft);
+  color: var(--as-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--as-space-3);
+  min-height: 3rem;
+  padding: var(--as-space-2) var(--as-space-6);
+}
+
+.as-shell-statusbar span {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--as-space-2);
+}
+
+.as-shell-mobile-nav {
+  display: none;
+}

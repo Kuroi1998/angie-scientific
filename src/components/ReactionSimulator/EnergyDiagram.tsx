@@ -32,7 +32,7 @@ export const EnergyDiagram: React.FC<EnergyDiagramProps> = ({ dH }) => {
     const titleFont = resolveCssFont('10px var(--font-title)');
     const monoFont = resolveCssFont('9px var(--font-mono)');
 
-    let animationId: number;
+    let animationId = 0;
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -171,7 +171,9 @@ export const EnergyDiagram: React.FC<EnergyDiagramProps> = ({ dH }) => {
         ctx.fill();
       }
 
-      animationId = requestAnimationFrame(draw);
+      if (isPlaying) {
+        animationId = requestAnimationFrame(draw);
+      }
     };
 
     draw();
@@ -185,22 +187,29 @@ export const EnergyDiagram: React.FC<EnergyDiagramProps> = ({ dH }) => {
   useEffect(() => {
     if (!isPlaying) return;
 
-    let startTime = Date.now();
+    const startTime = Date.now();
     const duration = 2000; // 2 seconds
+    let frame = 0;
+    let cancelled = false;
 
     const updateAnim = () => {
+      if (cancelled) return;
       const elapsed = Date.now() - startTime;
       const t = Math.min(elapsed / duration, 1);
       setProgress(t);
 
       if (t < 1) {
-        requestAnimationFrame(updateAnim);
+        frame = requestAnimationFrame(updateAnim);
       } else {
         setIsPlaying(false);
       }
     };
 
     updateAnim();
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
   }, [isPlaying]);
 
   const triggerAnimation = () => {

@@ -1,0 +1,300 @@
+/* 
+  scientific-shared.css 
+  Phase 3 - Design System for Scientific Modules 
+*/
+
+/* 1. Scientific Panel */
+.sci-panel {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--as-radius-3);
+  overflow: hidden;
+  transition: all var(--as-duration-base) var(--as-ease-standard);
+  font-family: var(--as-font-body);
+}
+
+.sci-panel-glass {
+  background: var(--as-surface-glass-dark);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--as-border-inverse);
+  box-shadow: var(--as-shadow-2);
+}
+
+.sci-panel-primary {
+  background: var(--as-surface-inverse);
+  border: 1px solid var(--as-accent-cyan);
+  box-shadow: 0 0 10px rgba(24, 184, 200, 0.1);
+}
+
+/* Unlike glass/secondary (always dark), this variant's background inverts
+   per theme along with --as-surface-inverse, so its title/label/limits need
+   the token that inverts with it instead of the fixed light color below. */
+.sci-panel-primary .sci-panel-title,
+.sci-panel-primary .sci-slider-label {
+  color: var(--as-text-inverse);
+}
+
+.sci-panel-primary .sci-slider-limits {
+  color: color-mix(in srgb, var(--as-text-inverse) 65%, transparent);
+}
+
+.sci-panel-secondary {
+  background: var(--as-surface-2);
+  border: 1px solid var(--as-border-strong);
+}
+
+.sci-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--as-space-3) var(--as-space-4);
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--as-border-inverse);
+}
+
+.sci-panel-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--as-space-2);
+}
+
+.sci-panel-icon {
+  display: flex;
+  align-items: center;
+  color: var(--as-accent-cyan);
+}
+
+.sci-panel-title {
+  margin: 0;
+  font-family: var(--as-font-display);
+  font-size: var(--as-font-size-md);
+  font-weight: 600;
+  color: var(--as-text-primary);
+  letter-spacing: 1px;
+}
+
+.sci-panel-content {
+  padding: var(--as-space-4);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--as-space-4);
+}
+
+/* 2. Scientific Card */
+.sci-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--as-border-inverse);
+  border-radius: var(--as-radius-2);
+  padding: var(--as-space-3);
+  transition: all var(--as-duration-base) var(--as-ease-standard);
+  font-family: var(--as-font-body);
+}
+
+.sci-card:hover {
+  background: var(--surface-border);
+}
+
+.sci-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--as-space-2);
+}
+
+.sci-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--as-space-2);
+}
+
+.sci-card-title {
+  margin: 0;
+  font-size: var(--as-font-size-sm);
+  font-weight: 600;
+  color: var(--as-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sci-card-icon {
+  color: var(--as-text-subtle);
+  display: flex;
+  align-items: center;
+}
+
+.sci-card-desc {
+  margin: 0 0 var(--as-space-3) 0;
+  font-size: var(--as-font-size-sm);
+  color: var(--as-text-subtle); /* Readable light gray */
+  line-height: var(--as-line-body);
+}
+
+.sci-card-value-container {
+  display: flex;
+  align-items: baseline;
+  gap: var(--as-space-1);
+  margin-top: auto;
+}
+
+.sci-card-value {
+  font-family: var(--as-font-mono);
+  font-size: var(--as-font-size-xl);
+  font-weight: 700;
+  color: var(--as-accent-cyan);
+}
+
+.sci-card-unit {
+  font-family: var(--as-font-body);
+  font-size: var(--as-font-size-sm);
+  color: var(--as-text-subtle);
+}
+
+/* Card States */
+.sci-card-active {
+  border-color: var(--as-accent-cyan);
+  background: rgba(24, 184, 200, 0.05);
+  box-shadow: 0 0 10px rgba(24, 184, 200, 0.1);
+}
+.sci-card-success { border-left: 3px solid var(--as-success); }
+.sci-card-warning { border-left: 3px solid var(--as-warning); }
+.sci-card-error { border-left: 3px solid var(--as-error); }
+.sci-card-info { border-left: 3px solid var(--as-info); }
+
+/* 3. Parameter Slider */
+.sci-slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--as-space-2);
+  font-family: var(--as-font-body);
+}
+
+.sci-slider-container.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.sci-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sci-slider-label {
+  font-size: var(--as-font-size-sm);
+  font-weight: 600;
+  /* ParameterSlider always sits inside a .sci-panel, which is fixed-dark in
+     every theme — see .sci-panel-title for why text-inverse is wrong here. */
+  color: rgba(247, 250, 252, 0.94);
+}
+
+.sci-slider-input-group {
+  display: flex;
+  align-items: center;
+  gap: var(--as-space-1);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--as-border-inverse);
+  border-radius: var(--as-radius-1);
+  padding: 2px 6px;
+}
+
+.sci-slider-input-group:focus-within {
+  border-color: var(--as-accent-cyan);
+}
+
+.sci-slider-number-input {
+  background: transparent;
+  border: none;
+  color: var(--as-accent-cyan);
+  font-family: var(--as-font-mono);
+  font-size: var(--as-font-size-md);
+  font-weight: bold;
+  width: 60px;
+  text-align: right;
+  outline: none;
+}
+
+/* Remove arrows from number input */
+.sci-slider-number-input::-webkit-outer-spin-button,
+.sci-slider-number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.sci-slider-number-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.sci-slider-unit {
+  color: var(--as-text-subtle);
+  font-size: var(--as-font-size-xs);
+}
+
+.sci-slider-range {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.sci-slider-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--as-accent-cyan);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.sci-slider-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.sci-slider-limits {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--as-font-size-xs);
+  color: var(--as-text-muted);
+  font-family: var(--as-font-mono);
+}
+
+/* 4. Formula Display */
+.sci-formula-container {
+  padding: var(--as-space-3);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--as-radius-2);
+  border-left: 2px solid var(--as-accent-cyan);
+  font-family: var(--as-font-mono);
+}
+
+.sci-formula-primary { border-color: var(--as-accent-cyan); }
+.sci-formula-secondary { border-color: var(--as-border-strong); }
+.sci-formula-accent { border-color: var(--as-accent-amber); }
+
+.sci-formula-name {
+  font-family: var(--as-font-body);
+  font-size: var(--as-font-size-xs);
+  text-transform: uppercase;
+  color: var(--as-text-subtle);
+  margin-bottom: var(--as-space-1);
+}
+
+.sci-formula-expression {
+  font-size: var(--as-font-size-md);
+  color: var(--as-accent-amber-soft);
+  margin-bottom: var(--as-space-1);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.sci-formula-desc {
+  font-family: var(--as-font-body);
+  font-size: var(--as-font-size-sm);
+  color: var(--as-text-subtle);
+}

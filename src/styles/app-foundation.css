@@ -1,0 +1,135 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap");
+
+:root {
+  --font-title: var(--as-font-display);
+  --font-mono: var(--as-font-mono);
+  --font-body: var(--as-font-body);
+  --bg-primary: var(--as-bg-space);
+  --bg-secondary: var(--as-surface-inverse);
+  --bg-tertiary: var(--as-bg-orbit);
+  --glass-bg: var(--as-surface-glass);
+  --glass-border: rgba(24, 184, 200, 0.28);
+  --glass-border-hover: rgba(24, 184, 200, 0.5);
+  --text-primary: var(--as-text-primary);
+  --text-secondary: var(--as-text-secondary);
+  --text-muted: var(--as-text-muted);
+  --text-subtle: var(--as-text-subtle);
+  --text-disabled: var(--as-text-disabled);
+  --text-inverse: var(--as-text-inverse);
+  --surface-inverse: var(--as-surface-inverse);
+  --text-neon: var(--as-accent-cyan);
+  --neon-cyan: var(--as-accent-cyan);
+  --neon-magenta: var(--as-accent-coral);
+  --neon-purple: var(--as-accent-violet);
+  --neon-green: var(--as-accent-green);
+  --neon-yellow: var(--as-accent-amber);
+  --neon-orange: var(--as-warning);
+  --glow-cyan: 0 0 0 3px rgba(24, 184, 200, 0.16);
+  --glow-magenta: 0 0 0 3px rgba(239, 107, 91, 0.18);
+  --glow-purple: 0 0 0 3px rgba(124, 110, 230, 0.18);
+  --glow-green: 0 0 0 3px rgba(57, 167, 109, 0.18);
+  --shadow-inset: inset 0 1px 0 var(--surface-border);
+  --cat-alkali: 3, 78%, 68%;
+  --cat-alkaline: 33, 76%, 64%;
+  --cat-transition: 43, 74%, 62%;
+  --cat-lanthanide: 257, 72%, 74%;
+  --cat-actinide: 324, 67%, 70%;
+  --cat-post-transition: 220, 74%, 76%;
+  --cat-metalloid: 157, 46%, 62%;
+  --cat-nonmetal: 188, 65%, 62%;
+  --cat-noble: 204, 78%, 67%;
+  --cat-unknown: 207, 10%, 63%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--as-bg-space);
+}
+
+body {
+  background:
+    radial-gradient(circle at 16% 10%, rgba(24, 184, 200, 0.12), transparent 28rem),
+    linear-gradient(135deg, var(--as-bg-soft), var(--as-bg-lab) 42%, var(--as-bg-orbit));
+  color: var(--as-text-body);
+  font-family: var(--as-font-body);
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding: 0;
+}
+
+#root {
+  margin: 0;
+  min-height: 100vh;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--as-radius-3);
+  box-shadow: var(--as-shadow-2);
+  color: var(--text-primary);
+}
+
+.hover-lift {
+  transition:
+    box-shadow var(--as-duration-fast) var(--as-ease-standard),
+    transform var(--as-duration-fast) var(--as-ease-standard);
+}
+
+.hover-lift:hover {
+  transform: translateY(-1px);
+}
+
+.scifi-background {
+  background: linear-gradient(135deg, rgba(16, 23, 32, 0.94), rgba(21, 34, 44, 0.86));
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  z-index: -1;
+}
+
+.scifi-grid,
+.scifi-glow-overlay {
+  inset: 0;
+  position: absolute;
+}
+
+.scifi-grid {
+  background-image:
+    linear-gradient(rgba(24, 184, 200, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(24, 184, 200, 0.08) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.35;
+}
+
+.scifi-glow-overlay {
+  background:
+    radial-gradient(circle at 18% 36%, rgba(24, 184, 200, 0.16), transparent 32rem),
+    radial-gradient(circle at 82% 24%, rgba(124, 110, 230, 0.12), transparent 30rem);
+}
+
+.lab-header,
+.lab-status-bar {
+  align-items: center;
+  background: var(--as-surface-1);
+  border: 1px solid var(--as-border-soft);
+  color: var(--as-text-body);
+  display: flex;
+  gap: var(--as-space-3);
+  justify-content: space-between;
+  padding: var(--as-space-4);
+}
+
+.lab-status-left {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--as-space-3);
+}

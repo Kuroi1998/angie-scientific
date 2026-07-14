@@ -33,7 +33,7 @@ export class MusicManager {
       if (AudioCtx) {
         try {
           this.audioCtx = new AudioCtx();
-        } catch (e) {}
+        } catch {}
       }
     }
     if (this.audioCtx && this.audioCtx.state === 'suspended') {
@@ -80,7 +80,7 @@ export class MusicManager {
     
     setTimeout(() => {
       this.oscillators.forEach(osc => {
-        try { osc.stop(); osc.disconnect(); } catch (e) {}
+        try { osc.stop(); osc.disconnect(); } catch {}
       });
       this.oscillators = [];
       if (this.gainNode) {

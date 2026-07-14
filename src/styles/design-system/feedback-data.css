@@ -1,0 +1,136 @@
+.as-badge,
+.as-alert,
+.as-toast {
+  padding: var(--as-space-2) var(--as-space-3);
+}
+
+.as-badge {
+  background: var(--as-surface-2);
+  border-radius: var(--as-radius-round);
+  display: inline-flex;
+  transition:
+    background var(--as-duration-fast) var(--as-ease-standard),
+    color var(--as-duration-fast) var(--as-ease-standard),
+    transform var(--as-duration-fast) var(--as-ease-standard);
+}
+
+.as-tone-success {
+  --as-tone-bg: var(--as-success-bg);
+  --as-tone-fg: var(--as-success);
+}
+
+.as-tone-info {
+  --as-tone-bg: var(--as-info-bg);
+  --as-tone-fg: var(--as-info);
+}
+
+.as-tone-warning {
+  --as-tone-bg: var(--as-warning-bg);
+  --as-tone-fg: var(--as-warning);
+}
+
+.as-tone-error {
+  --as-tone-bg: var(--as-error-bg);
+  --as-tone-fg: var(--as-error);
+}
+
+.as-alert,
+.as-toast,
+.as-badge {
+  background: var(--as-tone-bg, var(--as-surface-2));
+  color: var(--as-tone-fg, var(--as-text-body));
+}
+
+.as-toast-viewport {
+  bottom: var(--as-space-5);
+  display: grid;
+  gap: var(--as-space-3);
+  max-width: min(24rem, calc(100vw - var(--as-space-5) * 2));
+  position: fixed;
+  right: var(--as-space-5);
+  z-index: var(--as-z-toast);
+}
+
+.as-toast-floating {
+  align-items: center;
+  display: flex;
+  gap: var(--as-space-3);
+  justify-content: space-between;
+}
+
+.as-toast-actions {
+  align-items: center;
+  display: flex;
+  gap: var(--as-space-2);
+}
+
+.app-notification-viewport {
+  bottom: auto;
+  top: var(--as-space-5);
+}
+
+.as-progress-track {
+  background: var(--as-surface-2);
+  border-radius: var(--as-radius-round);
+  height: 0.55rem;
+  overflow: hidden;
+}
+
+.as-progress-track span {
+  background: var(--as-tone-fg, var(--as-accent-cyan));
+  display: block;
+  height: 100%;
+  transition: width var(--as-duration-slow) var(--as-ease-emphasis);
+}
+
+.as-state {
+  border: 1px dashed var(--as-border-strong);
+  border-radius: var(--as-radius-3);
+  justify-items: center;
+  padding: var(--as-space-8);
+  text-align: center;
+}
+
+.as-skeleton {
+  animation: as-pulse 1.4s ease-in-out infinite;
+  background: linear-gradient(90deg, var(--as-surface-2), var(--as-surface-3));
+  border-radius: var(--as-radius-2);
+  min-height: 1rem;
+}
+
+@keyframes as-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.as-table-wrap {
+  overflow-x: auto;
+}
+
+.as-table {
+  border-collapse: collapse;
+  color: var(--as-text-body);
+  min-width: 100%;
+}
+
+.as-table th,
+.as-table td {
+  border-bottom: 1px solid var(--as-border-soft);
+  padding: var(--as-space-3);
+  text-align: left;
+}
+
+.as-table .is-center {
+  text-align: center;
+}
+
+.as-table .is-right {
+  text-align: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .as-skeleton {
+    animation: none;
+  }
+}

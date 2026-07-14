@@ -1,0 +1,63 @@
+{
+  "routes": {
+    "home": {
+      "label": "Inicio",
+      "shortLabel": "Inicio",
+      "description": "Ver progreso y actividades recomendadas."
+    },
+    "profile": {
+      "label": "Perfil",
+      "shortLabel": "Perfil",
+      "description": "Gestionar perfil, ajustes, temas y progreso."
+    },
+    "table": {
+      "label": "Tabla Periódica",
+      "shortLabel": "Tabla",
+      "description": "Explorar elementos y propiedades."
+    },
+    "fusion": {
+      "label": "Simulador de Fusión",
+      "shortLabel": "Fusión",
+      "description": "Combinar reactivos y analizar resultados."
+    },
+    "quantum": {
+      "label": "Visor Cuántico",
+      "shortLabel": "Cuántico",
+      "description": "Visualizar orbitales, incertidumbres e hibridaciones."
+    },
+    "physchem": {
+      "label": "Lab Física-Química",
+      "shortLabel": "Fís-Quím",
+      "description": "Manipular gases, fases, cinética y espectros."
+    },
+    "virtuallab": {
+      "label": "Laboratorio Virtual",
+      "shortLabel": "Lab",
+      "description": "Probar experimentos guiados con seguridad."
+    },
+    "quests": {
+      "label": "Misiones",
+      "shortLabel": "Misiones",
+      "description": "Seguir descubrimientos, insignias y objetivos."
+    },
+    "quiz": {
+      "label": "Quiz",
+      "shortLabel": "Quiz",
+      "description": "Poner a prueba tus conocimientos científicos."
+    }
+  },
+  "breadcrumbsRoot": "Menú Principal",
+  "quickAccess": "Accesos rápidos",
+  "notifications": "Notificaciones",
+  "settings": "Configuración",
+  "themeStore": "Temas",
+  "sync": "Sync",
+  "ok": "OK",
+  "angieAction": "Preguntar a Angie",
+  "labStatus": "Sesión laboratorio",
+  "menu": "Abrir navegación",
+  "mobileNavigation": "Navegación móvil",
+  "profile": "Perfil",
+  "skipToContent": "Ir al contenido",
+  "userMenu": "Menú de usuario"
+}

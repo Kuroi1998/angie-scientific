@@ -1,0 +1,35 @@
+[data-theme="dark"] {
+  --as-bg-space: #080b12;
+  --as-bg-lab: #0a0d14;
+  --as-bg-orbit: #06090e;
+  --as-bg-soft: #0c121b;
+
+  --as-surface-1: #111923;
+  --as-surface-2: #16202c;
+  --as-surface-3: #1a2736;
+  --as-surface-inverse: #f7fafc;
+  --as-surface-glass: rgba(16, 23, 32, 0.76);
+  --as-surface-glass-dark: rgba(16, 23, 32, 0.76);
+  --surface-card: rgba(255, 255, 255, 0.02);
+  --surface-border: rgba(255, 255, 255, 0.1);
+
+  --as-text-primary: #f7fafc;
+  --as-text-secondary: #c2c9d1;
+  --as-text-muted: #8b99a6;
+  --as-text-subtle: #5d6f7a;
+  --as-text-inverse: #0f1620;
+  --as-text-disabled: #6b7a88;
+  --as-text-on-accent: #ffffff;
+  --as-text-body: #dbe2e8;
+  --as-text-strong: #ffffff;
+
+  /* Selected/active UI states (nav items, tabs, soft buttons) pair this with
+     --as-text-strong (white here). Its sibling dark-family themes already
+     override this to stay dark for that reason — without it, "dark" was the
+     one theme where that pairing produced white-on-near-white text. */
+  --as-accent-cyan-soft: rgba(24, 184, 200, 0.15);
+
+  --as-shadow-1: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --as-shadow-2: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --as-shadow-3: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}

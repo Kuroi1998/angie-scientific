@@ -19,7 +19,7 @@ export class AudioManager {
       if (AudioCtx) {
         try {
           this.audioCtx = new AudioCtx();
-        } catch (e) {
+        } catch {
           // Fallback for tests
         }
       }

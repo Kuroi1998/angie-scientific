@@ -1,116 +1,103 @@
 import React from 'react';
-import { useMascot } from './MascotContext';
-import { useUserProgress } from '../UserProgressProvider';
+import { Settings2, X } from 'lucide-react';
 import { useLanguage } from '../../hooks/useLanguage';
-import { X, Settings2 } from 'lucide-react';
+import { useMascot } from './useMascot';
+import { useUserProgress } from '../useUserProgress';
+import './angie-mascot.css';
+
+const factsFr = [
+  "Savais-tu que l'eau se dilate en gelant ?",
+  "L'helium est le deuxieme element le plus abondant de l'univers !",
+  'Le carbone est a la base de toute forme de vie connue sur Terre.',
+  "L'or est tellement malleable qu'un gramme peut etre etire sur plusieurs kilometres.",
+  "As-tu decouvert de nouveaux elements aujourd'hui ?",
+];
+
+const factsEs = [
+  'Sabias que el agua se expande al congelarse?',
+  'El helio es el segundo elemento mas abundante del universo!',
+  'El carbono es la base de todas las formas de vida conocidas en la Tierra.',
+  'El oro es muy maleable y se puede estirar en hilos muy finos.',
+  'Has descubierto nuevos elementos hoy?',
+];
 
 export const AngieMascot: React.FC = () => {
-  const { emotion, currentMessage, isVisible, hideMessage, toggleVisibility, showMessage } = useMascot();
-  const { profile } = useUserProgress();
+  const { currentMessage, emotion, hideMessage, isVisible, showMessage, toggleVisibility } = useMascot();
   const { language } = useLanguage();
+  const { profile } = useUserProgress();
 
-  if (profile && profile.mascotEnabled === false) {
-    return null;
-  }
+  if (profile?.mascotEnabled === false) return null;
 
   if (!isVisible) {
     return (
-      <button 
-        onClick={toggleVisibility}
-        style={{
-          position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000,
-          background: 'var(--neon-cyan)', color: '#000', border: 'none',
-          borderRadius: '50%', width: '50px', height: '50px',
-          boxShadow: 'var(--glow-cyan)', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center'
-        }}
-        aria-label="Afficher Angie"
-      >
+      <button className="angie-mascot-toggle" onClick={toggleVisibility} aria-label="Afficher Angie">
         A
       </button>
     );
   }
 
-  // Base SVG for Angie (a cute atom/robot)
-  const getEyeExpression = () => {
-    switch (emotion) {
-      case 'happy': return <path d="M 10 20 Q 15 15 20 20 M 30 20 Q 35 15 40 20" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" />;
-      case 'surprised': return <><circle cx="15" cy="18" r="4" fill="#fff" /><circle cx="35" cy="18" r="4" fill="#fff" /></>;
-      case 'worried': return <path d="M 10 18 Q 15 15 20 18 M 30 18 Q 35 15 40 18" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" />;
-      case 'thinking': return <><path d="M 10 20 L 20 20" stroke="#fff" strokeWidth="3" strokeLinecap="round" /><circle cx="35" cy="18" r="3" fill="#fff" /></>;
-      default: return <><circle cx="15" cy="20" r="3" fill="#fff" /><circle cx="35" cy="20" r="3" fill="#fff" /></>;
-    }
+  const shareFact = () => {
+    const facts = language === 'fr' ? factsFr : factsEs;
+    showMessage(facts[Math.floor(Math.random() * facts.length)], 4000, 'happy');
   };
 
   return (
-    <div style={{
-      position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000,
-      display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px'
-    }}>
+    <div className="angie-mascot">
       {currentMessage && (
-        <div 
-          className="speech-bubble animate-pop-in"
-          style={{
-            background: '#fff', color: '#000', padding: '12px 16px',
-            borderRadius: '16px 16px 0 16px', maxWidth: '250px',
-            fontFamily: 'var(--font-title)', fontSize: '13px',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.3)', position: 'relative'
-          }}
-        >
+        <div className="angie-mascot-bubble animate-pop-in">
           {currentMessage}
-          <button 
-            onClick={hideMessage} 
-            style={{ position: 'absolute', top: '4px', right: '4px', background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}
-          >
+          <button className="angie-mascot-close" onClick={hideMessage} aria-label="Fermer le message Angie">
             <X size={12} />
           </button>
         </div>
       )}
-      
-      <div 
-        className={`mascot-avatar ${emotion === 'happy' ? 'animate-bounce' : emotion === 'worried' ? 'animate-shake' : 'animate-float'}`}
-        style={{ cursor: 'pointer', position: 'relative' }}
-        onClick={() => {
-          const isFr = language === 'fr';
-          const factsFr = [
-            "Savais-tu que l'eau se dilate en gelant ?",
-            "L'hélium est le deuxième élément le plus abondant de l'univers !",
-            "Le carbone est à la base de toute forme de vie connue sur Terre.",
-            "L'or est tellement malléable qu'un seul gramme peut être étiré sur 3 kilomètres !",
-            "As-tu découvert de nouveaux éléments aujourd'hui ?"
-          ];
-          const factsEs = [
-            "¿Sabías que el agua se expande al congelarse?",
-            "¡El helio es el segundo elemento más abundante del universo!",
-            "El carbono es la base de todas las formas de vida conocidas en la Tierra.",
-            "¡El oro es tan maleable que un solo gramo puede estirarse hasta 3 kilómetros!",
-            "¿Has descubierto nuevos elementos hoy?"
-          ];
-          const facts = isFr ? factsFr : factsEs;
-          const randomFact = facts[Math.floor(Math.random() * facts.length)];
-          showMessage(randomFact, 4000, 'happy');
+      <div
+        className={`angie-mascot-avatar ${emotionClass(emotion)}`}
+        key={emotion}
+        aria-label="Demander un fait a Angie"
+        onClick={shareFact}
+        onKeyDown={(event) => {
+          if (!['Enter', ' '].includes(event.key)) return;
+          event.preventDefault();
+          shareFact();
         }}
+        role="button"
+        tabIndex={0}
       >
-        {/* Simple SVG Avatar */}
-        <svg width="60" height="60" viewBox="0 0 50 50">
-          <circle cx="25" cy="25" r="22" fill="var(--bg-secondary)" stroke="var(--neon-cyan)" strokeWidth="2" />
-          {/* Orbit paths */}
-          <ellipse cx="25" cy="25" rx="20" ry="8" fill="none" stroke="rgba(0, 243, 255, 0.3)" transform="rotate(45 25 25)" />
-          <ellipse cx="25" cy="25" rx="20" ry="8" fill="none" stroke="rgba(0, 243, 255, 0.3)" transform="rotate(-45 25 25)" />
-          {/* Eyes */}
-          {getEyeExpression()}
+        <svg width="60" height="60" viewBox="0 0 50 50" aria-hidden="true">
+          <circle cx="25" cy="25" r="22" fill="var(--as-surface-inverse)" stroke="var(--as-accent-cyan)" strokeWidth="2" />
+          <ellipse cx="25" cy="25" rx="20" ry="8" fill="none" stroke="var(--as-accent-cyan-soft)" transform="rotate(45 25 25)" />
+          <ellipse cx="25" cy="25" rx="20" ry="8" fill="none" stroke="var(--as-accent-cyan-soft)" transform="rotate(-45 25 25)" />
+          {eyeExpression(emotion)}
         </svg>
-        <button 
-          onClick={(e) => { e.stopPropagation(); toggleVisibility(); }}
-          style={{
-            position: 'absolute', bottom: '-5px', left: '-5px', background: 'var(--bg-primary)',
-            border: '1px solid var(--glass-border)', borderRadius: '50%', padding: '4px',
-            color: '#fff', cursor: 'pointer', display: 'flex'
-          }}
-        >
+        <button className="angie-mascot-mini" onClick={(event) => {
+          event.stopPropagation();
+          toggleVisibility();
+        }} aria-label="Masquer Angie">
           <Settings2 size={12} />
         </button>
       </div>
     </div>
   );
 };
+
+function emotionClass(emotion: string) {
+  return `angie-emotion-${emotion}`;
+}
+
+function eyeExpression(emotion: string) {
+  const eyeColor = 'var(--as-text-inverse)';
+  if (emotion === 'happy') {
+    return <path d="M 10 20 Q 15 15 20 20 M 30 20 Q 35 15 40 20" stroke={eyeColor} strokeWidth="3" fill="none" strokeLinecap="round" />;
+  }
+  if (emotion === 'surprised') {
+    return <><circle cx="15" cy="18" r="4" fill={eyeColor} /><circle cx="35" cy="18" r="4" fill={eyeColor} /></>;
+  }
+  if (emotion === 'worried') {
+    return <path d="M 10 18 Q 15 15 20 18 M 30 18 Q 35 15 40 18" stroke={eyeColor} strokeWidth="3" fill="none" strokeLinecap="round" />;
+  }
+  if (emotion === 'thinking') {
+    return <><path d="M 10 20 L 20 20" stroke={eyeColor} strokeWidth="3" strokeLinecap="round" /><circle cx="35" cy="18" r="3" fill={eyeColor} /></>;
+  }
+  return <><circle cx="15" cy="20" r="3" fill={eyeColor} /><circle cx="35" cy="20" r="3" fill={eyeColor} /></>;
+}
