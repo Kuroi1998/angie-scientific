@@ -8,9 +8,32 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+**/node_modules
 dist
+server/dist
 dist-ssr
 *.local
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Generated data and local databases
+database
+server/database
+*.sqlite
+*.sqlite3
+*.db
+
+# Reports and generated artifacts
+coverage
+artifacts
+.cache
+.vite
+.turbo
 
 # Playwright
 test-results
@@ -22,6 +45,7 @@ playwright/.cache
 .vscode/*
 !.vscode/extensions.json
 .idea
+.claude/settings.local.json
 .DS_Store
 *.suo
 *.ntvs*

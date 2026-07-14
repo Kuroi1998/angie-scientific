@@ -1,50 +1,71 @@
 # Changelog
 
-## 2026-07-13 — `fix/stabilization-angie-scientific`
+This project follows a Keep a Changelog style where practical. Versions are not
+tagged yet, so current work is listed under `Unreleased`.
 
-Mission de stabilisation complète menée à partir d'un audit de code. Détails complets dans [`REPAIR_REPORT_ANGIE_SCIENTIFIC.md`](./REPAIR_REPORT_ANGIE_SCIENTIFIC.md).
+## [Unreleased]
 
-### Corrections critiques
+### Added
 
-- **Fix (crash) :** `AtomModelCanvas` plantait (`addColorStop` / couleur CSS non résolue) au survol d'un élément ou à l'ouverture de sa fiche détaillée.
-- **Fix (crash) :** `Hybridization` plantait à l'ouverture de l'onglet « États d'hybridation orbitale » pour la même raison.
-- **Fix :** toutes les autres utilisations de variables CSS (`var(--...)`) dans des contextes Canvas (`fillStyle`, `strokeStyle`, `shadowColor`, `font`) ont été auditées et corrigées sur 10 composants (rendu couleur/police auparavant silencieusement ignoré par l'API Canvas).
-- **Fix :** suppression de `dangerouslySetInnerHTML` pour l'affichage des équations chimiques — remplacé par un rendu JSX sûr basé sur une tokenisation typée de la formule.
-- **Fix :** warning `react-hooks/exhaustive-deps` dans `PhaseDiagram` traité sans désactiver la règle.
-- **Fix :** débordement horizontal de la page sur petit écran (320-390px) sur plusieurs onglets (grilles CSS, en-tête, champs de saisie).
+- New app shell documentation, screenshots and GitHub project README.
+- Documentation for architecture, development, themes, i18n and Angie Mascot.
+- Contribution and security guides.
+- GitHub issue templates and pull request template.
+- Quality workflow for frontend checks and optional backend type-checking.
+- Optional `.env.example` with non-sensitive local configuration examples.
+- Physics-chemistry feature modules for gases, kinetics, phase diagrams and
+  spectroscopy.
+- Quantum visualizer feature module with orbital, hybridization and Heisenberg
+  views.
+- User center, theme gallery, progress panels and discovery album views.
 
-### Améliorations de stabilité
+### Changed
 
-- Ajout d'un Error Boundary global (recharge l'app) et de limites d'erreur localisées autour du Simulateur de Fusion, du Visualiseur Quantique, du Labo Physique-Chimie, du Labo Virtuel et de la fiche détaillée d'un élément — plus jamais d'écran blanc en cas d'erreur de rendu.
-- Prise en charge du ratio de pixels de l'appareil (DPR) et de `prefers-reduced-motion` sur le modèle atomique animé.
+- Rebuilt the interface around lazy-loaded modules and a shared app shell.
+- Replaced the old global CSS entry points with design tokens, theme files and
+  feature-scoped styles.
+- Split oversized scientific components and helpers to keep maintained source
+  files under the 300-line project limit.
+- Expanded FR/ES localization with i18next namespaces.
+- Updated the optional backend package so its SQLite wrapper dependency is
+  declared and it has usable development/type-check scripts.
+- Strengthened GitHub Pages deploy checks with lint, type-check and tests.
 
-### Améliorations d'accessibilité
+### Fixed
 
-- Résultats du laboratoire virtuel annoncés via une région `aria-live`.
-- Cellules du tableau périodique, slots de réactifs, ligne de quête et suggestions de recherche convertis en éléments `<button>` sémantiques avec libellés accessibles.
-- Navigation principale et onglets de la fiche élément structurés en `role="tablist"/"tab"/"tabpanel"` avec navigation clavier (flèches) et focus roving.
-- Fiche élément : `role="dialog"`, fermeture au clavier (Échap), gestion du focus (ouverture/fermeture).
-- Alternative textuelle (`role="img"` + `aria-label`) sur les 12 canvases scientifiques informatifs.
-- Animations décoratives désactivées sous `prefers-reduced-motion: reduce`.
+- Corrected outdated README claims about React, TypeScript and test counts.
+- Corrected visible encoding issues in page metadata, theme labels, PWA
+  description and selected console messages.
+- Removed misleading documentation for features, commands and test totals that
+  no longer matched the repository.
 
-### Ajout de la persistance
+### Security
 
-- Nouvelle couche de stockage local versionnée (`angieScientific:v1:*`), résiliente aux données corrompues ou de forme invalide, avec migration automatique des anciennes clés non versionnées.
-- Persistance étendue : langue, progression des quêtes, historique de recherche, onglet actif, expériences du labo virtuel complétées.
-- Bouton de réinitialisation complète des données locales avec confirmation.
+- Audited common secret patterns and environment files before preparing the
+  branch for push.
+- Added ignore rules for local environment files, generated databases, reports,
+  caches and temporary visual artifacts.
+- `npm audit --audit-level=moderate` reports 0 vulnerabilities for the frontend
+  package and the optional backend package.
 
-### Ajout des tests
+## 2026-07-13 - stabilization branch
 
-- Infrastructure Vitest + React Testing Library (composants) : **84 tests** sur 15 fichiers (utilitaires, hooks, composants).
-- Infrastructure Playwright (bout-en-bout) contre le build de production : **10 scénarios** couvrant le parcours critique complet (tableau périodique, fiche élément, visualiseur quantique, simulateur de fusion, labo virtuel, persistance après rechargement, navigation clavier, responsive mobile, absence d'erreurs console/réseau).
+### Fixed
 
-### Modifications techniques importantes
+- Resolved canvas color/font issues caused by unresolved CSS variables.
+- Removed unsafe equation HTML rendering and replaced it with typed JSX formula
+  rendering.
+- Improved small-screen overflow behavior.
+- Added error boundaries around high-risk scientific modules.
 
-- Nouveaux utilitaires : `resolveCssColor`, `resolveCssFont`, `cssVariables`, `canvasSetup`, `chemicalFormula`, `localStorage`, hook `useLocalStorageState`.
-- Nouveaux scripts npm : `typecheck`, `test`, `test:watch`, `test:e2e`.
-- `vite.config.ts` : port de développement configurable (`PORT` env), configuration Vitest intégrée (environnement `jsdom`).
+### Added
 
-### Ruptures de compatibilité
+- Vitest, React Testing Library and Playwright coverage for critical paths.
+- Local storage migration and persistence helpers.
+- Accessibility improvements for dialogs, tabs, canvases, status regions and
+  keyboard navigation.
 
-- Le champ `equationHTML` du moteur chimique (`ReactionResult`) a été supprimé. Aucun consommateur externe connu ; le composant `FusionCore` a été mis à jour en conséquence.
-- Les anciennes clés `localStorage` non versionnées (`angie_sci_lang`, `angie_scientific_quests_completed`, `angie_sci_search_history`) sont migrées automatiquement une seule fois vers le nouveau schéma versionné ; elles ne sont plus lues directement après la migration.
+### Changed
+
+- Added `typecheck`, `test`, `test:watch` and `test:e2e` scripts.
+- Configured the Vite base path for GitHub Pages.
