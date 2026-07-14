@@ -208,7 +208,7 @@ Validated locally in this branch on 2026-07-14:
 - `npm audit --audit-level=moderate`: 0 vulnerabilities.
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run test`: 127 tests passed.
+- `npm run test`: 164 tests passed.
 - `npm run build`: passed.
 - `npm run test:e2e`: 14 tests passed.
 

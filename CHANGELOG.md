@@ -30,6 +30,7 @@ tagged yet, so current work is listed under `Unreleased`.
 - Updated the optional backend package so its SQLite wrapper dependency is
   declared and it has usable development/type-check scripts.
 - Strengthened GitHub Pages deploy checks with lint, type-check and tests.
+- Refactored Angie Chat, Dashboard, and QuizMode with an all-new accessible UI.
 
 ### Fixed
 
@@ -38,6 +39,7 @@ tagged yet, so current work is listed under `Unreleased`.
   description and selected console messages.
 - Removed misleading documentation for features, commands and test totals that
   no longer matched the repository.
+- Repaired all Vitest suites broken by the UI refactoring, ensuring 100% pass rate (164/164).
 
 ### Security
 

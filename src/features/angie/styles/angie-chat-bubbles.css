@@ -1,0 +1,96 @@
+.angie-chat-messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--as-space-4);
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: var(--as-space-2);
+}
+
+/* Custom scrollbar for sci-fi look */
+.angie-chat-messages::-webkit-scrollbar {
+  width: 4px;
+}
+.angie-chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+.angie-chat-messages::-webkit-scrollbar-thumb {
+  background: var(--as-accent-cyan);
+  border-radius: var(--as-radius-round);
+}
+
+.angie-chat-message {
+  border-radius: 0 var(--as-radius-3) var(--as-radius-3) var(--as-radius-3);
+  font-size: var(--as-font-size-sm);
+  max-width: 85%;
+  padding: var(--as-space-3) var(--as-space-4);
+  position: relative;
+  line-height: var(--as-line-relaxed);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid transparent;
+}
+
+.angie-chat-message p {
+  margin: 0;
+}
+
+.angie-chat-message.is-user {
+  align-self: flex-end;
+  background: rgba(24, 184, 200, 0.15);
+  color: #ffffff !important;
+  border-radius: var(--as-radius-3) 0 var(--as-radius-3) var(--as-radius-3);
+  border: 1px solid var(--as-accent-cyan);
+  box-shadow: inset 0 0 10px rgba(24, 184, 200, 0.1), 0 0 10px rgba(24, 184, 200, 0.2);
+}
+
+.angie-chat-message.is-angie {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff !important;
+  border-radius: 0 var(--as-radius-3) var(--as-radius-3) var(--as-radius-3);
+  padding-right: var(--as-space-6);
+  backdrop-filter: blur(8px);
+}
+
+.angie-chat-copy {
+  background: transparent;
+  border: 0;
+  color: var(--as-text-subtle);
+  cursor: pointer;
+  min-height: 28px;
+  min-width: 28px;
+  position: absolute;
+  right: var(--as-space-1);
+  top: var(--as-space-1);
+  transition: color 0.2s;
+}
+
+.angie-chat-copy:hover {
+  color: var(--as-accent-cyan);
+}
+
+.angie-chat-message-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--as-space-2);
+  margin-top: var(--as-space-3);
+}
+
+.angie-chat-message-replies button {
+  background: rgba(24, 184, 200, 0.1);
+  border: 1px solid var(--as-accent-cyan);
+  border-radius: var(--as-radius-full);
+  color: var(--as-accent-cyan);
+  cursor: pointer;
+  font-size: var(--as-font-size-xs);
+  padding: var(--as-space-1) var(--as-space-3);
+  transition: all 0.2s ease;
+}
+
+.angie-chat-message-replies button:hover {
+  background: var(--as-accent-cyan);
+  color: var(--as-text-inverse);
+  box-shadow: var(--as-shadow-glow);
+}
