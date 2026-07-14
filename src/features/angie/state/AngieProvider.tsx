@@ -50,7 +50,7 @@ export const AngieProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       clearTimer();
     }
     return clearTimer;
-  }, [state.current, armTimer, clearTimer]);
+  }, [state, armTimer, clearTimer]);
 
   useEffect(() => {
     const handleVisibility = () => {
@@ -72,7 +72,7 @@ export const AngieProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (profile?.mascotSoundEnabled !== false) {
       AudioManager.getInstance().playNotification();
     }
-  }, [state.current, profile?.mascotSoundEnabled]);
+  }, [state, profile?.mascotSoundEnabled]);
 
   const enqueueDialogueMessage = useCallback((message: Omit<AngieMessage, 'id' | 'createdAt'>) => {
     if (profile?.mascotEnabled === false) return;

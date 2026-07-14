@@ -1,5 +1,5 @@
 import elementsData from '../../engines/data/elements.json';
-import type { ElementType } from '../PeriodicTable/TableGrid';
+
 import type { LearningDifficulty, QuizQuestion } from './learningTypes';
 
 const ELEMENTS = elementsData as any[];

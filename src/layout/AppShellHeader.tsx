@@ -85,14 +85,11 @@ function ShellActions<TId extends string>({
           );
         })}
       </div>
-      <Button
-        iconLeft={<Bell size={17} />}
-        aria-label={labels.notifications}
+      <IconButton
+        icon={<Bell size={18} />}
+        label={labels.notifications}
         variant="ghost"
-        size="sm"
-      >
-        {stats.isLoading ? labels.sync : labels.ok}
-      </Button>
+      />
       <ThemeToggle onOpenThemeStore={onOpenThemeStore} />
       <IconButton
         icon={<Settings size={18} />}

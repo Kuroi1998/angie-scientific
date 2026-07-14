@@ -25,8 +25,7 @@ import {
   ELEMENT_TOTAL,
   XP_PER_LEVEL,
   getDashboardMetrics,
-  getRecentBadges,
-  getRecentDiscoveries,
+  getRecentBadges
 } from './dashboardModel';
 import './dashboard.css';
 
@@ -58,7 +57,6 @@ export function DashboardContent({
   const { t } = useLanguage('dashboard');
   const metrics = getDashboardMetrics(profile, progress);
   const recentBadges = getRecentBadges(progress);
-  const discoveries = getRecentDiscoveries(progress);
 
   return (
     <div className="dashboard-page">

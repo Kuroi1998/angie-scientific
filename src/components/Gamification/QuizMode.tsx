@@ -23,7 +23,7 @@ import './quiz-mode.css';
 type QuizView = 'setup' | 'questionnaire' | 'results' | 'riddles';
 
 export const QuizMode: React.FC = () => {
-  const { t, currentLanguage } = useLanguage('gamification');
+  const { t, language } = useLanguage('gamification');
   const fireDialogue = useAngieFireDialogue();
   const [history, setHistory] = useLocalStorageState<QuizSessionResult[]>(
     'quizHistory',
@@ -83,7 +83,7 @@ export const QuizMode: React.FC = () => {
   }, [finishSession, mode, timeLeft, validated, view]);
 
   const startSession = () => {
-    const nextQuestions = generateQuizQuestions(difficulty, t, currentLanguage);
+    const nextQuestions = generateQuizQuestions(difficulty, t, language);
     setQuestions(nextQuestions);
     setCurrentIndex(0);
     setSelectedAnswer(null);

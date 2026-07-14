@@ -100,9 +100,9 @@ export const QuestSystem: React.FC = () => {
               const Icon = badge.icon;
               const unlocked = totalPoints >= badge.min;
               return (
-                  <div className="quiz-history-row" data-success={unlocked} key={badge.id}>
+                  <div className="quiz-history-row" data-success={unlocked} key={badge.name}>
                     <Icon className="user-muted" size={16} />
-                    <strong>{t('language') === 'es' && badge.nameEs ? badge.nameEs : badge.nameFr}</strong>
+                    <strong>{badge.name}</strong>
                     <Badge tone="info">{t('quests.objective', { pts: badge.min })}</Badge>
                   </div>
               );

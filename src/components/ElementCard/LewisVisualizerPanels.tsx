@@ -55,7 +55,7 @@ interface GeometrySummaryProps {
   language: string;
 }
 
-export const NobleGasNotice: React.FC<NobleGasNoticeProps> = ({ centralSymbol, language }) => {
+export const NobleGasNotice: React.FC<NobleGasNoticeProps> = ({ centralSymbol }) => {
   const { t } = useLanguage('periodicTable');
   return React.createElement('div', { style: nobleNoticeStyle },
     React.createElement('span', {
@@ -117,7 +117,7 @@ export const BondConfigurationPanel: React.FC<BondConfigurationPanelProps> = (pr
     ),
     React.createElement('div', { style: telemetryStyle },
       metric('FORMULA', `${centralSymbol}${count > 1 ? count : ''}${ligand}`, '#fff'),
-      metric('BOND TYPE', bond.type, 'var(--neon-cyan)'),
+      metric('BOND TYPE', language === 'es' ? bond.typeES : bond.typeFR, 'var(--neon-cyan)'),
       metric('DELTA ELECTRONEGATIVITY', bond.polarityDiff, '#fff'),
       metric('BOND ENERGY', `${bond.energy} kJ/mol`, 'var(--neon-yellow)'),
       metric('BOND LENGTH', `${bond.length} pm`, 'var(--neon-yellow)')
@@ -132,8 +132,7 @@ export const VisualsGrid: React.FC<VisualsGridProps> = ({
   ligand,
   count,
   vsepr,
-  geometryLabel,
-  language
+  geometryLabel
 }) => {
   const { t } = useLanguage('periodicTable');
   return React.createElement('div', { style: visualsGridStyle },
@@ -153,8 +152,7 @@ export const VisualsGrid: React.FC<VisualsGridProps> = ({
 export const GeometrySummary: React.FC<GeometrySummaryProps> = ({
   vsepr,
   geometryLabel,
-  bondCharacterLabel,
-  language
+  bondCharacterLabel
 }) => {
   const { t } = useLanguage('periodicTable');
   return React.createElement('div', { style: summaryStyle },
@@ -168,7 +166,7 @@ export const GeometrySummary: React.FC<GeometrySummaryProps> = ({
           geometryLabel
         ),
         React.createElement('div', { style: { color: 'var(--text-secondary)' } },
-          `${vsepr.bondPairs} liantes, ${vsepr.lonePairs} non-liantes`
+          `${vsepr.stericNumber - vsepr.lonePairs} liantes, ${vsepr.lonePairs} non-liantes`
         )
       )
     ),
@@ -191,13 +189,7 @@ const metric = (label: string, value: React.ReactNode, color: string) => {
   );
 };
 
-const metricLine = (label: string, value: React.ReactNode, color: string) => {
-  return React.createElement(React.Fragment, { key: label },
-    React.createElement('span', { style: { color: 'var(--text-muted)' } }, `${label}: `),
-    React.createElement('span', { style: { color, fontWeight: 'bold' } }, value),
-    React.createElement('br')
-  );
-};
+
 
 const canvasPanel = (title: string, canvasRef: CanvasRef, ariaLabel: string) => {
   return React.createElement('div', { className: 'glass-panel', key: title, style: canvasPanelStyle },

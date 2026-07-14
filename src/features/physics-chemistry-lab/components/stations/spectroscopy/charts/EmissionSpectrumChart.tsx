@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import type { EmissionElement } from '../types/spectroscopy.types';
 import { ScientificPanel } from '../../../../../../components/shared/ScientificPanel';
 import { wavelengthToRgbHex } from '../services/photonCalculator.service';
-import { useLanguage } from '../../../../../../../hooks/useLanguage';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 interface EmissionSpectrumChartProps {
   element: EmissionElement;

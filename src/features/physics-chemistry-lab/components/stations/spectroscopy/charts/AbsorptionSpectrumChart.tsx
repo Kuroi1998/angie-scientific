@@ -3,7 +3,7 @@ import type { AbsorptionMolecule } from '../types/spectroscopy.types';
 import { ScientificPanel } from '../../../../../../components/shared/ScientificPanel';
 import { resolveCssColor } from '../../../../../../utils/resolveCssColor';
 import { resolveCssFont } from '../../../../../../utils/resolveCssFont';
-import { useLanguage } from '../../../../../../../hooks/useLanguage';
+import { useLanguage } from '../../../../../../hooks/useLanguage';
 
 interface AbsorptionSpectrumChartProps {
   molecule: AbsorptionMolecule;
@@ -121,7 +121,7 @@ export const AbsorptionSpectrumChart: React.FC<AbsorptionSpectrumChartProps> = (
       ctx.setLineDash([]);
     }
 
-  }, [molecule, hoveredWavenumber]);
+  }, [molecule, hoveredWavenumber, t]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
