@@ -1,0 +1,51 @@
+name: Feature request
+description: Suggest a scientific, UX or technical improvement.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What learner or maintainer need does this address?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe the expected behavior.
+    validations:
+      required: true
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      options:
+        - Dashboard
+        - Periodic table
+        - Fusion simulator
+        - Quantum visualizer
+        - Physics-chemistry lab
+        - Virtual lab
+        - Quiz or quests
+        - Profile or settings
+        - Angie Mascot
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Scientific and UX impact
+      description: Explain the learning value and interface impact.
+  - type: checkboxes
+    id: compatibility
+    attributes:
+      label: Compatibility checklist
+      options:
+        - label: French and Spanish copy should be considered.
+        - label: Light and dark themes should be considered.
+        - label: Keyboard and reduced-motion behavior should be considered.

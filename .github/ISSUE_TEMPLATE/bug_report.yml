@@ -1,0 +1,67 @@
+name: Bug report
+description: Report a reproducible Angie Scientific problem.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open...
+        2. Click...
+        3. See...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      options:
+        - Dashboard
+        - Periodic table
+        - Fusion simulator
+        - Quantum visualizer
+        - Physics-chemistry lab
+        - Virtual lab
+        - Quiz or quests
+        - Profile or settings
+        - Angie Mascot
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: Chrome 126 on Windows 11
+  - type: input
+    id: theme
+    attributes:
+      label: Theme and language
+      placeholder: dark, French
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console logs or screenshots
+      description: Do not paste secrets or private data.
