@@ -44,8 +44,8 @@ describe('QuizMode', () => {
     await user.click(answers[0]);
     await user.click(screen.getByRole('button', { name: /Valider/i }));
 
-    expect(screen.getByText(/Bonne reponse|Mauvaise reponse/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Continuer/i })).toBeInTheDocument();
+    expect(screen.getByText(/Bonne réponse|Mauvaise réponse/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Suivant/i })).toBeInTheDocument();
   });
 
   it('opens the riddle mode from the mode selection screen', async () => {

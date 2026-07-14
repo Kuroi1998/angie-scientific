@@ -94,9 +94,9 @@ describe('UserCenter', () => {
     const user = userEvent.setup();
     renderCenter();
 
-    await user.click(screen.getByRole('tab', { name: /Themes/i }));
+    await user.click(screen.getByRole('tab', { name: /Thèmes/i }));
     const highContrastCard = screen.getByText('Contraste Renforcé').closest('article')!;
-    await user.click(within(highContrastCard).getByRole('button', { name: /Equiper/i }));
+    await user.click(within(highContrastCard).getByRole('button', { name: /Équiper/i }));
 
     expect(themeState.setTheme).toHaveBeenCalledWith('high-contrast');
   });

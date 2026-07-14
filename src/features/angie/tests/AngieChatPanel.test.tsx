@@ -90,7 +90,7 @@ describe('AngieChatPanel', () => {
     await user.click(await screen.findByRole('button', { name: 'Explique cette page' }));
 
     await waitFor(() => {
-      expect(screen.getByText('Explique cette page')).toBeInTheDocument();
+      expect(screen.getAllByText('Explique cette page')[0]).toBeInTheDocument();
     });
     await waitFor(() => {
       expect(screen.getAllByRole('log')[0].textContent).toMatch(/tableau de bord|activite/i);

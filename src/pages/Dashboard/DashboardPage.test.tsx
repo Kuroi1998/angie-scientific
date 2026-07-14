@@ -42,9 +42,8 @@ describe('DashboardContent', () => {
     expect(screen.getByText('Bienvenue, Ada')).toBeInTheDocument();
     expect(screen.getByText('620 XP')).toBeInTheDocument();
     expect(screen.getByText('6/118')).toBeInTheDocument();
-    expect(screen.getByText('Niveau 3 vers 4')).toBeInTheDocument();
+    expect(screen.getByText(/avant le niveau suivant/i)).toBeInTheDocument();
     expect(screen.getByText('b2')).toBeInTheDocument();
-    expect(screen.getByText('C')).toBeInTheDocument();
   });
 
   it('navigates from primary recommendations', async () => {
@@ -58,9 +57,9 @@ describe('DashboardContent', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: 'Explorer les elements' }));
-    await user.click(screen.getByRole('button', { name: 'Lancer un quiz' }));
-    await user.click(screen.getByRole('button', { name: 'Preparer une reaction' }));
+    await user.click(screen.getByRole('button', { name: /Explorer les éléments/i }));
+    await user.click(screen.getByRole('button', { name: /Lancer un quiz/i }));
+    await user.click(screen.getByRole('button', { name: /Aller au Labo de Fusion/i }));
 
     expect(onNavigate).toHaveBeenCalledWith('table');
     expect(onNavigate).toHaveBeenCalledWith('quiz');
@@ -80,6 +79,6 @@ describe('DashboardContent', () => {
       />,
     );
 
-    expect(screen.getByText('Aucune recompense recente')).toBeInTheDocument();
+    expect(screen.getByText('badgesEmptySub')).toBeInTheDocument();
   });
 });

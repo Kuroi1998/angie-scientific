@@ -4,28 +4,36 @@
   "subtitle": "Pilote tes découvertes, choisis ton prochain module et laisse Angie garder le cap pédagogique.",
   "explore": "Explorer les éléments",
   "quiz": "Lancer un quiz",
+  "go": "Aller",
   "stats": {
     "level": "Niveau",
     "xp": "Expérience",
     "elements": "Éléments",
-    "badges": "Badges"
+    "badges": "Badges",
+    "quests": "Quêtes"
   },
-  "progress": "Progression générale",
-  "badgesTitle": "Derniers badges obtenus",
-  "badgesEmpty": "Complétez des quêtes pour obtenir vos premiers badges.",
-  "discoveriesTitle": "Découvertes récentes",
-  "discoveriesEmpty": "Explorez le tableau pour découvrir de nouveaux éléments.",
-  "nextTitle": "Prochains objectifs conseillés",
-  "objectiveTypes": {
-    "module": "Module",
-    "quiz": "Quiz",
-    "theory": "Théorie"
+  "nextLevel": "Encore {{xp}} XP avant le niveau suivant.",
+  "recommendation": "Recommandation d'Angie",
+  "recommendationBody": "Tu as fait de belles découvertes ! Pourquoi ne pas essayer de combiner certains éléments pour voir ce qu'il se passe ?",
+  "recommendationAction": "Aller au Labo de Fusion",
+  "actionsTitle": "Laboratoires",
+  "actionsSubtitle": "Où souhaites-tu te rendre ?",
+  "actions": {
+    "table": {
+      "title": "Tableau Périodique",
+      "body": "Explore les 118 éléments, leurs propriétés et leurs structures.",
+      "label": "Explorer les éléments"
+    },
+    "quiz": {
+      "title": "Académie des Sciences",
+      "body": "Teste tes connaissances et accomplis des quêtes.",
+      "label": "Lancer un quiz"
+    },
+    "fusion": {
+      "title": "Laboratoire de Fusion",
+      "body": "Découvre les molécules en combinant des atomes.",
+      "label": "Préparer une réaction"
+    }
   },
-  "objectiveLevels": {
-    "beginner": "Débutant",
-    "intermediate": "Intermédiaire",
-    "advanced": "Avancé",
-    "expert": "Expert"
-  },
-  "go": "Aller"
+  "emptyState": "Aucune récompense récente"
 }
