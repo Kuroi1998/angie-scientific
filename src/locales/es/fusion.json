@@ -1,0 +1,87 @@
+{
+  "core": {
+    "localSim": "Simulación local",
+    "stationEyebrow": "Puesto de síntesis",
+    "stationTitle": "Simulador de fusión",
+    "stationSubtitle": "Seleccione dos reactivos, prepare la cámara, luego analice el resultado termodinámico.",
+    "metrics": {
+      "reactants": "Reactivos",
+      "state": "Estado",
+      "stateStable": "Estable",
+      "stateUnstable": "Inestable",
+      "stateReady": "Listo",
+      "product": "Producto"
+    },
+    "selectionEyebrow": "Selección",
+    "selectionTitle": "Elementos disponibles",
+    "safetyEyebrow": "Seguridad",
+    "safetyTitle": "Control de protocolo",
+    "safetyList": [
+      "Verificar que los reactivos no sean idénticos.",
+      "Aislar las síntesis explosivas en la cámara.",
+      "Comparar ΔH, ΔS y ΔG antes de continuar."
+    ],
+    "prepEyebrow": "Preparación",
+    "prepTitle": "Cámara de reacción",
+    "clearBtn": "Borrar",
+    "resultEyebrow": "Resultado",
+    "resultTitle": "Análisis de reacción",
+    "calcEyebrow": "Cálculo",
+    "calcTitle": "Estequiometría",
+    "previewEyebrow": "Vista previa",
+    "energyDiagram": "Diagrama de energía",
+    "nextActionTitle": "Siguiente acción",
+    "nextActionStable": "Documentar el rendimiento y comparar con una posible cascada.",
+    "nextActionUnstable": "Modificar los reactivos o las condiciones antes de continuar.",
+    "logAttemptBtn": "Registrar ensayo",
+    "unstableError": "Reacción inestable: protocolo de seguridad activado."
+  },
+  "selector": {
+    "ariaList": "Lista de elementos rápidos",
+    "manualEntry": "Entrada manual",
+    "manualPlaceholder": "Ej: Fe, Au, Pb...",
+    "addBtn": "Añadir"
+  },
+  "chamber": {
+    "title": "Cámara de confinamiento",
+    "instruction": "Inserte dos elementos para iniciar la secuencia.",
+    "removeReactant": "Retirar el reactivo",
+    "emptySlot": "espacio vacío",
+    "reactant1": "Reactivo 1",
+    "reactant2": "Reactivo 2",
+    "reset": "Reiniciar"
+  },
+  "telemetry": {
+    "noReactionTitle": "No se detectó reacción",
+    "noReactionDesc": "Seleccione dos reactivos compatibles para iniciar el análisis.",
+    "typeTitle": "Tipo",
+    "enthalpy": "Entalpía ΔH",
+    "entropy": "Entropía ΔS",
+    "gibbs": "Gibbs ΔG",
+    "spontaneous": "Reacción espontánea",
+    "monitor": "Reacción a vigilar",
+    "stableProduct": "Producto estable en las condiciones simuladas.",
+    "unstableProduct": "Producto no espontáneo o inestable en condiciones estándar.",
+    "angieNoteTitle": "Nota Angie",
+    "learningNote": "Esta síntesis muestra cómo la energía y la estructura impulsan el resultado.",
+    "stable": "Estable",
+    "unstable": "Inestable"
+  },
+  "stoichiometry": {
+    "ratioLocked": "Vinculado",
+    "ratioIndependent": "Independiente",
+    "ratioLabel": "Proporción estequiométrica",
+    "massInput": "{{symbol}} masa (g)",
+    "expMassInput": "Masa experimental (g)",
+    "molesOutput": "{{symbol}} moles",
+    "limitingReactant": "Reactivo limitante",
+    "theoreticalYield": "Rendimiento teórico",
+    "actualYield": "Rendimiento real",
+    "excessLeft": "Exceso restante",
+    "massLoss": "Pérdida de masa",
+    "cascadeTitle": "Reacción en cascada",
+    "cascadeDesc": "Usar el agua producida con sodio metálico.",
+    "initiateBtn": "Iniciar",
+    "resetCalcBtn": "Restablecer el cálculo"
+  }
+}

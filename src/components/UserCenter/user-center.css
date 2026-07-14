@@ -1,0 +1,123 @@
+.user-center {
+  display: grid;
+  gap: var(--as-space-5);
+  padding: var(--as-space-5);
+}
+
+.user-center-grid,
+.user-panel-grid,
+.user-stat-grid,
+.user-theme-grid,
+.user-album-grid {
+  display: grid;
+  gap: var(--as-space-4);
+}
+
+.user-center-grid {
+  grid-template-columns: minmax(260px, 0.8fr) minmax(320px, 1.2fr);
+}
+
+.user-panel-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.user-stat-grid,
+.user-theme-grid,
+.user-album-grid {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.user-id-card,
+.user-theme-card,
+.user-badge-card,
+.user-activity-card {
+  background: var(--as-surface-2);
+  border: 1px solid var(--as-border-soft);
+  border-radius: var(--as-radius-2);
+  display: grid;
+  gap: var(--as-space-3);
+  padding: var(--as-space-4);
+}
+
+.user-id-card strong,
+.user-stat-card strong {
+  color: var(--as-text-strong);
+  font: 700 var(--as-font-size-xl) / var(--as-line-tight) var(--as-font-display);
+}
+
+.user-action-row,
+.user-chip-list {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--as-space-2);
+}
+
+.user-muted {
+  color: var(--as-text-muted);
+  margin: 0;
+}
+
+.user-swatch {
+  background: var(--user-theme-color);
+  border-radius: var(--as-radius-round);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--user-theme-color) 18%, transparent);
+  height: 1.35rem;
+  width: 1.35rem;
+}
+
+.user-theme-card[data-active='true'],
+.user-badge-card[data-unlocked='true'] {
+  border-color: var(--as-accent-cyan);
+  box-shadow: var(--as-shadow-glow);
+}
+
+.user-modal-stack {
+  display: grid;
+  gap: var(--as-space-4);
+}
+
+@media (max-width: 820px) {
+  .user-center {
+    padding: var(--as-space-3);
+  }
+
+  .user-center-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .user-center {
+    gap: var(--as-space-4);
+  }
+
+  .user-panel-grid,
+  .user-stat-grid,
+  .user-theme-grid,
+  .user-album-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .user-action-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .user-action-row .as-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .user-center {
+    padding: var(--as-space-2);
+  }
+
+  .user-id-card,
+  .user-theme-card,
+  .user-badge-card,
+  .user-activity-card {
+    padding: var(--as-space-3);
+  }
+}

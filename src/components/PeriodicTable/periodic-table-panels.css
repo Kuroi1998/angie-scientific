@@ -1,0 +1,246 @@
+.pt-side-panel {
+  display: grid;
+  gap: var(--as-space-4);
+  padding: var(--as-space-4);
+}
+
+.pt-side-header {
+  align-items: center;
+  display: grid;
+  gap: var(--as-space-3);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.pt-side-symbol {
+  align-items: center;
+  background: color-mix(in srgb, var(--pt-category) 18%, var(--as-surface-1));
+  border: 1px solid var(--pt-category);
+  border-radius: var(--as-radius-2);
+  display: grid;
+  height: 4.5rem;
+  justify-items: center;
+  width: 4.5rem;
+}
+
+.pt-side-symbol strong {
+  color: var(--as-text-strong);
+  font-family: var(--as-font-display);
+  font-size: var(--as-font-size-xl);
+}
+
+.pt-side-symbol span,
+.pt-property-grid dt {
+  color: var(--as-text-muted);
+  font: 600 var(--as-font-size-xs) / 1.2 var(--as-font-mono);
+  text-transform: uppercase;
+}
+
+.pt-side-description {
+  color: var(--as-text-body);
+  margin: 0;
+}
+
+.pt-angie-note p {
+  /* Inherit the violet set on .pt-angie-note (matched to its own soft
+     background) instead of --as-text-body, which flips light in the
+     dark-family themes and clashes with this always-pale violet tint. */
+  margin: 0;
+}
+
+.pt-property-grid {
+  display: grid;
+  gap: var(--as-space-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pt-property-grid div {
+  background: var(--as-surface-2);
+  border-radius: var(--as-radius-2);
+  padding: var(--as-space-3);
+}
+
+.pt-property-grid dd {
+  color: var(--as-text-strong);
+  font-weight: 700;
+  margin: var(--as-space-1) 0 0;
+}
+
+.pt-meter-stack,
+.pt-side-actions {
+  display: grid;
+  gap: var(--as-space-3);
+}
+
+.pt-angie-note {
+  align-items: flex-start;
+  background: var(--as-accent-violet-soft);
+  border-radius: var(--as-radius-2);
+  /* --as-accent-violet-soft is an opaque light tint in every theme except
+     scientific-night (see override below), but --as-accent-violet itself
+     isn't dark enough against that light tint to clear 4.5:1 (measured
+     ~3.35:1) — darkened here only, so chart/border uses of the accent
+     elsewhere keep their normal vibrancy. */
+  color: #5a4bc4;
+  display: flex;
+  gap: var(--as-space-3);
+  padding: var(--as-space-3);
+}
+
+/* scientific-night overrides --as-accent-violet-soft to a translucent wash
+   over its dark surfaces instead of an opaque light tint, so it needs the
+   theme's own bright violet rather than the fixed dark one above. */
+[data-theme="scientific-night"] .pt-angie-note {
+  color: var(--as-accent-violet);
+}
+
+.pt-comparison article {
+  background: var(--as-surface-2);
+  border-radius: var(--as-radius-2);
+  display: grid;
+  gap: var(--as-space-1);
+  min-width: 8rem;
+  padding: var(--as-space-3);
+}
+
+.pt-status {
+  justify-content: flex-start;
+}
+
+.pt-status-online {
+  color: var(--as-success);
+}
+
+@media (max-width: 1180px) {
+  .pt-workspace,
+  .pt-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .pt-side-panel {
+    order: -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .pt-side-header {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .pt-side-header .as-icon-button {
+    justify-self: end;
+  }
+
+  .pt-side-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pt-side-actions .as-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .pt-header-meta,
+  .pt-toolbar-actions {
+    width: 100%;
+  }
+
+  .pt-toolbar-actions {
+    justify-content: space-between;
+  }
+
+  .pt-grid-shell {
+    min-height: 30rem;
+  }
+
+  .pt-zoom-controls {
+    grid-auto-flow: column;
+    grid-template-columns: repeat(3, 2.5rem);
+  }
+
+  .pt-zoom-canvas {
+    min-width: 50rem;
+  }
+
+  .pt-periodic-grid {
+    gap: 0.25rem;
+    grid-template-columns: repeat(18, minmax(2.35rem, 1fr));
+    padding: var(--as-space-4);
+    width: 50rem;
+  }
+
+  .pt-element-slot,
+  .pt-element-tile {
+    min-height: 3rem;
+  }
+}
+
+@media (max-width: 680px) {
+  .pt-page {
+    padding: var(--as-space-3);
+  }
+
+  .pt-header,
+  .pt-toolbar,
+  .pt-status,
+  .pt-comparison {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pt-periodic-grid {
+    padding: var(--as-space-4);
+  }
+
+  .pt-property-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pt-side-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .pt-comparison-list {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .pt-comparison article {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .pt-side-panel,
+  .pt-header,
+  .pt-toolbar,
+  .pt-status,
+  .pt-comparison {
+    padding: var(--as-space-3);
+  }
+
+  .pt-grid-shell {
+    min-height: 28rem;
+  }
+
+  .pt-zoom-canvas,
+  .pt-periodic-grid {
+    min-width: 48rem;
+    width: 48rem;
+  }
+
+  .pt-periodic-grid {
+    grid-template-columns: repeat(18, minmax(2.25rem, 1fr));
+    padding: var(--as-space-3);
+  }
+
+  .pt-element-name {
+    display: none;
+  }
+
+  .pt-side-symbol {
+    height: 3.6rem;
+    width: 3.6rem;
+  }
+}

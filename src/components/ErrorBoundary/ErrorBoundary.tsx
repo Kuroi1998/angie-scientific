@@ -78,7 +78,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           fontFamily: 'var(--font-title)',
           fontSize: '15px',
           letterSpacing: '1px',
-          color: '#fff',
+          color: 'var(--text-primary)',
           margin: 0
         }
       }, `UNE ERREUR EST SURVENUE — ${this.props.label.toUpperCase()}`),

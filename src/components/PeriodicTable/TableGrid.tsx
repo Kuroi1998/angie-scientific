@@ -1,607 +1,89 @@
-import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
-import { useLocalStorageState } from '../../hooks/useLocalStorageState';
-import elementsData from '../../engines/data/elements.json';
-import { Search, RotateCcw, Filter } from 'lucide-react';
-import { RiddleMinigame } from '../Gamification/RiddleMinigame';
 import { ZoomableContainer } from './ZoomableContainer';
+import { ElementTile } from './ElementTile';
+import {
+  getCategoryColor,
+  getElementName,
+  getGridPosition,
+} from './periodicTableModel';
+import type { ElementType, PeriodicMode } from './periodicTableTypes';
 
-const isStringArray = (raw: unknown): raw is string[] =>
-  Array.isArray(raw) && raw.every(item => typeof item === 'string');
+export type { ElementType } from './periodicTableTypes';
 
-export interface ElementType {
-  n: number;
-  s: string;
-  nameFR: string;
-  nameES: string;
-  cat: string;
-  mass: number;
-  en: number | null;
-  config: string;
-  shells: number[];
-  state: 'solid' | 'liquid' | 'gas' | 'synthetic';
-  density: number | null;
-  mp: number | null;
-  bp: number | null;
-  ar: number | null;
-  ir: number | null;
-  ie: number | null;
-  ea: number | null;
-  crystal: string;
-  ab: number | null;
-  usesFR: string;
-  usesES: string;
-  historyFR: string;
-  historyES: string;
-  descFR: string;
-  descES: string;
+export interface TableGridProps {
+  elements: ElementType[];
+  favoriteSymbols: string[];
+  matchesFilters: (element: ElementType) => boolean;
+  mode: PeriodicMode;
+  onSelectElement: (element: ElementType) => void;
+  selectedElement: ElementType | null;
+  setHoveredElement: (element: ElementType | null) => void;
+  setZoomLevel: (value: number | ((previous: number) => number)) => void;
+  zoomLevel: number;
 }
 
-interface TableGridProps {
-  onSelectElement: (el: ElementType) => void;
-  onAddToFusion?: (el: ElementType) => void;
-}
+export function TableGrid({
+  elements,
+  favoriteSymbols,
+  matchesFilters,
+  mode,
+  onSelectElement,
+  selectedElement,
+  setHoveredElement,
+  setZoomLevel,
+  zoomLevel,
+}: TableGridProps) {
+  const { language } = useLanguage();
 
-export const TableGrid: React.FC<TableGridProps> = ({ onSelectElement, onAddToFusion }) => {
-  const { language, t } = useLanguage();
-  const elements = elementsData as ElementType[];
-
-  // Search & Filter state
-  const [search, setSearch] = useState('');
-  const [suggestions, setSuggestions] = useState<ElementType[]>([]);
-  const [, setSearchHistory] = useLocalStorageState<string[]>(
-    'searchHistory',
-    [],
-    {
-      validate: isStringArray,
-      legacyKey: 'angie_sci_search_history',
-      parseLegacy: (raw) => {
-        try {
-          const parsed: unknown = JSON.parse(raw);
-          return isStringArray(parsed) ? parsed : undefined;
-        } catch {
-          return undefined;
-        }
-      },
-    }
-  );
-
-
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedState, setSelectedState] = useState<string>('all');
-  
-  // Advanced range filters
-  const [enRange, setEnRange] = useState<[number, number]>([0.7, 4.0]);
-  const [densityRange, setDensityRange] = useState<[number, number]>([0, 23]);
-  const [mpRange, setMpRange] = useState<[number, number]>([0, 4000]);
-
-  const [showFilters, setShowFilters] = useState(false);
-  const [hoveredElement, setHoveredElement] = useState<ElementType | null>(null);
-
-  // Autocomplete Suggestions
-  useEffect(() => {
-    if (!search.trim()) {
-      setSuggestions([]);
-      return;
-    }
-    const query = search.toLowerCase();
-    const filtered = elements.filter(el => {
-      const name = language === 'es' ? el.nameES : el.nameFR;
-      return el.s.toLowerCase().startsWith(query) || 
-             name.toLowerCase().includes(query) || 
-             el.n.toString() === query;
-    }).slice(0, 5);
-    setSuggestions(filtered);
-  }, [search, language, elements]);
-
-  const handleSearchSubmit = (queryStr: string) => {
-    if (!queryStr.trim()) return;
-    const cleanQuery = queryStr.trim();
-
-    // Add to history
-    setSearchHistory(prev => [cleanQuery, ...prev.filter(h => h !== cleanQuery)].slice(0, 5));
-
-    // Find exact match first (symbol, name, or atomic number)
-    const matched = elements.find(el => {
-      const name = language === 'es' ? el.nameES : el.nameFR;
-      return el.s.toLowerCase() === cleanQuery.toLowerCase() ||
-             name.toLowerCase() === cleanQuery.toLowerCase() ||
-             el.n.toString() === cleanQuery;
-    });
-
-    if (matched) {
-      onSelectElement(matched);
-      setSearch('');
-      setSuggestions([]);
-    } else {
-      // Fallback: open first partial match if available
-      const partialMatched = elements.find(el => {
-        const name = language === 'es' ? el.nameES : el.nameFR;
-        return el.s.toLowerCase().startsWith(cleanQuery.toLowerCase()) ||
-               name.toLowerCase().includes(cleanQuery.toLowerCase());
-      });
-      if (partialMatched) {
-        onSelectElement(partialMatched);
-        setSearch('');
-        setSuggestions([]);
-      }
-      // Otherwise: keep the search text to filter the grid
-    }
-  };
-
-
-  // Reset filters
-  const handleResetFilters = () => {
-    setSelectedCategory('all');
-    setSelectedState('all');
-    setEnRange([0.7, 4.0]);
-    setDensityRange([0, 23]);
-    setMpRange([0, 4000]);
-  };
-
-  // Check if element matches filters
-  const matchesFilters = (el: ElementType) => {
-    // Search filter
-    if (search.trim()) {
-      const query = search.toLowerCase();
-      const name = language === 'es' ? el.nameES : el.nameFR;
-      const matchSearch = el.s.toLowerCase().includes(query) || 
-                          name.toLowerCase().includes(query) || 
-                          el.n.toString() === query;
-      if (!matchSearch) return false;
-    }
-    // Category filter
-    if (selectedCategory !== 'all' && el.cat !== selectedCategory) return false;
-    // State filter
-    if (selectedState !== 'all' && el.state !== selectedState) return false;
-    // Electronegativity filter
-    if (el.en !== null) {
-      if (el.en < enRange[0] || el.en > enRange[1]) return false;
-    } else if (enRange[0] > 0.7) {
-      return false; // exclude if range is restricted
-    }
-    // Density filter
-    if (el.density !== null) {
-      if (el.density < densityRange[0] || el.density > densityRange[1]) return false;
-    } else if (densityRange[0] > 0) {
-      return false;
-    }
-    // Melting Point filter
-    if (el.mp !== null) {
-      if (el.mp < mpRange[0] || el.mp > mpRange[1]) return false;
-    } else if (mpRange[0] > 0) {
-      return false;
-    }
-
-    return true;
-  };
-
-  // Calculate standard grid layout position
-  const getGridPosition = (n: number) => {
-    if (n === 1) return { gridRow: 1, gridColumn: 1 };
-    if (n === 2) return { gridRow: 1, gridColumn: 18 };
-    if (n >= 3 && n <= 4) return { gridRow: 2, gridColumn: n - 2 };
-    if (n >= 5 && n <= 10) return { gridRow: 2, gridColumn: n + 8 };
-    if (n >= 11 && n <= 12) return { gridRow: 3, gridColumn: n - 10 };
-    if (n >= 13 && n <= 18) return { gridRow: 3, gridColumn: n };
-    if (n >= 19 && n <= 36) return { gridRow: 4, gridColumn: n - 18 };
-    if (n >= 37 && n <= 54) return { gridRow: 5, gridColumn: n - 36 };
-    
-    // Period 6 (includes Lanthanides split)
-    if (n >= 55 && n <= 56) return { gridRow: 6, gridColumn: n - 54 };
-    if (n === 57) return { gridRow: 6, gridColumn: 3 }; // placeholder cell
-    if (n >= 58 && n <= 71) return { gridRow: 9, gridColumn: n - 58 + 4 }; // Lanthanide row
-    if (n >= 72 && n <= 86) return { gridRow: 6, gridColumn: n - 72 + 4 };
-    
-    // Period 7 (includes Actinides split)
-    if (n >= 87 && n <= 88) return { gridRow: 7, gridColumn: n - 86 };
-    if (n === 89) return { gridRow: 7, gridColumn: 3 }; // placeholder cell
-    if (n >= 90 && n <= 103) return { gridRow: 10, gridColumn: n - 90 + 4 }; // Actinide row
-    if (n >= 104 && n <= 118) return { gridRow: 7, gridColumn: n - 104 + 4 };
-    
-    return {};
-  };
-
-  const categories = [
-    { id: 'alkali-metal', label: t('legend.alkali'), color: 'var(--cat-alkali)' },
-    { id: 'alkaline-earth', label: t('legend.alkaline'), color: 'var(--cat-alkaline)' },
-    { id: 'transition-metal', label: t('legend.transition'), color: 'var(--cat-transition)' },
-    { id: 'lanthanide', label: t('legend.lanthanide'), color: 'var(--cat-lanthanide)' },
-    { id: 'actinide', label: t('legend.actinide'), color: 'var(--cat-actinide)' },
-    { id: 'post-transition-metal', label: t('legend.post'), color: 'var(--cat-post-transition)' },
-    { id: 'metalloid', label: t('legend.metalloid'), color: 'var(--cat-metalloid)' },
-    { id: 'reactive-nonmetal', label: t('legend.nonmetal'), color: 'var(--cat-nonmetal)' },
-    { id: 'noble-gas', label: t('legend.noble'), color: 'var(--cat-noble)' },
-    { id: 'unknown', label: t('legend.unknown'), color: 'var(--cat-unknown)' }
-  ];
-
-  return React.createElement('div', { className: 'table-container animate-fade-in' },
-    // Riddle Minigame
-    React.createElement(RiddleMinigame, null),
-    
-    // Header Toolbar
-    React.createElement('div', { className: 'toolbar glass-panel', style: { padding: '16px', marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center', justifyContent: 'space-between' } },
-      // Search Box
-      React.createElement('div', { style: { position: 'relative', flex: '1', minWidth: '280px' } },
-        React.createElement('div', { style: { display: 'flex', gap: '8px' } },
-          React.createElement('div', { style: { position: 'relative', flex: '1', minWidth: 0 } },
-            React.createElement('input', {
-              type: 'text',
-              value: search,
-              onChange: (e) => setSearch(e.target.value),
-              onKeyDown: (e) => e.key === 'Enter' && handleSearchSubmit(search),
-              placeholder: t('search.placeholder'),
-              style: {
-                width: '100%',
-                padding: '10px 12px 10px 36px',
-                background: 'rgba(5, 5, 10, 0.6)',
-                border: '1px solid var(--glass-border)',
-                borderRadius: '4px',
-                color: '#fff',
-                fontFamily: 'var(--font-body)',
-                outline: 'none',
-              }
-            }),
-            React.createElement(Search, { size: 16, style: { position: 'absolute', left: '12px', top: '12px', color: 'var(--text-secondary)' } })
-          ),
-          React.createElement('button', {
-            onClick: () => setShowFilters(!showFilters),
-            className: 'btn btn-outline hover-lift',
-            style: { background: showFilters ? 'rgba(0, 243, 255, 0.15)' : undefined }
-          },
-            React.createElement(Filter, { size: 14 }),
-            "FILTERS"
-          )
-        ),
-        // Autocomplete suggestions
-        suggestions.length > 0 && React.createElement('div', {
-          style: {
-            position: 'absolute',
-            top: '46px',
-            left: '0',
-            width: '100%',
-            background: 'var(--bg-secondary)',
-            border: '1px solid var(--neon-cyan)',
-            borderRadius: '4px',
-            zIndex: '100',
-            boxShadow: 'var(--glow-cyan)',
-            overflow: 'hidden'
-          }
-        },
-          suggestions.map(el => React.createElement('button', {
-            key: el.n,
-            type: 'button',
-            onClick: () => {
-              onSelectElement(el);
-              setSearch('');
-              setSuggestions([]);
-            },
-            style: {
-              width: '100%',
-              padding: '10px 16px',
-              cursor: 'pointer',
-              border: 'none',
-              borderBottom: '1px solid rgba(0, 243, 255, 0.1)',
-              background: 'transparent',
-              color: 'inherit',
-              font: 'inherit',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              transition: 'background 0.2s'
-            },
-            className: 'suggestion-item'
-          },
-            React.createElement('span', { style: { fontFamily: 'var(--font-title)', fontWeight: 'bold' } },
-              React.createElement('span', { style: { color: 'var(--neon-cyan)', marginRight: '8px' } }, `${el.n}.`),
-              React.createElement('span', null, language === 'es' ? el.nameES : el.nameFR)
-            ),
-            React.createElement('span', { style: { fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' } }, el.s)
-          ))
-        )
-      ),
-
-      // Hover element quick details readout (telemetry style)
-      React.createElement('div', {
-        style: {
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '24px',
-          alignItems: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '13px',
-          color: 'var(--neon-cyan)',
-          minWidth: '220px',
-          maxWidth: '100%',
-          background: 'rgba(0, 243, 255, 0.03)',
-          borderLeft: '2px solid var(--neon-cyan)',
-          padding: '8px 16px',
-          borderRadius: '0 4px 4px 0'
-        }
-      },
-        hoveredElement ? [
-          React.createElement('div', { key: 'num', style: { display: 'flex', flexDirection: 'column' } },
-            React.createElement('span', { style: { fontSize: '10px', color: 'var(--text-secondary)' } }, "NUM"),
-            React.createElement('span', { style: { fontSize: '16px', fontWeight: 'bold' } }, hoveredElement.n)
-          ),
-          React.createElement('div', { key: 'sym', style: { display: 'flex', flexDirection: 'column' } },
-            React.createElement('span', { style: { fontSize: '10px', color: 'var(--text-secondary)' } }, "SYM"),
-            React.createElement('span', { style: { fontSize: '16px', fontWeight: 'bold', color: '#fff' } }, hoveredElement.s)
-          ),
-          React.createElement('div', { key: 'name', style: { display: 'flex', flexDirection: 'column' } },
-            React.createElement('span', { style: { fontSize: '10px', color: 'var(--text-secondary)' } }, "NAME"),
-            React.createElement('span', null, language === 'es' ? hoveredElement.nameES : hoveredElement.nameFR)
-          ),
-          React.createElement('div', { key: 'mass', style: { display: 'flex', flexDirection: 'column' } },
-            React.createElement('span', { style: { fontSize: '10px', color: 'var(--text-secondary)' } }, "MASS"),
-            React.createElement('span', null, `${hoveredElement.mass} u`)
-          )
-        ] : React.createElement('span', { style: { color: 'var(--text-secondary)', fontStyle: 'italic' } }, "TELEMETRY OFFLINE: HOVER AN ELEMENT")
-      )
-    ),
-
-    // Advanced Filters Panel
-    showFilters && React.createElement('div', { className: 'glass-panel animate-fade-in', style: { padding: '20px', marginBottom: '20px', border: '1px solid var(--neon-magenta)' } },
-      React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' } },
-        // Category Select
-        React.createElement('div', null,
-          React.createElement('label', { style: { display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px', fontFamily: 'var(--font-title)' } }, t('filter.category')),
-          React.createElement('select', {
-            value: selectedCategory,
-            onChange: (e) => setSelectedCategory((e.target as HTMLSelectElement).value),
-            style: {
-              width: '100%',
-              padding: '8px',
-              background: 'var(--bg-tertiary)',
-              border: '1px solid var(--glass-border)',
-              borderRadius: '4px',
-              color: '#fff',
-              outline: 'none'
-            }
-          },
-            React.createElement('option', { value: 'all' }, "ALL CATEGORIES"),
-            categories.map(c => React.createElement('option', { key: c.id, value: c.id }, c.label.toUpperCase()))
-          )
-        ),
-        // State Select
-        React.createElement('div', null,
-          React.createElement('label', { style: { display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px', fontFamily: 'var(--font-title)' } }, t('filter.state')),
-          React.createElement('select', {
-            value: selectedState,
-            onChange: (e) => setSelectedState((e.target as HTMLSelectElement).value),
-            style: {
-              width: '100%',
-              padding: '8px',
-              background: 'var(--bg-tertiary)',
-              border: '1px solid var(--glass-border)',
-              borderRadius: '4px',
-              color: '#fff',
-              outline: 'none'
-            }
-          },
-            React.createElement('option', { value: 'all' }, "ALL STATES"),
-            React.createElement('option', { value: 'solid' }, t('filter.state.solid').toUpperCase()),
-            React.createElement('option', { value: 'liquid' }, t('filter.state.liquid').toUpperCase()),
-            React.createElement('option', { value: 'gas' }, t('filter.state.gas').toUpperCase()),
-            React.createElement('option', { value: 'synthetic' }, t('filter.state.synthetic').toUpperCase())
-          )
-        ),
-        // Electronegativity Slider
-        React.createElement('div', null,
-          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px', fontFamily: 'var(--font-title)' } },
-            React.createElement('span', null, t('filter.electronegativity')),
-            React.createElement('span', { style: { color: 'var(--neon-cyan)', fontFamily: 'var(--font-mono)' } }, `${enRange[0].toFixed(1)} - ${enRange[1].toFixed(1)}`)
-          ),
-          React.createElement('input', {
-            type: 'range',
-            min: 0.7,
-            max: 4.0,
-            step: 0.1,
-            value: enRange[1],
-            onChange: (e) => setEnRange([enRange[0], parseFloat(e.target.value)]),
-            style: { width: '100%', accentColor: 'var(--neon-cyan)' }
-          })
-        ),
-        // Melting Point Slider
-        React.createElement('div', null,
-          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px', fontFamily: 'var(--font-title)' } },
-            React.createElement('span', null, t('filter.melting')),
-            React.createElement('span', { style: { color: 'var(--neon-cyan)', fontFamily: 'var(--font-mono)' } }, `${mpRange[0]}K - ${mpRange[1]}K`)
-          ),
-          React.createElement('input', {
-            type: 'range',
-            min: 0,
-            max: 4000,
-            step: 50,
-            value: mpRange[1],
-            onChange: (e) => setMpRange([mpRange[0], parseInt(e.target.value)]),
-            style: { width: '100%', accentColor: 'var(--neon-cyan)' }
-          })
-        )
-      ),
-      // Reset Button
-      React.createElement('div', { style: { marginTop: '16px', display: 'flex', justifyContent: 'flex-end' } },
-        React.createElement('button', {
-          onClick: handleResetFilters,
-          className: 'btn btn-danger-ghost hover-lift'
-        },
-          React.createElement(RotateCcw, { size: 12 }),
-          t('filter.reset').toUpperCase()
-        )
-      )
-    ),
-
-    // Grid Layout Area. Wrapped in ZoomableContainer for pinch-to-zoom and pan.
-    React.createElement('div', {
-      style: {
-        height: '65vh', // provide a constrained height for the zoom container
-        minHeight: '400px',
-        width: '100%',
-        position: 'relative',
-        borderRadius: '8px',
-        border: '1px solid var(--glass-border)',
-        background: 'rgba(5, 5, 10, 0.3)',
-        boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.5)'
-      }
-    },
-      React.createElement(ZoomableContainer, null,
-        React.createElement('div', {
-          className: 'periodic-grid-scroll',
-          style: {
-            display: 'grid',
-            gridTemplateColumns: 'repeat(18, minmax(45px, 1fr))',
-            gap: '6px',
-            padding: '24px' // padding inside zoom area
-          }
-        },
-          elements.map(el => {
-            const active = matchesFilters(el);
-            const gridPos = getGridPosition(el.n);
-            const catObj = categories.find(c => c.id === el.cat);
-            const catColor = catObj ? catObj.color : 'var(--cat-unknown)';
-
-            return React.createElement('div', {
-              key: el.n,
-              style: { ...gridPos, position: 'relative' },
-              className: 'element-cell-wrapper',
-              onMouseEnter: () => active && setHoveredElement(el),
-              onMouseLeave: () => active && setHoveredElement(null),
-              onFocus: () => active && setHoveredElement(el),
-              onBlur: (e) => {
-                if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                  if (active) setHoveredElement(null);
-                }
-              }
-            },
-              React.createElement('button', {
-                type: 'button',
-                disabled: !active,
-                'aria-label': `${el.n} — ${language === 'es' ? el.nameES : el.nameFR} (${el.s})`,
-                className: `element-cell ${active ? 'active' : ''}`,
-                style: {
-                  '--cell-color': catColor,
-                  '--cell-opacity': active ? 1 : 0.2,
-                  '--cell-zindex': hoveredElement?.n === el.n ? 10 : 1
-                } as React.CSSProperties,
-                onClick: () => active && onSelectElement(el)
-              },
-                React.createElement('span', { className: 'element-cell-num' }, el.n),
-                React.createElement('span', { className: 'element-cell-sym' }, el.s),
-                React.createElement('span', { className: 'element-cell-mass' }, el.mass.toFixed(2))
-              ),
-
-              active && hoveredElement?.n === el.n && onAddToFusion && React.createElement('button', {
-                type: 'button',
-                title: t('fusion.add'),
-                'aria-label': `${t('fusion.add')}: ${el.s}`,
-                onClick: (e) => {
-                  e.stopPropagation();
-                  onAddToFusion(el);
-                },
-                style: {
-                  position: 'absolute',
-                  top: '1px',
-                  right: '1px',
-                  width: '16px',
-                  height: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'var(--neon-magenta)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '50%',
-                  cursor: 'pointer',
-                  fontSize: '10px',
-                  fontWeight: 'bold',
-                  boxShadow: 'var(--glow-magenta)',
-                  zIndex: 11
-                }
-              }, "+")
+  return (
+    <div className="pt-grid-shell">
+      <ZoomableContainer scale={zoomLevel} onScaleChange={setZoomLevel}>
+        <div className="pt-periodic-grid" aria-label="Tableau periodique">
+          {elements.map((element) => {
+            const active = matchesFilters(element);
+            const name = getElementName(element, language);
+            return (
+              <ElementTile
+                categoryColor={getCategoryColor(element.cat)}
+                element={element}
+                gridPosition={getGridPosition(element.n)}
+                isActive={active}
+                isFavorite={favoriteSymbols.includes(element.s)}
+                isQuizMode={mode === 'quiz'}
+                isSelected={selectedElement?.n === element.n}
+                key={element.n}
+                name={name}
+                onBlur={() => active && setHoveredElement(null)}
+                onClick={() => active && onSelectElement(element)}
+                onFocus={() => active && setHoveredElement(element)}
+                onMouseEnter={() => active && setHoveredElement(element)}
+                onMouseLeave={() => active && setHoveredElement(null)}
+              />
             );
-          }),
-
-          React.createElement('div', {
-            key: 'la-placeholder',
-            style: {
-              gridRow: 6,
-              gridColumn: 3,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '1px dashed var(--text-muted)',
-              borderRadius: '4px',
-              background: 'rgba(255,255,255,0.02)',
-              fontSize: '9px',
-              fontFamily: 'var(--font-title)',
-              color: 'var(--text-secondary)',
-              textAlign: 'center'
-            }
-          }, "57-71"),
-          React.createElement('div', {
-            key: 'ac-placeholder',
-            style: {
-              gridRow: 7,
-              gridColumn: 3,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '1px dashed var(--text-muted)',
-              borderRadius: '4px',
-              background: 'rgba(255,255,255,0.02)',
-              fontSize: '9px',
-              fontFamily: 'var(--font-title)',
-              color: 'var(--text-secondary)',
-              textAlign: 'center'
-            }
-          }, "89-103")
-        )
-      )
-    ),
-
-    // Grid Category Legend
-    React.createElement('div', {
-      style: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '12px',
-        marginTop: '20px',
-        padding: '12px',
-        border: '1px solid var(--glass-border)',
-        borderRadius: '4px',
-        background: 'rgba(10, 10, 15, 0.5)'
-      }
-    },
-      categories.map(cat => React.createElement('button', {
-        key: cat.id,
-        type: 'button',
-        'aria-pressed': selectedCategory === cat.id,
-        style: {
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          fontSize: '11px',
-          fontFamily: 'var(--font-title)',
-          cursor: 'pointer',
-          opacity: selectedCategory === 'all' || selectedCategory === cat.id ? 1 : 0.4,
-          background: 'transparent',
-          border: 'none',
-          padding: 0,
-          color: 'inherit'
-        },
-        onClick: () => setSelectedCategory(selectedCategory === cat.id ? 'all' : cat.id)
-      },
-        React.createElement('div', {
-          style: {
-            width: '12px',
-            height: '12px',
-            borderRadius: '2px',
-            background: cat.color,
-            boxShadow: `0 0 6px ${cat.color}`
-          }
-        }),
-        React.createElement('span', { style: { color: selectedCategory === cat.id ? 'var(--neon-cyan)' : '#fff' } }, cat.label)
-      ))
-    )
+          })}
+          <SeriesPlaceholder column={3} row={6} label="57-71" />
+          <SeriesPlaceholder column={3} row={7} label="89-103" />
+        </div>
+      </ZoomableContainer>
+    </div>
   );
-};
+}
+
+function SeriesPlaceholder({
+  column,
+  label,
+  row,
+}: {
+  column: number;
+  label: string;
+  row: number;
+}) {
+  return (
+    <div
+      className="pt-series-placeholder"
+      style={{ gridColumn: column, gridRow: row }}
+    >
+      {label}
+    </div>
+  );
+}

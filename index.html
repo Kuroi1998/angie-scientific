@@ -6,8 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0a0a0f" />
     <link rel="apple-touch-icon" href="/pwa-192x192.png" />
-    <title>ANGIE Scientific — Tableau Périodique Interactif FR/ES</title>
-    <meta name="description" content="Application web interactive bilingue (FR/ES) du tableau périodique des éléments. Simulation chimique, VSEPR, Chimie Quantique, Labo Virtuel." />
+    <title>ANGIE Scientific - Tableau Periodique Interactif FR/ES</title>
+    <meta
+      name="description"
+      content="Application web interactive bilingue (FR/ES) pour explorer le tableau periodique, les simulations chimiques, VSEPR, la chimie quantique et les laboratoires virtuels."
+    />
+    <script>
+      (function() {
+        try {
+          var lang = localStorage.getItem('i18nextLng') || localStorage.getItem('language');
+          if (lang && lang.startsWith('es')) {
+            document.documentElement.lang = 'es';
+          } else {
+            document.documentElement.lang = 'fr';
+          }
+        } catch {
+          document.documentElement.lang = 'fr';
+        }
+      })();
+    </script>
+    <script>
+      (function() {
+        try {
+          var storedTheme = localStorage.getItem('angie-scientific-theme');
+          var theme = storedTheme || 'system';
+          if (theme === 'system') {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch {}
+      })();
+    </script>
     <style>
       body { margin: 0; background: #08090d; }
       #root-loader {
@@ -37,11 +66,10 @@
     <div id="root-loader">
       <div class="spinner"></div>
       <span>ANGIE SCIENTIFIC</span>
-      <span style="font-size:9px;opacity:0.5;letter-spacing:2px">INITIALISATION DU SYSTÈME...</span>
+      <span style="font-size:9px;opacity:0.5;letter-spacing:2px">INITIALISATION DU SYSTEME...</span>
     </div>
     <div id="root"></div>
     <script>
-      // Hide the loader once React mounts
       const observer = new MutationObserver(() => {
         if (document.getElementById('root').childElementCount > 0) {
           const loader = document.getElementById('root-loader');

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { setUserId } from '../api/progress';
 import { useLanguage } from '../hooks/useLanguage';
 import { UserCircle } from 'lucide-react';
+import { Button } from '../design-system';
 
 export const LoginScreen: React.FC = () => {
   const [username, setUsername] = useState('');
-  const { language } = useLanguage();
+  const { t } = useLanguage();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +23,7 @@ export const LoginScreen: React.FC = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'var(--bg-primary)',
+      background: 'var(--as-bg-space)',
       padding: '20px'
     }}>
       <div className="glass-panel" style={{
@@ -30,27 +31,23 @@ export const LoginScreen: React.FC = () => {
         maxWidth: '400px',
         width: '100%',
         textAlign: 'center',
-        background: 'var(--bg-secondary)',
-        border: '1px solid var(--neon-cyan)',
-        boxShadow: '0 0 20px rgba(0, 243, 255, 0.2)',
-        borderRadius: '12px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-          <UserCircle size={64} style={{ color: 'var(--neon-cyan)' }} aria-hidden="true" />
+          <UserCircle size={64} style={{ color: 'var(--as-accent-cyan)' }} aria-hidden="true" />
         </div>
         <h1 style={{
-          fontFamily: 'var(--font-title)',
-          color: '#fff',
+          fontFamily: 'var(--as-font-display)',
+          color: 'var(--as-text-primary)',
           fontSize: '24px',
           marginBottom: '8px'
         }}>ANGIE SCIENTIFIC</h1>
         <p style={{
-          color: 'var(--text-secondary)',
-          fontFamily: 'var(--font-mono)',
+          color: 'var(--as-text-secondary)',
+          fontFamily: 'var(--as-font-mono)',
           fontSize: '12px',
           marginBottom: '32px'
         }}>
-          {language === 'fr' ? "Identifie-toi pour sauvegarder tes découvertes." : "Identifícate para guardar tus descubrimientos."}
+          {t('login.subtitle', { ns: 'auth' })}
         </p>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -58,27 +55,17 @@ export const LoginScreen: React.FC = () => {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder={language === 'fr' ? "Ton pseudo (3 lettres min)" : "Tu apodo (mínimo 3 letras)"}
-            aria-label={language === 'fr' ? "Ton pseudo" : "Tu apodo"}
-            style={{
-              padding: '12px 16px',
-              background: 'rgba(0, 0, 0, 0.4)',
-              border: '1px solid var(--glass-border)',
-              borderRadius: '6px',
-              color: '#fff',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '14px',
-              outline: 'none'
-            }}
+            placeholder={t('login.placeholder', { ns: 'auth' })}
+            aria-label={t('login.ariaLabel', { ns: 'auth' })}
+            className="as-input"
           />
-          <button
+          <Button
             type="submit"
             disabled={username.trim().length < 3}
-            className="btn btn-primary hover-lift"
             style={{ width: '100%', marginTop: '8px' }}
           >
-            {language === 'fr' ? "COMMENCER L'EXPÉRIENCE" : "COMENZAR LA EXPERIENCIA"}
-          </button>
+            {t('login.submit', { ns: 'auth' })}
+          </Button>
         </form>
       </div>
     </main>

@@ -1,20 +1,7 @@
-import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
-import { useUserProgress } from '../UserProgressProvider';
+import React, { useState, useCallback, useRef } from 'react';
+import { useUserProgress } from '../useUserProgress';
 import { AudioManager } from '../../services/Audio/AudioManager';
-
-type Emotion = 'neutral' | 'happy' | 'impressed' | 'thinking' | 'encouraging' | 'surprised' | 'worried';
-
-interface MascotContextType {
-  emotion: Emotion;
-  currentMessage: string | null;
-  isVisible: boolean;
-  setEmotion: (emotion: Emotion) => void;
-  showMessage: (msg: string, durationMs?: number, emotion?: Emotion) => void;
-  hideMessage: () => void;
-  toggleVisibility: () => void;
-}
-
-const MascotContext = createContext<MascotContextType | undefined>(undefined);
+import { MascotContext, type Emotion } from './mascotContextValue';
 
 export const MascotProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [emotion, setEmotion] = useState<Emotion>('neutral');
@@ -53,12 +40,4 @@ export const MascotProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       {children}
     </MascotContext.Provider>
   );
-};
-
-export const useMascot = () => {
-  const context = useContext(MascotContext);
-  if (context === undefined) {
-    throw new Error('useMascot must be used within a MascotProvider');
-  }
-  return context;
 };

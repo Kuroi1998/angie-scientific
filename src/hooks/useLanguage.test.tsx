@@ -1,19 +1,22 @@
-import { describe, it, expect, afterEach, beforeEach } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import i18n from '../i18n';
 import { LanguageProvider, useLanguage } from './useLanguage';
 
 afterEach(cleanup);
-beforeEach(() => {
+
+beforeEach(async () => {
   window.localStorage.clear();
+  await i18n.changeLanguage('fr');
 });
 
 function LanguageProbe() {
   const { language, setLanguage, t } = useLanguage();
   return (
     <div>
-      <span data-testid="lang">{language ?? 'none'}</span>
-      <span data-testid="translated">{t('nav.table')}</span>
+      <span data-testid="lang">{language}</span>
+      <span data-testid="translated">{t('routes.table.label', { ns: 'navigation' })}</span>
       <button onClick={() => setLanguage('es')}>ES</button>
       <button onClick={() => setLanguage('fr')}>FR</button>
     </div>
@@ -21,41 +24,45 @@ function LanguageProbe() {
 }
 
 describe('useLanguage / LanguageProvider', () => {
-  it('defaults to no language selected when nothing is stored', () => {
+  it('defaults to the French fallback language', () => {
     render(<LanguageProvider><LanguageProbe /></LanguageProvider>);
-    expect(screen.getByTestId('lang')).toHaveTextContent('none');
+    expect(screen.getByTestId('lang')).toHaveTextContent('fr');
+    expect(screen.getByTestId('translated')).toHaveTextContent(/Tableau/);
   });
 
-  it('switching language updates translations and persists across a fresh provider mount', async () => {
+  it('switching language updates translations and persists the selected language', async () => {
     const user = userEvent.setup();
-    const { unmount } = render(<LanguageProvider><LanguageProbe /></LanguageProvider>);
+    render(<LanguageProvider><LanguageProbe /></LanguageProvider>);
 
     await user.click(screen.getByRole('button', { name: 'ES' }));
-    expect(screen.getByTestId('lang')).toHaveTextContent('es');
-    unmount();
 
-    render(<LanguageProvider><LanguageProbe /></LanguageProvider>);
-    expect(screen.getByTestId('lang')).toHaveTextContent('es');
+    await waitFor(() => {
+      expect(screen.getByTestId('lang')).toHaveTextContent('es');
+      expect(screen.getByTestId('translated')).toHaveTextContent(/Tabla/);
+    });
+    expect(window.localStorage.getItem('language')).toBe('es');
   });
 
-  it('migrates the legacy "angie_sci_lang" key on first load', () => {
-    window.localStorage.setItem('angie_sci_lang', 'es');
+  it('can switch back to French', async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage('es');
     render(<LanguageProvider><LanguageProbe /></LanguageProvider>);
-    expect(screen.getByTestId('lang')).toHaveTextContent('es');
-    expect(window.localStorage.getItem('angieScientific:v1:language')).toBe('"es"');
+
+    await user.click(screen.getByRole('button', { name: 'FR' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('lang')).toHaveTextContent('fr');
+      expect(screen.getByTestId('translated')).toHaveTextContent(/Tableau/);
+    });
   });
 
-  it('ignores a corrupted stored language and falls back to none', () => {
-    window.localStorage.setItem('angieScientific:v1:language', '{"bad":"shape"}');
-    render(<LanguageProvider><LanguageProbe /></LanguageProvider>);
-    expect(screen.getByTestId('lang')).toHaveTextContent('none');
-  });
-
-  it('throws a clear error when useLanguage is used outside the provider', () => {
+  it('works without a custom provider because i18next is initialized globally', () => {
     function Bare() {
-      useLanguage();
-      return null;
+      const { language } = useLanguage();
+      return <span data-testid="bare-lang">{language}</span>;
     }
-    expect(() => render(<Bare />)).toThrow(/useLanguage must be used within/);
+
+    render(<Bare />);
+    expect(screen.getByTestId('bare-lang')).toHaveTextContent('fr');
   });
 });

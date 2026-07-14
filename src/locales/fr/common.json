@@ -1,0 +1,21 @@
+{
+  "welcome": {
+    "title": "Système de Chimie Tactique & Quantique",
+    "subtitle": "Interface de Simulation Chimique Futuriste",
+    "choose": "Sélectionnez votre langue d'accréditation",
+    "confirm": "Confirmer l'accès",
+    "continue": "Continuer en français",
+    "badge": "Interface accréditée",
+    "description": "Sélectionnez votre langue pour commencer l'exploration scientifique.",
+    "secure": "Données locales sécurisées"
+  },
+  "loading": "CHARGEMENT...",
+  "errorBoundary": {
+    "description": "L'application a rencontré une erreur inattendue. Vos données locales sont conservées.",
+    "reload": "Recharger l'application",
+    "title": "Angie Scientific"
+  },
+  "angie": {
+    "ready": "Je suis prête. Choisis une station et je garde le fil scientifique avec toi."
+  }
+}

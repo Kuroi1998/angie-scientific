@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { useMascot } from '../components/Mascot/MascotContext';
+import { useMascot } from '../components/Mascot/useMascot';
 import { useLocalStorageState } from './useLocalStorageState';
 import { useLanguage } from './useLanguage';
-import { useUserProgress } from '../components/UserProgressProvider';
+import { useUserProgress } from '../components/useUserProgress';
 
 type Emotion = 'neutral' | 'happy' | 'impressed' | 'thinking' | 'encouraging' | 'surprised' | 'worried';
 
@@ -20,6 +20,11 @@ export const useTutorial = (activeTab: string) => {
 
     if (!seenTutorials[activeTab]) {
       const msgs: Record<string, {fr: string, es: string, emotion: Emotion}> = {
+        home: {
+          fr: "Bienvenue dans ton tableau de bord. Je te proposerai toujours une prochaine activitÃ© utile.",
+          es: "Bienvenido a tu panel. Siempre te propondre una siguiente actividad util.",
+          emotion: 'encouraging'
+        },
         table: { 
           fr: "Bienvenue dans le Tableau Périodique ! Clique sur un élément pour découvrir ses secrets.", 
           es: "¡Bienvenido a la Tabla Periódica! Haz clic en un elemento para descubrir sus secretos.",

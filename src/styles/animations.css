@@ -1,40 +1,7 @@
-/* Keyframe Animations */
-
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(0, 243, 255, 0.4), inset 0 0 10px rgba(0, 243, 255, 0.1);
-    text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(0, 243, 255, 0.8), inset 0 0 15px rgba(0, 243, 255, 0.3);
-    text-shadow: 0 0 12px rgba(0, 243, 255, 0.9);
-  }
-}
-
-@keyframes neon-flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-    opacity: 1;
-    filter: drop-shadow(0 0 8px var(--neon-cyan));
-  }
-  20%, 24%, 55% {
-    opacity: 0.7;
-    filter: none;
-  }
-}
-
-@keyframes scanline {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100%);
-  }
-}
-
-@keyframes fade-in {
+@keyframes as-page-enter {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -42,147 +9,202 @@
   }
 }
 
-@keyframes modal-scale {
+@keyframes as-page-exit {
   from {
-    opacity: 0;
-    transform: scale(0.95);
+    opacity: 1;
+    transform: translateY(0);
   }
   to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes as-surface-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes as-overlay-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes as-dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes as-selection-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(24, 184, 200, 0.34);
+  }
+  100% {
+    box-shadow: 0 0 0 7px rgba(24, 184, 200, 0);
+  }
+}
+
+@keyframes as-success-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes as-attention-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  100% {
     opacity: 1;
     transform: scale(1);
   }
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+@keyframes as-gentle-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  35% {
+    transform: translateX(-3px);
+  }
+  70% {
+    transform: translateX(3px);
+  }
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+.as-page-transition {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  width: 100%;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+.as-page-transition.is-entering,
+.animate-fade-in,
+.tab-slide-in,
+.tab-content {
+  animation: as-page-enter var(--as-duration-base) var(--as-ease-emphasis) both;
 }
 
-@keyframes pop-in {
-  0% { opacity: 0; transform: scale(0.5); }
-  80% { transform: scale(1.05); }
-  100% { opacity: 1; transform: scale(1); }
+.as-page-transition.is-exiting,
+.tab-slide-out {
+  animation: as-page-exit var(--as-duration-fast) var(--as-ease-standard) both;
 }
 
-@keyframes slide-in-fade {
-  from { opacity: 0; transform: translateY(15px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+.as-overlay {
+  animation: as-overlay-enter var(--as-duration-base) var(--as-ease-standard) both;
 }
 
-@keyframes slide-out-fade {
-  from { opacity: 1; transform: translateY(0) scale(1); }
-  to { opacity: 0; transform: translateY(-15px) scale(0.98); }
+.as-modal,
+.as-drawer,
+.as-bottom-sheet,
+.modal-anim {
+  animation: as-dialog-enter var(--as-duration-base) var(--as-ease-emphasis) both;
 }
 
-
-/* Class Utilities */
-.animate-fade-in {
-  animation: fade-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.as-tab-panel,
+.as-toast-floating,
+.animate-pop-in {
+  animation: as-surface-enter var(--as-duration-base) var(--as-ease-emphasis) both;
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s infinite ease-in-out;
+.as-card,
+.as-panel,
+.lab-panel,
+.pt-side-panel,
+.pt-comparison,
+.dashboard-hero,
+.dashboard-section {
+  animation: as-surface-enter var(--as-duration-base) var(--as-ease-emphasis) both;
 }
 
-.animate-flicker {
-  animation: neon-flicker 3s infinite;
+.as-button[data-selected="true"],
+.as-tab[aria-selected="true"],
+.as-nav-item.is-active,
+.pt-element-tile.is-selected,
+.quiz-mode-card[data-selected="true"],
+.fusion-element-button[aria-pressed="true"],
+.virtual-exp-button[aria-pressed="true"] {
+  animation: as-selection-pulse var(--as-duration-slow) var(--as-ease-emphasis);
 }
 
-.animate-bounce {
-  animation: bounce 0.5s ease-in-out infinite;
+.fusion-result,
+.virtual-exp-button .as-badge,
+.quiz-history-row .as-badge.as-tone-success,
+.user-badge-card[data-unlocked="true"] {
+  animation: as-success-rise var(--as-duration-base) var(--as-ease-emphasis) both;
+}
+
+.animate-pulse-glow,
+.animate-flicker,
+.animate-bounce,
+.animate-float {
+  animation: as-attention-pop var(--as-duration-base) var(--as-ease-emphasis) both;
 }
 
 .animate-shake {
-  animation: shake 0.4s ease-in-out infinite;
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-pop-in {
-  animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: as-gentle-shake var(--as-duration-base) var(--as-ease-standard) both;
 }
 
 .scanline-container {
-  position: relative;
   overflow: hidden;
+  position: relative;
 }
 
 .scanline-container::after {
+  background: linear-gradient(90deg, transparent, rgba(24, 184, 200, 0.28), transparent);
   content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(180deg, transparent, var(--neon-cyan), transparent);
-  opacity: 0.4;
+  height: 1px;
+  inset: auto 0 0;
+  opacity: 0.7;
   pointer-events: none;
-  animation: scanline 4s linear infinite;
+  position: absolute;
 }
 
-/* Tab & Modal transitions */
-.tab-content {
-  opacity: 0;
-  animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.tab-slide-in {
-  animation: slide-in-fade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.tab-slide-out {
-  animation: slide-out-fade 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.modal-anim {
-  animation: modal-scale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* Respect the user's OS/browser preference OR explicit app setting: stop purely decorative, endless
-   animations (pulse, flicker, scanline) and make the remaining one-shot
-   transitions near-instant instead of fully removing them (so content still
-   appears, just without the motion). */
-@media (prefers-reduced-motion: reduce) {
-  .animate-pulse-glow,
-  .animate-flicker,
-  .scanline-container::after {
-    animation: none;
-  }
-
-  .animate-fade-in,
-  .tab-content,
-  .tab-slide-in,
-  .tab-slide-out,
-  .modal-anim {
-    animation-duration: 0.01ms;
-    animation-iteration-count: 1;
-  }
-}
-
-html[data-reduced-motion="true"] .animate-pulse-glow,
-html[data-reduced-motion="true"] .animate-flicker,
-html[data-reduced-motion="true"] .scanline-container::after {
-  animation: none !important;
-}
-
-html[data-reduced-motion="true"] .animate-fade-in,
-html[data-reduced-motion="true"] .tab-content,
-html[data-reduced-motion="true"] .tab-slide-in,
-html[data-reduced-motion="true"] .tab-slide-out,
-html[data-reduced-motion="true"] .modal-anim {
+html[data-reduced-motion="true"] *,
+html[data-reduced-motion="true"] *::before,
+html[data-reduced-motion="true"] *::after {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

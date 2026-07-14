@@ -1,0 +1,32 @@
+[data-theme="laboratory"] {
+  --as-bg-space: #eef2f5;
+  --as-bg-lab: #f5f8fa;
+  --as-bg-orbit: #e5ebf0;
+  --as-bg-soft: #f0f4f7;
+
+  --as-surface-1: #ffffff;
+  --as-surface-2: #f8fafc;
+  --as-surface-3: #f1f5f9;
+  --as-surface-inverse: #1e293b;
+  --as-surface-glass: rgba(255, 255, 255, 0.9);
+  --as-surface-glass-dark: rgba(30, 41, 59, 0.9);
+  --surface-card: #ffffff;
+  --surface-border: #cbd5e1;
+
+  --as-text-primary: #1e293b;
+  --as-text-secondary: #475569;
+  --as-text-muted: #546475;
+  --as-text-subtle: #94a3b8;
+  --as-text-inverse: #ffffff;
+  --as-text-disabled: #94a3b8;
+  --as-text-on-accent: #ffffff;
+  --as-text-body: #334155;
+  --as-text-strong: #0f172a;
+
+  --as-accent-cyan: #0ea5e9;
+  --as-accent-cyan-soft: #e0f2fe;
+
+  --as-shadow-1: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --as-shadow-2: 0 4px 6px -1px rgba(15, 23, 42, 0.05);
+  --as-shadow-3: 0 10px 15px -3px rgba(15, 23, 42, 0.05);
+}

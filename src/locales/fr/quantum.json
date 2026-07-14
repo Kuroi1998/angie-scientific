@@ -1,0 +1,65 @@
+{
+  "hub": {
+    "tabs": {
+      "orbital": "Structure de l'Atome",
+      "compare": "Comparaison",
+      "heisenberg": "Incertitude",
+      "hybrid": "Hybridation"
+    },
+    "quantumParams": "Paramètres Quantiques",
+    "visualizer": "Visualiseur 2D/3D"
+  },
+  "controls": {
+    "nLabel": "Nombre Quantique Principal (n)",
+    "nTooltip": "Niveau d'énergie principal",
+    "lLabel": "Nombre Quantique Azimutal (l)",
+    "lTooltip": "Définit la forme de l'orbitale (s=0, p=1, d=2)",
+    "mLabel": "Nombre Quantique Magnétique (m)",
+    "mTooltip": "Définit l'orientation spatiale de l'orbitale",
+    "viewMode": "Mode de visualisation"
+  },
+  "heisenberg": {
+    "title": "Principe d'Incertitude d'Heisenberg",
+    "uncertaintyPosition": "Incertitude sur la position (Δx)",
+    "space": "Espace (Position)",
+    "momentum": "Impulsion (Quantité de mouvement)",
+    "inequality": "Inégalité d'Heisenberg",
+    "description": "La nature quantique limite fondamentalement la précision avec laquelle on peut connaître simultanément la position et la quantité de mouvement. Ce n'est pas une limite instrumentale, mais une propriété intrinsèque de l'onde."
+  },
+  "hybrid": {
+    "title": "Module d'Hybridation",
+    "hybridType": "Type d'Hybridation",
+    "geometry": "Géométrie",
+    "desc_sp": "Présente dans l'éthyne (acétylène).",
+    "desc_sp2": "Présente dans l'éthène (éthylène).",
+    "desc_sp3": "Présente dans le méthane.",
+    "geom_sp": "Linéaire",
+    "geom_sp2": "Trigonale plane",
+    "geom_sp3": "Tétraédrique"
+  },
+  "compare": {
+    "orbitalA": "Orbitale A : {{label}}",
+    "orbitalB": "Orbitale B : {{label}}",
+    "chooseA": "CHOISIR L'ORBITALE A",
+    "chooseB": "CHOISIR L'ORBITALE B",
+    "totalNodes": "Nœuds totaux : {{nodes}}",
+    "relativeEnergy": "Énergie relative : {{energy}}"
+  },
+  "info": {
+    "title": "Comprendre cette orbitale",
+    "simple": "SIMPLE",
+    "advanced": "AVANCÉ",
+    "orbital": "Orbitale",
+    "relativeEnergy": "Énergie relative",
+    "desc1": "L'orbitale {{label}} est une région de l'espace où il y a une forte probabilité de trouver un électron.",
+    "desc2_base": "Elle est située sur la couche n={{n}}.",
+    "desc2_s": "Elle a une forme sphérique, ce qui signifie que la probabilité est la même dans toutes les directions.",
+    "desc2_p": "Elle a une forme d'altère avec deux lobes de chaque côté du noyau.",
+    "desc2_d": "Elle a une forme complexe avec plusieurs lobes.",
+    "desc3": "Les zones cyan et magenta représentent les deux phases opposées de l'onde de l'électron.",
+    "waveFunction": "Fonction d'onde $\\Psi_{{{n}}{{l}}{{m}}}$",
+    "waveFunctionDesc": "La couleur cyan indique la phase positive, et le magenta la phase négative.",
+    "radialNodes": "Nœuds Radiaux (n-l-1)",
+    "angularNodes": "Nœuds Angulaires (l)"
+  }
+}

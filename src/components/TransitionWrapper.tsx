@@ -8,33 +8,49 @@ interface TransitionWrapperProps {
 export const TransitionWrapper: React.FC<TransitionWrapperProps> = ({ activeKey, children }) => {
   const [displayKey, setDisplayKey] = useState(activeKey);
   const [displayChildren, setDisplayChildren] = useState(children);
-  const [transitionClass, setTransitionClass] = useState('tab-slide-in');
+  const [transitionClass, setTransitionClass] = useState('is-entering');
 
-  // Trigger out animation
-  if (activeKey !== displayKey && transitionClass !== 'tab-slide-out') {
-    setTransitionClass('tab-slide-out');
-  }
+  useEffect(() => {
+    if (activeKey === displayKey) {
+      setDisplayChildren(children);
+      return undefined;
+    }
+
+    if (shouldReduceMotion()) {
+      setDisplayKey(activeKey);
+      setDisplayChildren(children);
+      setTransitionClass('is-entering');
+      return undefined;
+    }
+
+    setTransitionClass('is-exiting');
+    const timer = window.setTimeout(() => {
+      setDisplayKey(activeKey);
+      setDisplayChildren(children);
+      setTransitionClass('is-entering');
+    }, 140);
+    return () => window.clearTimeout(timer);
+  }, [activeKey, displayKey, children]);
 
   useEffect(() => {
     if (activeKey !== displayKey) {
-      const timer = setTimeout(() => {
-        setDisplayKey(activeKey);
-        setDisplayChildren(children);
-        setTransitionClass('tab-slide-in');
-      }, 200); // 200ms matches the slide-out-fade animation duration
-      return () => clearTimeout(timer);
-    } else {
-      // Keep displayChildren in sync without transition delay
-      setDisplayChildren(children);
+      return;
     }
-  }, [activeKey, displayKey, children]);
+    const timer = window.setTimeout(() => setTransitionClass(''), 220);
+    return () => window.clearTimeout(timer);
+  }, [activeKey, displayKey]);
 
-  // Use fresh children if no transition is occurring, to prevent 1-render lag
   const currentChildren = activeKey === displayKey ? children : displayChildren;
 
   return (
-    <div className={transitionClass} style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+    <div className={`as-page-transition ${transitionClass}`}>
       {currentChildren}
     </div>
   );
 };
+
+function shouldReduceMotion() {
+  if (typeof window === 'undefined') return false;
+  return document.documentElement.dataset.reducedMotion === 'true'
+    || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}

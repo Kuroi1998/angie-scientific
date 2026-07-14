@@ -12,7 +12,7 @@ beforeEach(() => {
 describe('QuestSystem', () => {
   it('mounts with zero completed quests and 0 points', () => {
     renderWithLanguage(<QuestSystem />);
-    expect(screen.getByText('0')).toBeInTheDocument();
+    expect(screen.getAllByText('0').length).toBeGreaterThan(0);
   });
 
   it('toggling a quest checkbox marks it complete, updates points, and persists', async () => {

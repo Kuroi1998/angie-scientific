@@ -1,0 +1,172 @@
+:root {
+  /* Backgrounds */
+  --as-bg-space: #080b12;
+  --as-bg-lab: #101720;
+  --as-bg-orbit: #15222c;
+  --as-bg-soft: #edf4f7;
+
+  /* Surfaces */
+  --as-surface-1: #f7fafc;
+  --as-surface-2: #eaf1f5;
+  --as-surface-3: #dfe9ee;
+  --as-surface-inverse: #111923;
+  --as-surface-glass: rgba(247, 250, 252, 0.82);
+  --as-surface-glass-dark: rgba(16, 23, 32, 0.76);
+  --surface-card: #f8fafc;
+  --surface-border: #e2e8f0;
+
+  /* Text - Semantic Default (Light Theme as base) */
+  --as-text-primary: #101820;      /* High contrast text */
+  --as-text-secondary: #334155;    /* Descriptions, labels */
+  --as-text-muted: #546475;        /* Placeholders, secondary labels — darkened to clear 4.5:1 on --as-surface-2/3 */
+  --as-text-subtle: #94a3b8;       /* Borders, very subtle text */
+  --as-text-inverse: #ffffff;      /* For use on bright backgrounds like buttons */
+  --as-text-disabled: #94a3b8;     /* Disabled state, maintaining contrast */
+  --as-text-on-accent: #ffffff;    /* Text on solid accent colors */
+  --as-text-body: #1e293b;         /* Default body copy, slightly softer than primary */
+  --as-text-strong: #0b1220;       /* Emphasis/headings, highest contrast */
+
+  /* Borders */
+  --as-border-soft: #d5e0e6;
+  --as-border-strong: #9eb0bb;
+  --as-border-inverse: rgba(247, 250, 252, 0.22);
+  --as-border-focus: #18b8c8;
+
+  /* Accents */
+  --as-accent-cyan: #18b8c8;
+  --as-accent-cyan-soft: #d9f4f7;
+  --as-accent-amber: #f2b84b;
+  --as-accent-amber-soft: #fff1cf;
+  --as-accent-violet: #7c6ee6;
+  --as-accent-violet-soft: #ebe8ff;
+  --as-accent-coral: #ef6b5b;
+  --as-accent-coral-soft: #ffe4df;
+  --as-accent-green: #39a76d;
+  --as-accent-green-soft: #ddf4e8;
+  --as-accent-magenta: #f26bb0;   /* lightened from #ef4d9e for headroom against dark glass panels */
+  --as-accent-magenta-soft: #ffe1f1;
+
+  /* Legacy-name aliases: several feature files reference these token names
+     (typos/renames from earlier passes). Aliasing them here fixes every call
+     site at once instead of hand-editing dozens of files. */
+  --as-font-title: var(--as-font-display);
+  --as-accent-yellow: var(--as-accent-amber); /* decorative accent, not the (now-darkened) semantic warning color */
+  --as-accent-red: var(--as-error);
+  --as-surface-primary: var(--as-surface-1);
+  --as-surface-secondary: var(--as-surface-2);
+  --as-surface-tertiary: var(--as-surface-3);
+  --as-line-relaxed: var(--as-line-body);
+  --as-shadow-lg: var(--as-shadow-3);
+  --as-shadow-glow: 0 0 20px color-mix(in srgb, var(--as-accent-cyan) 45%, transparent);
+
+  /* Charts (composed from existing tokens so they auto-adapt per theme) */
+  --as-chart-background: var(--as-surface-1);
+  --as-chart-grid: var(--as-border-soft);
+  --as-chart-axis: var(--as-text-muted);
+  --as-chart-label: var(--as-text-secondary);
+  --as-chart-tooltip-bg: var(--as-surface-inverse);
+  --as-chart-tooltip-text: var(--as-text-inverse);
+  --as-chart-series-1: var(--as-accent-cyan);
+  --as-chart-series-2: var(--as-accent-violet);
+  --as-chart-series-3: var(--as-accent-amber);
+  --as-chart-series-4: var(--as-accent-coral);
+
+  /* Simulations */
+  --as-simulation-grid: var(--as-border-soft);
+  --as-simulation-axis: var(--as-text-muted);
+  --as-simulation-particle-primary: var(--as-accent-cyan);
+  --as-simulation-particle-secondary: var(--as-accent-violet);
+
+  /* Semantic */
+  --as-success: #1a6b43;  /* darkened from #238f5a to clear 4.5:1 against --as-success-bg */
+  --as-success-bg: #ddf4e8;
+  --as-info: #146690;      /* darkened from #167aa4 to clear 4.5:1 against --as-info-bg */
+  --as-info-bg: #dff2fb;
+  --as-warning: #8a5c0f;   /* darkened from #b87a14 to clear 4.5:1 against --as-warning-bg */
+  --as-warning-bg: #fff1cf;
+  --as-error: #b13a2f;    /* darkened from #c9473a to clear 4.5:1 against --as-error-bg */
+  --as-error-bg: #ffe4df;
+
+  /* Type */
+  --as-font-display: "Orbitron", "Inter", sans-serif;
+  --as-font-body: "Inter", system-ui, sans-serif;
+  --as-font-mono: "Share Tech Mono", monospace;
+  --as-font-size-xs: 0.75rem;
+  --as-font-size-sm: 0.875rem;
+  --as-font-size-md: 1rem;
+  --as-font-size-lg: 1.125rem;
+  --as-font-size-xl: 1.5rem;
+  --as-font-size-2xl: 2rem;
+  --as-line-tight: 1.15;
+  --as-line-body: 1.55;
+
+  /* Spacing */
+  --as-space-0: 0;
+  --as-space-1: 0.25rem;
+  --as-space-2: 0.5rem;
+  --as-space-3: 0.75rem;
+  --as-space-4: 1rem;
+  --as-space-5: 1.25rem;
+  --as-space-6: 1.5rem;
+  --as-space-8: 2rem;
+  --as-space-10: 2.5rem;
+  --as-space-12: 3rem;
+  --as-space-16: 4rem;
+
+  /* Sizes */
+  --as-size-touch: 2.75rem;
+  --as-size-icon-sm: 1rem;
+  --as-size-icon-md: 1.25rem;
+  --as-size-icon-lg: 1.5rem;
+  --as-size-toolbar: 4rem;
+  --as-size-sidebar: 17rem;
+
+  /* Radii */
+  --as-radius-0: 0;
+  --as-radius-1: 0.25rem;
+  --as-radius-2: 0.375rem;
+  --as-radius-3: 0.5rem;
+  --as-radius-round: 999px;
+
+  /* Shadows */
+  --as-shadow-1: 0 1px 2px rgba(16, 32, 42, 0.08);
+  --as-shadow-2: 0 8px 24px rgba(16, 32, 42, 0.12);
+  --as-shadow-3: 0 18px 48px rgba(16, 32, 42, 0.18);
+  --as-shadow-focus: 0 0 0 3px rgba(24, 184, 200, 0.28);
+
+  /* Transitions */
+  --as-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --as-ease-emphasis: cubic-bezier(0.16, 1, 0.3, 1);
+  --as-duration-fast: 120ms;
+  --as-duration-base: 180ms;
+  --as-duration-slow: 400ms;
+
+  /* Layers */
+  --as-z-base: 0;
+  --as-z-nav: 20;
+  --as-z-drawer: 40;
+  --as-z-toast: 80;
+  --as-z-modal: 120;
+
+  /* Widths */
+  --as-max-reading: 68ch;
+  --as-max-content: 1180px;
+  --as-max-wide: 1440px;
+
+  /* Breakpoints documented for JS/CSS parity */
+  --as-bp-xs: 320px;
+  --as-bp-sm: 480px;
+  --as-bp-md: 768px;
+  --as-bp-lg: 1024px;
+  --as-bp-xl: 1280px;
+  --as-bp-2xl: 1536px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --as-duration-fast: 1ms;
+    --as-duration-base: 1ms;
+    --as-duration-slow: 1ms;
+  }
+}
+

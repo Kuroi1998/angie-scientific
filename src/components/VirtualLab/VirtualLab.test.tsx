@@ -26,7 +26,7 @@ describe('VirtualLab', () => {
     await user.click(screen.getByRole('button', { name: /LANCER|INICIAR/i }));
     expect(status).toHaveTextContent(/en cours|en curso/i);
 
-    await waitFor(() => expect(status).toHaveTextContent(/terminée|completado/i), { timeout: 3000 });
+    await waitFor(() => expect(status).toHaveTextContent(/terminee|terminée|completado/i), { timeout: 3000 });
 
     await waitFor(() => {
       const stored = window.localStorage.getItem('angieScientific:v1:virtualLabCompletedExperiments');

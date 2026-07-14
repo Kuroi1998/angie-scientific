@@ -6,7 +6,7 @@ import { LanguageProvider } from '../../hooks/useLanguage';
 import { FusionCore } from './FusionCore';
 import { vi } from 'vitest';
 
-vi.mock('../UserProgressProvider', () => ({
+vi.mock('../useUserProgress', () => ({
   useUserProgress: () => ({
     profile: { learningLevel: 'discovery' },
     progress: { discoveredElements: [], unlockedBadges: [], successfulReactions: [] },
@@ -14,7 +14,7 @@ vi.mock('../UserProgressProvider', () => ({
   }),
 }));
 
-vi.mock('../Mascot/MascotContext', () => ({
+vi.mock('../Mascot/useMascot', () => ({
   useMascot: () => ({
     showMessage: vi.fn(),
     setEmotion: vi.fn(),

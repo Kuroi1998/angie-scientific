@@ -1,191 +1,132 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { ZoomIn, ZoomOut, Maximize } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { PointerEvent, ReactNode, TouchEvent } from 'react';
+import { Maximize, ZoomIn, ZoomOut } from 'lucide-react';
 
 interface ZoomableContainerProps {
-  children: React.ReactNode;
-  minScale?: number;
-  maxScale?: number;
+  children: ReactNode;
   initialScale?: number;
+  maxScale?: number;
+  minScale?: number;
+  onScaleChange?: (scale: number | ((previous: number) => number)) => void;
+  scale?: number;
 }
 
-export const ZoomableContainer: React.FC<ZoomableContainerProps> = ({
+export function ZoomableContainer({
   children,
-  minScale = 0.4,
-  maxScale = 3,
   initialScale = 1,
-}) => {
+  maxScale = 3,
+  minScale = 0.45,
+  onScaleChange,
+  scale: externalScale,
+}: ZoomableContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(initialScale);
+  const [internalScale, setInternalScale] = useState(initialScale);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const pinchStartDist = useRef<number | null>(null);
-  const lastScale = useRef(initialScale);
+  const scale = externalScale ?? internalScale;
+  const updateScale = onScaleChange ?? setInternalScale;
+  const lastScale = useRef(scale);
 
-  const handleWheel = useCallback((e: WheelEvent) => {
-    e.preventDefault();
-    if (!containerRef.current) return;
-    
-    // Zoom in/out based on wheel delta
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    setScale(prev => {
-      const newScale = Math.min(Math.max(prev + delta, minScale), maxScale);
-      return newScale;
-    });
-  }, [minScale, maxScale]);
+  const clampScale = useCallback(
+    (value: number) => Math.min(Math.max(value, minScale), maxScale),
+    [maxScale, minScale],
+  );
+
+  const manualZoom = useCallback(
+    (delta: number) => updateScale((previous) => clampScale(previous + delta)),
+    [clampScale, updateScale],
+  );
+
+  const handleWheel = useCallback((event: WheelEvent) => {
+    event.preventDefault();
+    manualZoom(event.deltaY > 0 ? -0.1 : 0.1);
+  }, [manualZoom]);
 
   useEffect(() => {
     const container = containerRef.current;
-    if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: false });
-    }
-    return () => {
-      if (container) {
-        container.removeEventListener('wheel', handleWheel);
-      }
-    };
+    if (!container) return undefined;
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    // only start drag if we aren't clicking on a button inside
-    if ((e.target as HTMLElement).tagName === 'BUTTON') return;
-    
-    if (e.pointerType === 'mouse' && e.button !== 0) return; // Only left click for mouse
+  const handlePointerDown = (event: PointerEvent) => {
+    if ((event.target as HTMLElement).closest('button')) return;
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
     setIsDragging(true);
-    dragStart.current = { x: e.clientX - position.x, y: e.clientY - position.y };
-    e.currentTarget.setPointerCapture(e.pointerId);
+    dragStart.current = {
+      x: event.clientX - position.x,
+      y: event.clientY - position.y,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
   };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
+  const handlePointerMove = (event: PointerEvent) => {
     if (!isDragging) return;
     setPosition({
-      x: e.clientX - dragStart.current.x,
-      y: e.clientY - dragStart.current.y
+      x: event.clientX - dragStart.current.x,
+      y: event.clientY - dragStart.current.y,
     });
   };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (isDragging) {
-      setIsDragging(false);
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    }
+  const handlePointerUp = (event: PointerEvent) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
-  // Touch logic for Pinch to Zoom
-  const getPinchDistance = (e: React.TouchEvent) => {
-    if (e.touches.length < 2) return null;
-    const dx = e.touches[0].clientX - e.touches[1].clientX;
-    const dy = e.touches[0].clientY - e.touches[1].clientY;
+  const getPinchDistance = (event: TouchEvent) => {
+    if (event.touches.length < 2) return null;
+    const dx = event.touches[0].clientX - event.touches[1].clientX;
+    const dy = event.touches[0].clientY - event.touches[1].clientY;
     return Math.sqrt(dx * dx + dy * dy);
   };
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      pinchStartDist.current = getPinchDistance(e);
-      lastScale.current = scale;
-    }
+  const handleTouchStart = (event: TouchEvent) => {
+    if (event.touches.length !== 2) return;
+    pinchStartDist.current = getPinchDistance(event);
+    lastScale.current = scale;
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length === 2 && pinchStartDist.current !== null) {
-      const dist = getPinchDistance(e);
-      if (dist) {
-        const delta = dist / pinchStartDist.current;
-        setScale(() => {
-          const newScale = Math.min(Math.max(lastScale.current * delta, minScale), maxScale);
-          return newScale;
-        });
-      }
-    }
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (e.touches.length < 2) {
-      pinchStartDist.current = null;
-    }
+  const handleTouchMove = (event: TouchEvent) => {
+    if (event.touches.length !== 2 || pinchStartDist.current === null) return;
+    const distance = getPinchDistance(event);
+    if (distance) updateScale(clampScale(lastScale.current * (distance / pinchStartDist.current)));
   };
 
   const resetZoom = () => {
-    setScale(initialScale);
+    updateScale(initialScale);
     setPosition({ x: 0, y: 0 });
   };
 
-  const manualZoom = (delta: number) => {
-    setScale(prev => Math.min(Math.max(prev + delta, minScale), maxScale));
-  };
-
   return (
-    <div 
-      style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', touchAction: 'none' }}
-      ref={containerRef}
-    >
-      {/* Control Overlay */}
-      <div style={{
-        position: 'absolute',
-        top: '10px',
-        right: '10px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-        zIndex: 50,
-        background: 'rgba(5, 5, 10, 0.7)',
-        padding: '8px',
-        borderRadius: '8px',
-        border: '1px solid var(--glass-border)',
-        backdropFilter: 'blur(4px)'
-      }}>
-        <button 
-          onClick={() => manualZoom(0.2)}
-          className="btn-icon" 
-          aria-label="Zoom In"
-          style={{ width: '32px', height: '32px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}
-        >
-          <ZoomIn size={18} />
+    <div className="pt-zoom-shell" ref={containerRef}>
+      <div className="pt-zoom-controls" aria-label="Controle du zoom">
+        <button aria-label="Zoom In" onClick={() => manualZoom(0.2)} type="button">
+          <ZoomIn size={17} />
         </button>
-        <button 
-          onClick={resetZoom}
-          className="btn-icon" 
-          aria-label="Reset Zoom"
-          style={{ width: '32px', height: '32px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}
-        >
-          <Maximize size={18} />
+        <button aria-label="Reset Zoom" onClick={resetZoom} type="button">
+          <Maximize size={17} />
         </button>
-        <button 
-          onClick={() => manualZoom(-0.2)}
-          className="btn-icon" 
-          aria-label="Zoom Out"
-          style={{ width: '32px', height: '32px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}
-        >
-          <ZoomOut size={18} />
+        <button aria-label="Zoom Out" onClick={() => manualZoom(-0.2)} type="button">
+          <ZoomOut size={17} />
         </button>
       </div>
-
-      {/* Pannable/Zoomable Content */}
-      <div 
+      <div
+        className={isDragging ? 'pt-zoom-canvas is-dragging' : 'pt-zoom-canvas'}
+        onPointerCancel={handlePointerUp}
         onPointerDown={handlePointerDown}
+        onPointerLeave={handlePointerUp}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-        onTouchStart={handleTouchStart}
+        onTouchEnd={() => { pinchStartDist.current = null; }}
         onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        style={{
-          width: '100%',
-          height: '100%',
-          transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-          transformOrigin: 'center center',
-          transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-          cursor: isDragging ? 'grabbing' : 'grab',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+        onTouchStart={handleTouchStart}
+        style={{ transform: `translate(${position.x}px, ${position.y}px) scale(${scale})` }}
       >
-        <div style={{ pointerEvents: isDragging ? 'none' : 'auto', width: '100%', display: 'flex', justifyContent: 'center' }}>
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );
-};
+}

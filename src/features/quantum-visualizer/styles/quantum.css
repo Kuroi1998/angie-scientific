@@ -1,0 +1,95 @@
+/* quantum.css */
+
+.quantum-hub-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  gap: var(--as-space-4);
+  font-family: var(--as-font-body);
+}
+
+.quantum-nav {
+  display: flex;
+  justify-content: center;
+  gap: var(--as-space-2);
+  padding: var(--as-space-2);
+  background: rgba(0,0,0,0.2);
+  border-radius: var(--as-radius-3);
+  border: 1px solid var(--as-border-inverse);
+  flex-wrap: wrap;
+}
+
+.quantum-nav-btn {
+  background: transparent;
+  border: none;
+  padding: var(--as-space-2) var(--as-space-6);
+  border-radius: var(--as-radius-2);
+  color: var(--as-text-muted);
+  font-family: var(--as-font-title);
+  font-size: var(--as-font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all var(--as-duration-fast) var(--as-ease-standard);
+}
+
+.quantum-nav-btn:hover {
+  background: var(--surface-border);
+  color: var(--as-text-subtle);
+}
+
+.quantum-nav-btn.active {
+  background: rgba(24, 184, 200, 0.15);
+  /* This is a 15%-alpha wash, so the dominant factor is the page background
+     underneath — --as-text-primary already reads reliably against that in
+     every theme, unlike a fixed accent color (cyan alone measured as low as
+     ~1.25:1 in some themes, --as-info as low as ~2.9:1 in others). */
+  color: var(--as-text-primary);
+  box-shadow: 0 0 10px rgba(24, 184, 200, 0.2);
+}
+
+.quantum-content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.quantum-grid-layout {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: var(--as-space-6);
+  height: 100%;
+}
+
+@media (max-width: 900px) {
+  .quantum-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quantum-col-controls {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.quantum-col-visualizer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.quantum-visualizer-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+}

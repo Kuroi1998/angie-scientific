@@ -1,0 +1,134 @@
+.angie-mascot-toggle,
+.angie-mascot {
+  bottom: calc(var(--as-space-4) + env(safe-area-inset-bottom));
+  position: fixed;
+  right: var(--as-space-4);
+  z-index: var(--as-z-toast);
+}
+
+.angie-mascot-toggle {
+  align-items: center;
+  background: var(--as-accent-cyan);
+  border: 0;
+  border-radius: var(--as-radius-round);
+  box-shadow: var(--as-shadow-glow);
+  color: var(--as-bg-space);
+  cursor: pointer;
+  display: inline-flex;
+  height: 3.125rem;
+  justify-content: center;
+  width: 3.125rem;
+}
+
+.angie-mascot {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: var(--as-space-2);
+}
+
+.angie-mascot-bubble {
+  background: var(--as-surface-1);
+  border: 1px solid var(--as-border-soft);
+  border-radius: var(--as-radius-3) var(--as-radius-3) 0 var(--as-radius-3);
+  box-shadow: var(--as-shadow-lg);
+  color: var(--as-text-strong);
+  font-family: var(--as-font-display);
+  font-size: var(--as-font-size-sm);
+  max-width: 16rem;
+  padding: var(--as-space-3) var(--as-space-4);
+  position: relative;
+}
+
+.angie-mascot-close,
+.angie-mascot-mini {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--as-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.angie-mascot-close {
+  border-radius: var(--as-radius-round);
+  min-height: 44px;
+  min-width: 44px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.angie-mascot-avatar {
+  cursor: pointer;
+  position: relative;
+  transform-origin: center bottom;
+  transition:
+    filter var(--as-duration-fast) var(--as-ease-standard),
+    transform var(--as-duration-fast) var(--as-ease-standard);
+}
+
+.angie-mascot-avatar:hover,
+.angie-mascot-avatar:focus-visible {
+  filter: drop-shadow(0 8px 18px rgba(24, 184, 200, 0.22));
+  transform: translateY(-2px);
+}
+
+.angie-emotion-happy,
+.angie-emotion-encouraging {
+  animation: as-attention-pop var(--as-duration-base) var(--as-ease-emphasis) both;
+}
+
+.angie-emotion-impressed,
+.angie-emotion-surprised {
+  animation: as-selection-pulse var(--as-duration-slow) var(--as-ease-emphasis);
+}
+
+.angie-emotion-thinking {
+  animation: as-page-enter var(--as-duration-base) var(--as-ease-emphasis) both;
+}
+
+.angie-emotion-worried {
+  animation: as-gentle-shake var(--as-duration-base) var(--as-ease-standard) both;
+}
+
+.angie-mascot-mini {
+  background: var(--as-bg-space);
+  border: 1px solid var(--as-border-inverse);
+  border-radius: var(--as-radius-round);
+  bottom: -0.5rem;
+  /* --as-bg-space is the theme's own primary background (not inverted), so
+     it needs --as-text-primary, which is designed to pair with it. */
+  color: var(--as-text-primary);
+  left: -0.5rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0;
+  position: absolute;
+}
+
+@media (max-width: 1180px) {
+  .angie-mascot-toggle,
+  .angie-mascot {
+    bottom: calc(5.6rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 520px) {
+  .angie-mascot-toggle,
+  .angie-mascot {
+    right: var(--as-space-3);
+  }
+
+  .angie-mascot-bubble {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1180px) and (orientation: landscape) {
+  .angie-mascot-toggle,
+  .angie-mascot {
+    bottom: calc(var(--as-space-4) + env(safe-area-inset-bottom));
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "core": {
+    "localSim": "Simulation locale",
+    "stationEyebrow": "Poste de synthèse",
+    "stationTitle": "Simulateur de fusion",
+    "stationSubtitle": "Sélectionner deux réactifs, préparer la chambre, puis analyser le résultat thermodynamique.",
+    "metrics": {
+      "reactants": "Réactifs",
+      "state": "État",
+      "stateStable": "Stable",
+      "stateUnstable": "Instable",
+      "stateReady": "Prêt",
+      "product": "Produit"
+    },
+    "selectionEyebrow": "Sélection",
+    "selectionTitle": "Éléments disponibles",
+    "safetyEyebrow": "Sécurité",
+    "safetyTitle": "Contrôle de protocole",
+    "safetyList": [
+      "Vérifier que les réactifs ne sont pas identiques.",
+      "Isoler les synthèses explosives dans la chambre.",
+      "Comparer ΔH, ΔS et ΔG avant de poursuivre."
+    ],
+    "prepEyebrow": "Préparation",
+    "prepTitle": "Chambre de réaction",
+    "clearBtn": "Effacer",
+    "resultEyebrow": "Résultat",
+    "resultTitle": "Analyse de réaction",
+    "calcEyebrow": "Calcul",
+    "calcTitle": "Stœchiométrie",
+    "previewEyebrow": "Aperçu",
+    "energyDiagram": "Diagramme énergétique",
+    "nextActionTitle": "Action suivante",
+    "nextActionStable": "Documenter le rendement et comparer avec une cascade possible.",
+    "nextActionUnstable": "Modifier les réactifs ou les conditions avant de poursuivre.",
+    "logAttemptBtn": "Consigner l'essai",
+    "unstableError": "Réaction instable : protocole de sécurité activé."
+  },
+  "selector": {
+    "ariaList": "Liste des éléments rapides",
+    "manualEntry": "Saisie manuelle",
+    "manualPlaceholder": "Ex: Fe, Au, Pb...",
+    "addBtn": "Ajouter"
+  },
+  "chamber": {
+    "title": "Chambre de confinement",
+    "instruction": "Insérez deux éléments pour démarrer la séquence.",
+    "removeReactant": "Retirer le réactif",
+    "emptySlot": "emplacement vide",
+    "reactant1": "Réactif 1",
+    "reactant2": "Réactif 2",
+    "reset": "Réinitialiser"
+  },
+  "telemetry": {
+    "noReactionTitle": "Aucune réaction détectée",
+    "noReactionDesc": "Sélectionnez deux réactifs compatibles pour lancer l'analyse.",
+    "typeTitle": "Type",
+    "enthalpy": "Enthalpie ΔH",
+    "entropy": "Entropie ΔS",
+    "gibbs": "Gibbs ΔG",
+    "spontaneous": "Réaction spontanée",
+    "monitor": "Réaction à surveiller",
+    "stableProduct": "Produit stable aux conditions simulées.",
+    "unstableProduct": "Produit non spontané ou instable en conditions standard.",
+    "angieNoteTitle": "Note Angie",
+    "learningNote": "Cette synthèse montre comment énergie et structure pilotent le résultat.",
+    "stable": "Stable",
+    "unstable": "Instable"
+  },
+  "stoichiometry": {
+    "ratioLocked": "Lié",
+    "ratioIndependent": "Indépendant",
+    "ratioLabel": "Ratio stœchiométrique",
+    "massInput": "{{symbol}} masse (g)",
+    "expMassInput": "Masse expérimentale (g)",
+    "molesOutput": "{{symbol}} moles",
+    "limitingReactant": "Réactif limitant",
+    "theoreticalYield": "Rendement théorique",
+    "actualYield": "Rendement réel",
+    "excessLeft": "Excès restant",
+    "massLoss": "Perte de matière",
+    "cascadeTitle": "Réaction en cascade",
+    "cascadeDesc": "Utiliser l'eau produite avec du sodium métallique.",
+    "initiateBtn": "Initier",
+    "resetCalcBtn": "Réinitialiser le calcul"
+  }
+}

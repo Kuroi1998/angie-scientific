@@ -38,7 +38,9 @@ const getDefaultProgress = (userId: string): UserProgress => ({
   completedQuests: []
 });
 
-export const fetchUserData = async (userId: string): Promise<{ profile: UserProfile, progress: UserProgress }> => {
+export const fetchUserData = async (
+  userId: string,
+): Promise<{ profile: UserProfile, progress: UserProgress }> => {
   let cloudProfile: UserProfile | null = null;
   let cloudProgress: UserProgress | null = null;
 
@@ -51,14 +53,13 @@ export const fetchUserData = async (userId: string): Promise<{ profile: UserProf
         cloudProgress = data.progress;
       }
     } catch (e) {
-      console.warn("Could not fetch from cloud, falling back to local storage", e);
+      console.warn('Could not fetch from cloud, falling back to local storage', e);
     }
   }
 
   const profiles = OfflineStorageService.getItem<Record<string, UserProfile>>(PROFILES_KEY) || {};
   const allProgress = OfflineStorageService.getItem<Record<string, UserProgress>>(PROGRESS_KEY) || {};
 
-  // If we got cloud data, save it to local
   if (cloudProfile && cloudProgress) {
     profiles[userId] = cloudProfile;
     allProgress[userId] = cloudProgress;
@@ -67,7 +68,6 @@ export const fetchUserData = async (userId: string): Promise<{ profile: UserProf
     return { profile: cloudProfile, progress: cloudProgress };
   }
 
-  // Fallback to local
   let profile = profiles[userId];
   if (!profile) {
     profile = getDefaultProfile(userId);
@@ -85,15 +85,16 @@ export const fetchUserData = async (userId: string): Promise<{ profile: UserProf
   return { profile, progress };
 };
 
-export const updateProfile = async (userId: string, profileUpdates: Partial<UserProfile>): Promise<void> => {
-  // 1. Save local (Optimistic UI)
+export const updateProfile = async (
+  userId: string,
+  profileUpdates: Partial<UserProfile>,
+): Promise<void> => {
   const profiles = OfflineStorageService.getItem<Record<string, UserProfile>>(PROFILES_KEY) || {};
   if (profiles[userId]) {
     profiles[userId] = { ...profiles[userId], ...profileUpdates };
     OfflineStorageService.setItem(PROFILES_KEY, profiles);
   }
 
-  // 2. Try push to cloud
   if (navigator.onLine) {
     try {
       await fetch(`${API_URL}/users/${userId}`, {
@@ -102,18 +103,16 @@ export const updateProfile = async (userId: string, profileUpdates: Partial<User
         body: JSON.stringify(profileUpdates)
       });
     } catch (e) {
-      console.warn("Could not sync profile to cloud, will sync later", e);
+      console.warn('Could not sync profile to cloud, will sync later', e);
     }
   }
 };
 
 export const updateProgress = async (userId: string, progress: UserProgress): Promise<void> => {
-  // 1. Save local
   const allProgress = OfflineStorageService.getItem<Record<string, UserProgress>>(PROGRESS_KEY) || {};
   allProgress[userId] = progress;
   OfflineStorageService.setItem(PROGRESS_KEY, allProgress);
 
-  // 2. Try push to cloud
   if (navigator.onLine) {
     try {
       await fetch(`${API_URL}/progress/${userId}`, {
@@ -122,20 +121,20 @@ export const updateProgress = async (userId: string, progress: UserProgress): Pr
         body: JSON.stringify(progress)
       });
     } catch (e) {
-      console.warn("Could not sync progress to cloud, will sync later", e);
+      console.warn('Could not sync progress to cloud, will sync later', e);
     }
   }
 };
 
 export const syncWithCloud = async (userId: string): Promise<boolean> => {
   if (!navigator.onLine) return false;
-  
+
   const profiles = OfflineStorageService.getItem<Record<string, UserProfile>>(PROFILES_KEY) || {};
   const allProgress = OfflineStorageService.getItem<Record<string, UserProgress>>(PROGRESS_KEY) || {};
-  
+
   const profile = profiles[userId];
   const progress = allProgress[userId];
-  
+
   if (!profile || !progress) return false;
 
   try {
@@ -144,16 +143,16 @@ export const syncWithCloud = async (userId: string): Promise<boolean> => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(profile)
     });
-    
+
     await fetch(`${API_URL}/progress/${userId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(progress)
     });
-    console.log("Synchronisation Cloud réussie pour l'utilisateur:", userId);
+    console.log("Synchronisation cloud reussie pour l'utilisateur:", userId);
     return true;
   } catch (e) {
-    console.error("Échec de la synchronisation au cloud:", e);
+    console.error('Echec de la synchronisation au cloud:', e);
     return false;
   }
 };
